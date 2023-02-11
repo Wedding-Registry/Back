@@ -1,5 +1,10 @@
 .DS_Store
+.env
+docker-compose-local.yml
+
 .idea
 .gradle
 
 build
+src/main/resources/application-local.yml
+db
