@@ -1,6 +1,5 @@
 .DS_Store
 .env
-docker-compose-local.yml
 
 .idea
 .gradle
