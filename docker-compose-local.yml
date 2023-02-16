@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  mysql:
+    image: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      TZ: Asia/Seoul
+    env_file:
+      - .env
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/conf.d:/etc/mysql/conf.d
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci
+    container_name: mysql-server

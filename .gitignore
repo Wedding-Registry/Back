@@ -1,5 +1,9 @@
 .DS_Store
+.env
+
 .idea
 .gradle
 
 build
+src/main/resources/application-local.yml
+db
