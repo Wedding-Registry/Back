@@ -13,4 +13,10 @@ public class TestController {
         log.info("nohup log test");
         return "jenkins test";
     }
+
+    @GetMapping("/test")
+    public String webHookTest2() {
+        log.info("webhooktest");
+        return "jenkins test2";
+    }
 }
