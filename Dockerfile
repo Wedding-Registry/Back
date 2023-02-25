@@ -6,5 +6,5 @@ WORKDIR /app
 
 COPY build/libs/${JAR_FILE} .
 
-ENTRYPOINT ["java", "-jar", "/${JAR_FILE}", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-jar", "/app/serviceapi-0.1.jar", "--spring.profiles.active=prod"]
 
