@@ -30,8 +30,8 @@ services:
     networks:
       - wedding-network
     container_name: wedding-backend
-    depends_on:
-      - mysql
+#    depends_on:
+#      - mysql
 
   frontend:
     image: frontend
