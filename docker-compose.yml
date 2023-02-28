@@ -9,7 +9,7 @@ services:
     environment:
       TZ: Asia/Seoul
     env_file:
-      - /home/ec2-user/db/env/db.env
+      - ./db.env
     volumes:
       - /home/ec2-user/db/data:/var/lib/mysql
       - /home/ec2-user/db/conf.d:/etc/mysql/conf.d
