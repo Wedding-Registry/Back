@@ -1,24 +1,24 @@
 version: "3.7"
 
 services:
-  mysql:
-    image: mysql
-    restart: always
-    ports:
-      - 3306:3306
-    environment:
-      TZ: Asia/Seoul
-    env_file:
-      - /home/ec2-user/db/env/db.env
-    volumes:
-      - /home/ec2-user/db/data:/var/lib/mysql
-      - /home/ec2-user/db/conf.d:/etc/mysql/conf.d
-    command:
-      - --character-set-server=utf8
-      - --collation-server=utf8_general_ci
-    networks:
-      - wedding-network
-    container_name: wedding-mysql
+#  mysql:
+#    image: mysql
+#    restart: always
+#    ports:
+#      - 3306:3306
+#    environment:
+#      TZ: Asia/Seoul
+#    env_file:
+#      - /home/ec2-user/db/env/db.env
+#    volumes:
+#      - /home/ec2-user/db/data:/var/lib/mysql
+#      - /home/ec2-user/db/conf.d:/etc/mysql/conf.d
+#    command:
+#      - --character-set-server=utf8
+#      - --collation-server=utf8_general_ci
+#    networks:
+#      - wedding-network
+#    container_name: wedding-mysql
 
   backend:
     image: backend
@@ -30,8 +30,8 @@ services:
     networks:
       - wedding-network
     container_name: wedding-backend
-    depends_on:
-      - mysql
+#    depends_on:
+#      - mysql
 
   frontend:
     image: frontend
