@@ -23,6 +23,6 @@ public class TestController {
     @GetMapping("/test2")
     public String webHookTest3() {
         log.info("webhookTest2");
-        return "jenkins feature push not ci build test2";
+        return "jenkins feature push not ci build test3";
     }
 }
