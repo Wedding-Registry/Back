@@ -1,13 +1,14 @@
 package com.wedding.serviceapi.common.domain;
 
 import lombok.Getter;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -21,6 +22,12 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ColumnDefault(value = "false")
+    @Column(columnDefinition = "BOOLEAN")
     private Boolean deletedAt;
+
+    @PrePersist
+    void setDeletedAt() {
+        this.deletedAt = false;
+    }
+
 }
