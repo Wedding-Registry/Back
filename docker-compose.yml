@@ -43,8 +43,8 @@ services:
     networks:
       - wedding-network
     container_name: wedding-fronend
-    depends_on:
-      - backend
+#    depends_on:
+#      - backend
 
 networks:
   wedding-network:
