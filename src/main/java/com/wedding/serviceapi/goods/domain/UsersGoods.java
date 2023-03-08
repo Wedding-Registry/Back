@@ -21,8 +21,8 @@ public class UsersGoods {
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
-    private String updatedGoodsName;
-    private String updatedGoodsPrice;
-    private Integer goodsDonationTotal;
+    private String updatedUsersGoodsName;
+    private String updatedUsersGoodsPrice;
+    private Integer usersGoodsTotalDonation;
     private Boolean wishGoods;
 }
