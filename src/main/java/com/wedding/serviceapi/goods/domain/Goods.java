@@ -2,11 +2,13 @@ package com.wedding.serviceapi.goods.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Goods extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +22,12 @@ public class Goods extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private Commerce commerce;
+
+    public Goods(String goodsImgUrl, String goodsUrl, String goodsName, Integer goodsPrice, Commerce commerce) {
+        this.goodsImgUrl = goodsImgUrl;
+        this.goodsUrl = goodsUrl;
+        this.goodsName = goodsName;
+        this.goodsPrice = goodsPrice;
+        this.commerce = commerce;
+    }
 }
