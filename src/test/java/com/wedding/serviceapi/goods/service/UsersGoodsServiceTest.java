@@ -38,7 +38,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-@Transactional
 @Slf4j
 class UsersGoodsServiceTest {
 
