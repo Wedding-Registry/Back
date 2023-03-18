@@ -3,6 +3,7 @@ package com.wedding.serviceapi.goods.service;
 import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
+import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.persistence.EntityManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -64,6 +68,31 @@ class UsersGoodsServiceTest {
     }
 
     @Test
+    @DisplayName("등록한 상품 리스트 조회")
+    void findAllUsersGoods() {
+        // given
+        Goods goods1 = new Goods("test1", "test1", "goods1", 10000, Commerce.COUPANG);
+        Goods goods2 = new Goods("test2", "test2", "goods2", 20000, Commerce.COUPANG);
+        Goods goods3 = new Goods("test3", "test3", "goods3", 30000, Commerce.COUPANG);
+        UsersGoods usersGoods1 = new UsersGoods(users, goods1);
+        UsersGoods usersGoods2 = new UsersGoods(users, goods2);
+        UsersGoods usersGoods3 = new UsersGoods(users, goods3);
+        List<UsersGoods> data = new ArrayList<>();
+        data.add(usersGoods1);
+        data.add(usersGoods2);
+        data.add(usersGoods3);
+
+        doReturn(data).when(usersGoodsRepository).findByUsersId(anyLong());
+        
+        // when
+        List<UsersGoodsInfoDto> result = usersGoodsService.findAllUsersGoods(anyLong());
+
+        // then;
+        result.forEach(usersGoodsInfoDto -> assertThat(usersGoodsInfoDto.getUsersGoodsPercent()).isEqualTo(0));
+        assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
     @DisplayName("상품 URL 등록")
     void postUsersGoods() {
         // given
@@ -91,10 +120,10 @@ class UsersGoodsServiceTest {
         // given
         assertThat(usersGoods.getUpdatedUsersGoodsName()).isEqualTo("goods1");
         String changedName = "testName";
-        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findById(usersGoods.getId());
+        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(users.getId(), usersGoods.getId());
 
         // when
-        usersGoodsService.updateUsersGoodsName(usersGoods.getId(), changedName);
+        usersGoodsService.updateUsersGoodsName(users.getId(), usersGoods.getId(), changedName);
 
         // then
         assertThat(usersGoods.getUpdatedUsersGoodsName()).isEqualTo("testName");
@@ -106,12 +135,25 @@ class UsersGoodsServiceTest {
         // given
         String changedName = "testName";
         Long usersGoodsId = 1L;
-        doReturn(Optional.empty()).when(usersGoodsRepository).findById(anyLong());
+        doReturn(Optional.empty()).when(usersGoodsRepository).findByIdAndUsersId(anyLong(), anyLong());
 
         // when
-        assertThrows(NoSuchElementException.class, () -> usersGoodsService.updateUsersGoodsName(usersGoodsId, changedName));
+        assertThrows(NoSuchElementException.class, () -> usersGoodsService.updateUsersGoodsName(users.getId(), usersGoodsId, changedName));
     }
 
+    @Test
+    @DisplayName("상품 후원가 수정")
+    void changeUsersGoodsPrice() {
+        // given
+        Integer newPrice = 1000;
+        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(users.getId(), usersGoods.getId());
+
+        // when
+        usersGoodsService.updateUsersGoodsPrice(users.getId(), usersGoods.getId(), newPrice);
+
+        // then
+        assertThat(usersGoods.getUpdatedUsersGoodsPrice()).isEqualTo(1000);
+    }
 }
 
 

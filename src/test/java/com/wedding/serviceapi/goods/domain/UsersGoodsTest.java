@@ -1,12 +1,15 @@
 package com.wedding.serviceapi.goods.domain;
 
+import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UsersGoodsTest {
 
@@ -56,6 +59,29 @@ class UsersGoodsTest {
 
         // then
         assertThat(usersGoods.getUpdatedUsersGoodsName()).isEqualTo(newUsersGoodsName);
+    }
+
+    @Test
+    @DisplayName("상품 후원가 수정 성공")
+    void changeUsersGoodsPrice() {
+        UsersGoods usersGoods = new UsersGoods(users, goods);
+        Integer newPrice = 100;
+
+        // when
+        usersGoods.changeUsersGoodsPrice(newPrice);
+
+        // then
+        assertThat(usersGoods.getUpdatedUsersGoodsPrice()).isEqualTo(100);
+    }
+
+    @Test
+    @DisplayName("상품 후원가 수정 실패")
+    void negativePriceException() {
+        UsersGoods usersGoods = new UsersGoods(users, goods);
+        Integer newPrice = -100;
+
+        // then
+        assertThrows(NegativePriceException.class, () -> usersGoods.changeUsersGoodsPrice(newPrice));
     }
 }
 

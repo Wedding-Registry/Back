@@ -60,7 +60,7 @@ class UsersGoodsControllerTest {
         Long usersGoodsId = 1L;
         String usersGoodsName = "testGoodsName";
 
-        doNothing().when(usersGoodsService).updateUsersGoodsName(usersGoodsId, usersGoodsName);
+        doNothing().when(usersGoodsService).updateUsersGoodsName(userId, usersGoodsId, usersGoodsName);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/usersgoods/name/update/{userId}", userId)
@@ -73,6 +73,53 @@ class UsersGoodsControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(201))
+                .andExpect(jsonPath("data").doesNotExist())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("상품 후원가 변경 성공")
+    void updateUsersGoodsPrice() throws Exception {
+        // given
+        Long userId = 1L;
+        Long usersGoodsId = 1L;
+        Integer newPrice = 1000;
+
+        doNothing().when(usersGoodsService).updateUsersGoodsPrice(userId, usersGoodsId, newPrice);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/usersgoods/cost/update/{userId}", userId)
+                .param("usersGoodsId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.valueOf(newPrice))
+        );
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(true))
+                .andExpect(jsonPath("status").value(201))
+                .andExpect(jsonPath("data").doesNotExist())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("등록된 상품 삭제 성공")
+    void deleteUsersGoods() throws Exception {
+        // given
+        Long usersGoodsId = 1L;
+
+        doNothing().when(usersGoodsService).deleteUsersGoods(usersGoodsId);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(delete("/usersgoods")
+                .param("usersGoodsId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(true))
+                .andExpect(jsonPath("status").value(202))
                 .andExpect(jsonPath("data").doesNotExist())
                 .andDo(print());
     }

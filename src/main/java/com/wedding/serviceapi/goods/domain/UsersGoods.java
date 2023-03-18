@@ -1,14 +1,17 @@
 package com.wedding.serviceapi.goods.domain;
 
+import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.users.domain.Users;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@ToString
 public class UsersGoods {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +41,17 @@ public class UsersGoods {
 
     public void changeUsersGoodsName(String usersGoodsName) {
         this.updatedUsersGoodsName = usersGoodsName;
+    }
+
+    public void changeUsersGoodsPrice(Integer usersGoodsPrice) {
+        // TODO: 2023/03/18 에러 처리 controller 작성
+        if (usersGoodsPrice < 0) throw new NegativePriceException("적절하지 않은 상품 가격입니다.");
+        this.updatedUsersGoodsPrice = usersGoodsPrice;
+    }
+
+    public void donateMoney(Integer money) {
+        // TODO: 2023/03/18 money 유효성 검사
+        this.usersGoodsTotalDonation = this.usersGoodsTotalDonation == null ? money : ++money;
     }
 }
 
