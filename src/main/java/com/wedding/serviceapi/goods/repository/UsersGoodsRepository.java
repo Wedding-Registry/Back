@@ -12,6 +12,6 @@ public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
     Optional<UsersGoods> findByIdAndUsersId(Long id, Long usersId);
 
     @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId")
-    List<UsersGoods> findByUsersId(Long usersId);
+    List<UsersGoods> findByUsersId(Long userId);
 
 }
