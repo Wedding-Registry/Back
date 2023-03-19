@@ -1,6 +1,6 @@
 package com.wedding.serviceapi.goods.controller;
 
-import com.wedding.serviceapi.common.dto.ResponseDto;
+import com.wedding.serviceapi.common.vo.ResponseVo;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
@@ -21,42 +21,42 @@ public class UsersGoodsController {
     private final UsersGoodsService usersGoodsService;
 
     @GetMapping("/all/{userId}")
-    public ResponseDto<List<UsersGoodsInfoDto>> findAllUsersGoods(@PathVariable Long userId) {
+    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@PathVariable Long userId) {
         log.info("[findAllUsersGoods controller] userId = {}", userId);
         List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(userId);
-        return new ResponseDto<>(true, HttpStatus.OK.value(), data);
+        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
     @PostMapping("/add/{userId}")
-    public ResponseDto<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @RequestBody String url) {
+    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @RequestBody String url) {
         log.info("[postUsersGoods controller] userId = {}, url = {}", userId, url);
 
         UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(userId, url);
-        return new ResponseDto<>(true, HttpStatus.CREATED.value(), data);
+        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
     @PostMapping("/name/update/{userId}")
-    public ResponseDto<Void> updateUsersGoodsName(@PathVariable Long userId, @RequestParam Long usersGoodsId, @RequestBody String usersGoodsName) {
+    public ResponseVo<Void> updateUsersGoodsName(@PathVariable Long userId, @RequestParam Long usersGoodsId, @RequestBody String usersGoodsName) {
         log.info("[updateUsersGoodsName controller] userId = {}, usersGoodsId = {}, usersGoodsName = {}", userId, usersGoodsId, usersGoodsName);
 
         usersGoodsService.updateUsersGoodsName(userId, usersGoodsId, usersGoodsName);
-        return new ResponseDto<>(true, HttpStatus.CREATED.value(), null);
+        return new ResponseVo<>(true, HttpStatus.CREATED.value(), null);
     }
 
     @PostMapping("/cost/update/{userId}")
-    public ResponseDto<Void> updateUsersGoodsPrice(@PathVariable Long userId, @RequestParam Long usersGoodsId, @RequestBody Integer usersGoodsPrice) {
+    public ResponseVo<Void> updateUsersGoodsPrice(@PathVariable Long userId, @RequestParam Long usersGoodsId, @RequestBody Integer usersGoodsPrice) {
         log.info("[updateUsersGoodsPrice controller] userId = {}, usersGoodsId = {}, usersGoodsPrice = {}", userId, usersGoodsId, usersGoodsPrice);
 
         usersGoodsService.updateUsersGoodsPrice(userId, usersGoodsId, usersGoodsPrice);
-        return new ResponseDto<>(true, HttpStatus.CREATED.value(), null);
+        return new ResponseVo<>(true, HttpStatus.CREATED.value(), null);
     }
 
     @DeleteMapping()
-    public ResponseDto<Void> deleteUsersGoods(@RequestParam Long usersGoodsId) {
+    public ResponseVo<Void> deleteUsersGoods(@RequestParam Long usersGoodsId) {
         log.info("[deleteUsersGoods controlle] usersGoodsId = {}", usersGoodsId);
 
         usersGoodsService.deleteUsersGoods(usersGoodsId);
-        return new ResponseDto<>(true, HttpStatus.ACCEPTED.value(), null);
+        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
     }
 }
 

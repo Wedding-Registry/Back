@@ -2,7 +2,7 @@ package com.wedding.serviceapi.boards.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
 import com.wedding.serviceapi.users.domain.Users;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -13,6 +13,9 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @DynamicInsert
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Boards extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,7 +69,6 @@ public class Boards extends BaseEntity {
     }
 
     private LocalDate parseDateString(String date) {
-        // TODO: 2023/03/19 에러처리 필요
         if (date.length() != 8 || date.startsWith("0")) throw new IllegalArgumentException("잘못된 날짜 정보입니다.");
 
         int year = Integer.parseInt(date.substring(0, 4));

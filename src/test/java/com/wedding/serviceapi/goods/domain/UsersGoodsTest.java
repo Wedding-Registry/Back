@@ -3,7 +3,6 @@ package com.wedding.serviceapi.goods.domain;
 import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,19 +39,6 @@ class UsersGoodsTest {
         // given
         UsersGoods usersGoods = new UsersGoods(users, goods);
         String newUsersGoodsName = "goodsName2";
-
-        // when
-        usersGoods.changeUsersGoodsName(newUsersGoodsName);
-
-        // then
-        assertThat(usersGoods.getUpdatedUsersGoodsName()).isEqualTo(newUsersGoodsName);
-    }
-
-    @Test
-    void changeUsersGoodsNameWithSaveName() {
-        // given
-        UsersGoods usersGoods = new UsersGoods(users, goods);
-        String newUsersGoodsName = usersGoods.getUpdatedUsersGoodsName();
 
         // when
         usersGoods.changeUsersGoodsName(newUsersGoodsName);

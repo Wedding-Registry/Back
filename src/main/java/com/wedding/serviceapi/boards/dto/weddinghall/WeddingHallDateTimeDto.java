@@ -1,4 +1,4 @@
-package com.wedding.serviceapi.boards.dto;
+package com.wedding.serviceapi.boards.dto.weddinghall;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

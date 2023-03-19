@@ -1,15 +1,13 @@
 package com.wedding.serviceapi.boards.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wedding.serviceapi.boards.dto.WeddingHallAddressDto;
-import com.wedding.serviceapi.boards.dto.WeddingHallDateTimeDto;
+import com.wedding.serviceapi.boards.domain.Boards;
+import com.wedding.serviceapi.boards.domain.HusbandAndWifeEachInfo;
+import com.wedding.serviceapi.boards.dto.weddinghall.*;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
 import com.wedding.serviceapi.boards.vo.RequestPostWeddingHallTimeVo;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,11 +16,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -40,6 +34,34 @@ class WeddingHallControllerTest {
     MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    @DisplayName("예식장 정보 가져오기")
+    void getWeddingHallInfo() throws Exception {
+        // given
+        WeddingHallInfoDto weddingHallInfoDto = makeResultData();
+        doReturn(weddingHallInfoDto).when(weddingHallService).getWeddingHallInfo(anyLong());
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/weddingHall/all/{boardsId}", anyLong()));
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("status").value(200))
+                .andDo(print());
+    }
+
+    private WeddingHallInfoDto makeResultData() {
+        WeddingHallInfoDto testResult = new WeddingHallInfoDto();
+        testResult.getUsers().add(new HusbandWifeNameDto("husband", "husband name"));
+        testResult.getUsers().add(new HusbandWifeNameDto("wife", "wife name"));
+        testResult.getAccount().add(new HusbandWifeBankAccountDto("husband", "husband bank", "husband account"));
+        testResult.getAccount().add(new HusbandWifeBankAccountDto("wife", "wife bank", "wife account"));
+        testResult.setLocation("test address");
+        testResult.setWeddingDate("2023-02-16");
+        testResult.setWeddingTime("15:50");
+        return testResult;
+    }
 
     @Test
     @DisplayName("예식장 주소 변경")

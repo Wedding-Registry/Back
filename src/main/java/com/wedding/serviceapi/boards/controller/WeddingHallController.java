@@ -1,10 +1,11 @@
 package com.wedding.serviceapi.boards.controller;
 
-import com.wedding.serviceapi.boards.dto.WeddingHallAddressDto;
-import com.wedding.serviceapi.boards.dto.WeddingHallDateTimeDto;
+import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallAddressDto;
+import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallDateTimeDto;
+import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
 import com.wedding.serviceapi.boards.vo.RequestPostWeddingHallTimeVo;
-import com.wedding.serviceapi.common.dto.ResponseDto;
+import com.wedding.serviceapi.common.vo.ResponseVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,19 +19,27 @@ public class WeddingHallController {
 
     private final WeddingHallService weddingHallService;
 
+    @GetMapping("/all/{boardsId}")
+    public ResponseVo<WeddingHallInfoDto> getWeddingHallInfo(@PathVariable Long boardsId) {
+        log.info("[getWeddingHallInfo controller] boardsId = {}", boardsId);
+        WeddingHallInfoDto data = weddingHallService.getWeddingHallInfo(boardsId);
+
+        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+    }
+
     @PostMapping("/location/{boardsId}")
-    public ResponseDto<WeddingHallAddressDto> postWeddingHallAddress(@PathVariable Long boardsId ,@RequestBody String address) {
+    public ResponseVo<WeddingHallAddressDto> postWeddingHallAddress(@PathVariable Long boardsId , @RequestBody String address) {
         log.info("[postWeddingHallAddress controller] boardsId = {}, address = {}", boardsId, address);
         WeddingHallAddressDto data = weddingHallService.postWeddingHallAddress(boardsId, address);
 
-        return new ResponseDto<>(true, HttpStatus.CREATED.value(), data);
+        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
     @PostMapping("/time/{boardsId}")
-    public ResponseDto<WeddingHallDateTimeDto> postWeddingHallDateTime(@PathVariable Long boardsId, @RequestBody RequestPostWeddingHallTimeVo body) {
+    public ResponseVo<WeddingHallDateTimeDto> postWeddingHallDateTime(@PathVariable Long boardsId, @RequestBody RequestPostWeddingHallTimeVo body) {
         log.info("[postWeddingHallTime controller] boardsId = {}, date = {}, time = {}", boardsId, body.getDate(), body.getTime());
         WeddingHallDateTimeDto data = weddingHallService.postWeddingHallDateTime(boardsId, body.getDate(), body.getTime());
 
-        return new ResponseDto<>(true, HttpStatus.CREATED.value(), data);
+        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 }
