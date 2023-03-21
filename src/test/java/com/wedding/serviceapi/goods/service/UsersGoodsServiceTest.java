@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.goods.service;
 
+import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
@@ -12,10 +13,13 @@ import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.internal.Integers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -119,7 +123,7 @@ class UsersGoodsServiceTest {
         // given
         assertThat(usersGoods.getUpdatedUsersGoodsName()).isEqualTo("goods1");
         String changedName = "testName";
-        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(users.getId(), usersGoods.getId());
+        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(usersGoods.getId(), users.getId());
 
         // when
         usersGoodsService.updateUsersGoodsName(users.getId(), usersGoods.getId(), changedName);
@@ -145,13 +149,33 @@ class UsersGoodsServiceTest {
     void changeUsersGoodsPrice() {
         // given
         Integer newPrice = 1000;
-        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(users.getId(), usersGoods.getId());
+        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(usersGoods.getId(), users.getId());
 
         // when
         usersGoodsService.updateUsersGoodsPrice(users.getId(), usersGoods.getId(), newPrice);
 
         // then
         assertThat(usersGoods.getUpdatedUsersGoodsPrice()).isEqualTo(1000);
+    }
+
+    @ParameterizedTest
+    @DisplayName("상품 후원가 변경시 가격에 0 미만 값이 들어온 경우")
+    @ValueSource(ints = {-100, -1})
+    void negativeUsersGoodsPrice(int price) {
+        // given
+        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(usersGoods.getId(), users.getId());
+        // when
+        assertThrows(NegativePriceException.class, () -> usersGoodsService.updateUsersGoodsPrice(users.getId(), usersGoods.getId(), price));
+    }
+
+    @Test
+    @DisplayName("상품 후원가 변경시 가격에 null 값이 들어온 경우")
+    void nullUsersGoodsPrice() {
+        // given
+        Integer price = null;
+        doReturn(Optional.of(usersGoods)).when(usersGoodsRepository).findByIdAndUsersId(usersGoods.getId(), users.getId());
+        // when
+        assertThrows(NegativePriceException.class, () -> usersGoodsService.updateUsersGoodsPrice(users.getId(), usersGoods.getId(), price));
     }
 }
 

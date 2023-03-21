@@ -29,6 +29,8 @@ public class Users extends BaseEntity {
 
     private String password;
 
+    private String name;
+
     private Boolean alarmEvent;
 
     @Enumerated(value = EnumType.STRING)

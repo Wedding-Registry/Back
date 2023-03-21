@@ -1,15 +1,14 @@
-package com.wedding.serviceapi.boards.vo;
+package com.wedding.serviceapi.goods.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestPostWeddingHallTimeVo {
-    private String date;
-    private String time;
+public class UpdateUsersGoodsNameRequestVo {
+    private String usersGoodsName;
 }

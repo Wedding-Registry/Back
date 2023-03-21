@@ -4,7 +4,9 @@ import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
+import com.wedding.serviceapi.goods.dto.UsersGoodsNameDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
+import com.wedding.serviceapi.goods.dto.UsersGoodsPriceDto;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.users.domain.Users;
@@ -39,6 +41,7 @@ public class UsersGoodsService {
 
     public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url) {
         // TODO: 2023/03/09 크롤링 서버로 url을 담아 요청을 보내서 상품 이름, 가격 등의 정보를 가져온다.
+        // TODO: 2023/03/21 이미 기존에 한번 등록한 상품은 다시 등록할 수 없도록 처리해주어야 한다.
         Goods goods = new Goods("imgUrl", url, "goods1", 100000, Commerce.COUPANG);
         Users user = usersRepository.getReferenceById(userId);
 
@@ -53,14 +56,16 @@ public class UsersGoodsService {
                 savedUsersGoods.getUpdatedUsersGoodsPrice());
     }
 
-    public void updateUsersGoodsName(Long userId, Long usersGoodsId, String usersGoodsName) {
-        UsersGoods usersGoods = usersGoodsRepository.findByIdAndUsersId(userId, usersGoodsId).orElseThrow(() -> new NoSuchElementException("해당하는 상품이 없습니다."));
+    public UsersGoodsNameDto updateUsersGoodsName(Long userId, Long usersGoodsId, String usersGoodsName) {
+        UsersGoods usersGoods = usersGoodsRepository.findByIdAndUsersId(usersGoodsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 상품이 없습니다."));
         usersGoods.changeUsersGoodsName(usersGoodsName);
+        return new UsersGoodsNameDto(usersGoods.getUpdatedUsersGoodsName());
     }
 
-    public void updateUsersGoodsPrice(Long userId, Long usersGoodsId, Integer usersGoodsPrice) {
-        UsersGoods usersGoods = usersGoodsRepository.findByIdAndUsersId(userId, usersGoodsId).orElseThrow(() -> new NoSuchElementException("해당하는 상품이 없습니다."));
+    public UsersGoodsPriceDto updateUsersGoodsPrice(Long userId, Long usersGoodsId, Integer usersGoodsPrice) {
+        UsersGoods usersGoods = usersGoodsRepository.findByIdAndUsersId(usersGoodsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 상품이 없습니다."));
         usersGoods.changeUsersGoodsPrice(usersGoodsPrice);
+        return new UsersGoodsPriceDto(usersGoods.getUpdatedUsersGoodsPrice());
     }
 
     public void deleteUsersGoods(Long usersGoodsId) {

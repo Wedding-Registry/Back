@@ -4,7 +4,8 @@ import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallAddressDto;
 import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallDateTimeDto;
 import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
-import com.wedding.serviceapi.boards.vo.RequestPostWeddingHallTimeVo;
+import com.wedding.serviceapi.boards.vo.weddinghall.PostWeddingHallAddressRequestVo;
+import com.wedding.serviceapi.boards.vo.weddinghall.RequestPostWeddingHallTimeVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +29,9 @@ public class WeddingHallController {
     }
 
     @PostMapping("/location/{boardsId}")
-    public ResponseVo<WeddingHallAddressDto> postWeddingHallAddress(@PathVariable Long boardsId , @RequestBody String address) {
-        log.info("[postWeddingHallAddress controller] boardsId = {}, address = {}", boardsId, address);
-        WeddingHallAddressDto data = weddingHallService.postWeddingHallAddress(boardsId, address);
+    public ResponseVo<WeddingHallAddressDto> postWeddingHallAddress(@PathVariable Long boardsId , @RequestBody PostWeddingHallAddressRequestVo body) {
+        log.info("[postWeddingHallAddress controller] boardsId = {}, address = {}", boardsId, body.getAddress());
+        WeddingHallAddressDto data = weddingHallService.postWeddingHallAddress(boardsId, body.getAddress());
 
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }

@@ -1,14 +1,13 @@
 package com.wedding.serviceapi.boards.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.boards.dto.marriage.MarriageBankAccountDto;
 import com.wedding.serviceapi.boards.dto.marriage.MarriageNameDto;
 import com.wedding.serviceapi.boards.service.MarriageService;
-import com.wedding.serviceapi.boards.vo.RequestPostMarriageBankAccountVo;
+import com.wedding.serviceapi.boards.vo.marriage.PostHusbandOrWifeNameRequestVo;
+import com.wedding.serviceapi.boards.vo.marriage.RequestPostMarriageBankAccountVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,11 +16,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -48,12 +43,13 @@ class MarriageControllerTest {
         Long boardsId = 1L;
         String name = "husband name";
         MarriageNameDto data = new MarriageNameDto(name);
+        PostHusbandOrWifeNameRequestVo requestVo = new PostHusbandOrWifeNameRequestVo(name);
 
         doReturn(data).when(marriageService).postHusbandOrWifeName(type, boardsId, name);
         // when
         ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/name/{boardsId}", type, boardsId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(name)
+                .content(objectMapper.writeValueAsString(requestVo))
         );
 
         // then

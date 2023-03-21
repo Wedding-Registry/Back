@@ -1,7 +1,13 @@
 package com.wedding.serviceapi.goods.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wedding.serviceapi.goods.dto.UsersGoodsNameDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
+import com.wedding.serviceapi.goods.dto.UsersGoodsPriceDto;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
+import com.wedding.serviceapi.goods.vo.PostUsersGoodsRequestVo;
+import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsNameRequestVo;
+import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsPriceRequestVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -24,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class UsersGoodsControllerTest {
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @MockBean
     UsersGoodsService usersGoodsService;
 
@@ -36,13 +44,14 @@ class UsersGoodsControllerTest {
         // given
         Long userId = 1L;
         String url = "testUrl";
+        PostUsersGoodsRequestVo requestVo = new PostUsersGoodsRequestVo(url);
         UsersGoodsPostResponseDto usersGoodsPostResponseDto = new UsersGoodsPostResponseDto();
 
         BDDMockito.given(usersGoodsService.postUsersGoods(userId, url)).willReturn(usersGoodsPostResponseDto);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/{userId}", 1)
-                .content(url)
+                .content(objectMapper.writeValueAsString(requestVo))
                 .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -59,21 +68,23 @@ class UsersGoodsControllerTest {
         Long userId = 1L;
         Long usersGoodsId = 1L;
         String usersGoodsName = "testGoodsName";
+        UpdateUsersGoodsNameRequestVo requestVo = new UpdateUsersGoodsNameRequestVo(usersGoodsName);
+        UsersGoodsNameDto data = new UsersGoodsNameDto(usersGoodsName);
 
-        doNothing().when(usersGoodsService).updateUsersGoodsName(userId, usersGoodsId, usersGoodsName);
+        doReturn(data).when(usersGoodsService).updateUsersGoodsName(userId, usersGoodsId, requestVo.getUsersGoodsName());
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/usersgoods/name/update/{userId}", userId)
                 .param("usersGoodsId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(usersGoodsName)
+                .content(objectMapper.writeValueAsString(requestVo))
         );
 
         // then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(201))
-                .andExpect(jsonPath("data").doesNotExist())
+                .andExpect(jsonPath("data.usersGoodsName").value("testGoodsName"))
                 .andDo(print());
     }
 
@@ -85,20 +96,22 @@ class UsersGoodsControllerTest {
         Long usersGoodsId = 1L;
         Integer newPrice = 1000;
 
-        doNothing().when(usersGoodsService).updateUsersGoodsPrice(userId, usersGoodsId, newPrice);
+        UpdateUsersGoodsPriceRequestVo requestVo = new UpdateUsersGoodsPriceRequestVo(newPrice);
+        UsersGoodsPriceDto data = new UsersGoodsPriceDto(newPrice);
+        doReturn(data).when(usersGoodsService).updateUsersGoodsPrice(userId, usersGoodsId, newPrice);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/usersgoods/cost/update/{userId}", userId)
                 .param("usersGoodsId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(String.valueOf(newPrice))
+                .content(objectMapper.writeValueAsString(requestVo))
         );
 
         // then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(201))
-                .andExpect(jsonPath("data").doesNotExist())
+                .andExpect(jsonPath("data.usersGoodsPrice").value(1000))
                 .andDo(print());
     }
 

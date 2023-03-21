@@ -40,12 +40,14 @@ public class UsersGoods {
 
 
     public void changeUsersGoodsName(String usersGoodsName) {
+        // TODO: 2023/03/22 에러처리 controller 작성
+        if (usersGoodsName == null || usersGoodsName.isBlank()) throw new IllegalArgumentException("이름 정보가 필요합니다.");
         this.updatedUsersGoodsName = usersGoodsName;
     }
 
     public void changeUsersGoodsPrice(Integer usersGoodsPrice) {
         // TODO: 2023/03/18 에러 처리 controller 작성
-        if (usersGoodsPrice < 0) throw new NegativePriceException("적절하지 않은 상품 가격입니다.");
+        if (usersGoodsPrice == null || usersGoodsPrice < 0) throw new NegativePriceException("적절하지 않은 상품 가격입니다.");
         this.updatedUsersGoodsPrice = usersGoodsPrice;
     }
 

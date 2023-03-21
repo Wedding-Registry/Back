@@ -3,8 +3,10 @@ package com.wedding.serviceapi.goods.repository;
 import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
+import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@Slf4j
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UsersGoodsRepositoryTest {
 
@@ -28,6 +31,8 @@ class UsersGoodsRepositoryTest {
     GoodsRepository goodsRepository;
     @Autowired
     UsersRepository usersRepository;
+    @Autowired
+    EntityManager em;
 
     public String url;
     public Goods goods;
@@ -39,13 +44,15 @@ class UsersGoodsRepositoryTest {
     void setting() {
         url = "testUrl";
         goods = new Goods("imgUrl", url, "goods1", 100000, Commerce.COUPANG);
-        users = Users.builder().email("test").build();
+        users = Users.builder().email("test").password("password").loginType(LoginType.KAKAO).build();
 
         savedUsers = usersRepository.save(users);
         goodsRepository.save(goods);
         usersGoods = new UsersGoods(savedUsers, goods);
         usersGoodsRepository.save(usersGoods);
 
+        em.flush();
+        em.clear();
     }
 
 
@@ -57,6 +64,7 @@ class UsersGoodsRepositoryTest {
 
         // then
         assertThat(result.getUpdatedUsersGoodsName()).isEqualTo("goods1");
+        assertThat(result.getUsers().getEmail()).isEqualTo("test");
     }
 }
 

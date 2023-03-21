@@ -28,7 +28,7 @@ public class WeddingHallInfoDto {
     private void extractNameAndBankAccountForSettingUsersAndAccount(Boards boards) {
         HusbandAndWifeEachInfo husband = boards.getHusband();
         HusbandAndWifeEachInfo wife = boards.getWife();
-
+        System.out.println("husband : " + husband);
         users.add(new HusbandWifeNameDto("husband", husband.getName()));
         users.add(new HusbandWifeNameDto("wife", wife.getName()));
 

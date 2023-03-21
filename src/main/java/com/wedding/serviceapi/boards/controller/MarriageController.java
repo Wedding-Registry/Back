@@ -3,7 +3,8 @@ package com.wedding.serviceapi.boards.controller;
 import com.wedding.serviceapi.boards.dto.marriage.MarriageBankAccountDto;
 import com.wedding.serviceapi.boards.dto.marriage.MarriageNameDto;
 import com.wedding.serviceapi.boards.service.MarriageService;
-import com.wedding.serviceapi.boards.vo.RequestPostMarriageBankAccountVo;
+import com.wedding.serviceapi.boards.vo.marriage.PostHusbandOrWifeNameRequestVo;
+import com.wedding.serviceapi.boards.vo.marriage.RequestPostMarriageBankAccountVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +20,9 @@ public class MarriageController {
     private final MarriageService marriageService;
 
     @PostMapping("/{type}/name/{boardsId}")
-    public ResponseVo<MarriageNameDto> postHusbandOrWifeName(@PathVariable String type, @PathVariable Long boardsId, @RequestBody String name) {
-        log.info("[postHusbandName controller] type = {}, boardsId = {}, name = {}", type, boardsId, name);
-        MarriageNameDto data = marriageService.postHusbandOrWifeName(type, boardsId, name);
+    public ResponseVo<MarriageNameDto> postHusbandOrWifeName(@PathVariable String type, @PathVariable Long boardsId, @RequestBody PostHusbandOrWifeNameRequestVo body) {
+        log.info("[postHusbandName controller] type = {}, boardsId = {}, name = {}", type, boardsId, body.getName());
+        MarriageNameDto data = marriageService.postHusbandOrWifeName(type, boardsId, body.getName());
 
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }

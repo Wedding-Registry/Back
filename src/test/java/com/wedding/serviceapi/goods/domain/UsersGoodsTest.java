@@ -48,6 +48,27 @@ class UsersGoodsTest {
     }
 
     @Test
+    @DisplayName("상품이름 정보가 null로 들어온 경우")
+    void nullUsersGoodsName() {
+        // given
+        UsersGoods usersGoods = new UsersGoods(users, goods);
+        String newUsersGoodsName = null;
+        // when
+        assertThrows(IllegalArgumentException.class, () -> usersGoods.changeUsersGoodsName(newUsersGoodsName));
+    }
+
+    @Test
+    @DisplayName("상품이름 정보가 빈 값으로 들어온 경우")
+    void blankUsersGoodsName() {
+        // given
+        UsersGoods usersGoods = new UsersGoods(users, goods);
+        String newUsersGoodsName = " ";
+        // when
+        assertThrows(IllegalArgumentException.class, () -> usersGoods.changeUsersGoodsName(newUsersGoodsName));
+
+    }
+
+    @Test
     @DisplayName("상품 후원가 수정 성공")
     void changeUsersGoodsPrice() {
         UsersGoods usersGoods = new UsersGoods(users, goods);

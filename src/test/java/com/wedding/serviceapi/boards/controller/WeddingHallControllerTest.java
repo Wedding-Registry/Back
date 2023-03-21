@@ -1,11 +1,10 @@
 package com.wedding.serviceapi.boards.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wedding.serviceapi.boards.domain.Boards;
-import com.wedding.serviceapi.boards.domain.HusbandAndWifeEachInfo;
 import com.wedding.serviceapi.boards.dto.weddinghall.*;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
-import com.wedding.serviceapi.boards.vo.RequestPostWeddingHallTimeVo;
+import com.wedding.serviceapi.boards.vo.weddinghall.PostWeddingHallAddressRequestVo;
+import com.wedding.serviceapi.boards.vo.weddinghall.RequestPostWeddingHallTimeVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +69,14 @@ class WeddingHallControllerTest {
         String newAddress = "testAddress";
         WeddingHallAddressDto data = new WeddingHallAddressDto(newAddress);
 
+        PostWeddingHallAddressRequestVo requestVo = new PostWeddingHallAddressRequestVo(newAddress);
+
         doReturn(data).when(weddingHallService).postWeddingHallAddress(1L, newAddress);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/weddingHall/location/{boardsId}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(newAddress)
+                .content(objectMapper.writeValueAsString(requestVo))
         );
 
         // then
