@@ -1,6 +1,8 @@
 package com.wedding.serviceapi.users.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -11,6 +13,8 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Users extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +28,8 @@ public class Users extends BaseEntity {
     private String email;
 
     private String password;
+
+    private String name;
 
     private Boolean alarmEvent;
 
