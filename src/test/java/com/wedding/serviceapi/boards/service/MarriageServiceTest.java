@@ -67,7 +67,8 @@ class MarriageServiceTest {
         doReturn(Optional.of(boards)).when(boardsRepository).findById(anyLong());
 
         // when
-        assertThrows(NoSuchPathTypeException.class, () -> marriageService.postHusbandOrWifeName(type, anyLong(), name));
+        NoSuchPathTypeException error = assertThrows(NoSuchPathTypeException.class, () -> marriageService.postHusbandOrWifeName(type, anyLong(), name));
+        assertThat(error.getMessage()).isEqualTo("잘못된 url 정보 입니다.");
     }
 
     @Test

@@ -11,6 +11,8 @@ import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
+import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
+import com.wedding.serviceapi.util.webclient.WebClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.internal.Integers;
@@ -54,6 +56,8 @@ class UsersGoodsServiceTest {
     UsersRepository usersRepository;
     @Mock
     GoodsRepository goodsRepository;
+    @Mock
+    WebClientUtil webClientUtil;
 
     public String url;
     public Long userId;
@@ -96,21 +100,51 @@ class UsersGoodsServiceTest {
     }
 
     @Test
-    @DisplayName("상품 URL 등록")
-    void postUsersGoods() {
+    @DisplayName("상품 URL 등록 - 기존 상품이 있는 경우")
+    void postUsersGoodsExistedGoods() {
         // given
+        GoodsRegisterResponseDto goodsRegisterResponseDto = new GoodsRegisterResponseDto(200, "webclient", 250000, "webClient img");
+        doReturn(goodsRegisterResponseDto).when(webClientUtil).getGoodsInfo(anyString());
+        doReturn(Optional.of(goods)).when(goodsRepository).findByGoodsUrl(anyString());
         doReturn(users).when(usersRepository).getReferenceById(userId);
-        doReturn(goods).when(goodsRepository).save(any(Goods.class));
-        doReturn(usersGoods).when(usersGoodsRepository).save(any(UsersGoods.class));
 
+        goods.updateGoodsInfo(goodsRegisterResponseDto);
+        UsersGoods usersgoods = new UsersGoods(users, goods);
+
+        doReturn(usersgoods).when(usersGoodsRepository).save(any(UsersGoods.class));
         // when
         UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url);
 
         // then
         assertThat(usersGoodsPostResponseDto.getUsersGoodsId()).isEqualTo(usersGoods.getId());
-        assertThat(usersGoodsPostResponseDto.getUsersGoodsName()).isEqualTo("goods1");
-        assertThat(usersGoodsPostResponseDto.getUsersGoodsPrice()).isEqualTo(100000);
-        assertThat(usersGoodsPostResponseDto.getUsersGoodsImgUrl()).isEqualTo("imgUrl");
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsName()).isEqualTo("webclient");
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsPrice()).isEqualTo(250000);
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsImgUrl()).isEqualTo("webClient img");
+
+    }
+
+    @Test
+    @DisplayName("상품 URL 등록 - 기존 상품이 없는 경우")
+    void postUsersGoodsNotExistedGoods() {
+        // given
+        GoodsRegisterResponseDto data = new GoodsRegisterResponseDto(200, "test", 1000, "test");
+        Goods newGoods = new Goods(data.getGoodsImgUrl(), "test", data.getGoodsName(), data.getGoodsPrice(), Commerce.NAVER);
+
+        UsersGoods usersGoods = new UsersGoods(users, newGoods);
+
+        doReturn(users).when(usersRepository).getReferenceById(userId);
+        doReturn(newGoods).when(goodsRepository).save(any(Goods.class));
+        doReturn(usersGoods).when(usersGoodsRepository).save(any(UsersGoods.class));
+        doReturn(data).when(webClientUtil).getGoodsInfo(anyString());
+        doThrow(NoSuchElementException.class).when(goodsRepository).findByGoodsUrl(anyString());
+        // when
+        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url);
+
+        // then
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsId()).isEqualTo(this.usersGoods.getId());
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsName()).isEqualTo("test");
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsPrice()).isEqualTo(1000);
+        assertThat(usersGoodsPostResponseDto.getUsersGoodsImgUrl()).isEqualTo("test");
 
         verify(usersRepository, times(1)).getReferenceById(userId);
         verify(goodsRepository, times(1)).save(any(Goods.class));

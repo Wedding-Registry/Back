@@ -64,7 +64,8 @@ class UsersGoodsTest {
         UsersGoods usersGoods = new UsersGoods(users, goods);
         String newUsersGoodsName = " ";
         // when
-        assertThrows(IllegalArgumentException.class, () -> usersGoods.changeUsersGoodsName(newUsersGoodsName));
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class, () -> usersGoods.changeUsersGoodsName(newUsersGoodsName));
+        assertThat(error.getMessage()).isEqualTo("이름 정보가 필요합니다.");
 
     }
 
@@ -88,7 +89,8 @@ class UsersGoodsTest {
         Integer newPrice = -100;
 
         // then
-        assertThrows(NegativePriceException.class, () -> usersGoods.changeUsersGoodsPrice(newPrice));
+        NegativePriceException error = assertThrows(NegativePriceException.class, () -> usersGoods.changeUsersGoodsPrice(newPrice));
+        assertThat(error.getMessage()).isEqualTo("적절하지 않은 상품 가격입니다.");
     }
 }
 

@@ -70,7 +70,6 @@ public class Boards extends BaseEntity {
 
     private LocalDate parseDateString(String date) {
         if (date.length() != 8 || date.startsWith("0")) throw new IllegalArgumentException("잘못된 날짜 정보입니다.");
-        // TODO: 2023/03/22 DateTimeException 에러처리 필요
         int year = Integer.parseInt(date.substring(0, 4));
         int month = Integer.parseInt(date.substring(4, 6));
         int day = Integer.parseInt(date.substring(6));
@@ -82,7 +81,6 @@ public class Boards extends BaseEntity {
         if (time.length() != 4) throw new IllegalArgumentException("잘못된 시간 정보입니다.");
         int hour = Integer.parseInt(time.substring(0, 2));
         int minute = Integer.parseInt(time.substring(2));
-        // TODO: 2023/03/22 DateTimeException 에러처리 필요
         return LocalTime.of(hour, minute);
     }
 

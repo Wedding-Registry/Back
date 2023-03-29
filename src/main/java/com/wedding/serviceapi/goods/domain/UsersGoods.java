@@ -40,19 +40,17 @@ public class UsersGoods {
 
 
     public void changeUsersGoodsName(String usersGoodsName) {
-        // TODO: 2023/03/22 에러처리 controller 작성
         if (usersGoodsName == null || usersGoodsName.isBlank()) throw new IllegalArgumentException("이름 정보가 필요합니다.");
         this.updatedUsersGoodsName = usersGoodsName;
     }
 
     public void changeUsersGoodsPrice(Integer usersGoodsPrice) {
-        // TODO: 2023/03/18 에러 처리 controller 작성
         if (usersGoodsPrice == null || usersGoodsPrice < 0) throw new NegativePriceException("적절하지 않은 상품 가격입니다.");
         this.updatedUsersGoodsPrice = usersGoodsPrice;
     }
 
     public void donateMoney(Integer money) {
-        // TODO: 2023/03/18 money 유효성 검사
+        // TODO: 2023/03/18 money 유효성 검사 설정한 값보다 많은 돈이 들어와도 되는가
         this.usersGoodsTotalDonation = this.usersGoodsTotalDonation == null ? money : ++money;
     }
 }
