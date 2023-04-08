@@ -112,6 +112,7 @@ class UsersGoodsServiceTest {
         UsersGoods usersgoods = new UsersGoods(users, goods);
 
         doReturn(usersgoods).when(usersGoodsRepository).save(any(UsersGoods.class));
+
         // when
         UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url);
 

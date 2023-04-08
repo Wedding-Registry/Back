@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+
 import java.time.DateTimeException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -38,6 +39,7 @@ class BoardsTest {
         // when
         assertThrows(IllegalArgumentException.class, () -> boards.updateDateAndTime(date, time));
     }
+
 
     @Test
     @DisplayName("날짜 형식이 아닌 경우")
