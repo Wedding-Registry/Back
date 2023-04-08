@@ -11,6 +11,8 @@ import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
+import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
+import com.wedding.serviceapi.util.webclient.WebClientUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class UsersGoodsService {
     private final UsersGoodsRepository usersGoodsRepository;
     private final UsersRepository usersRepository;
     private final GoodsRepository goodsRepository;
+    private final WebClientUtil webClientUtil;
 
     @Transactional
     public List<UsersGoodsInfoDto> findAllUsersGoods(Long userId) {
@@ -40,18 +43,26 @@ public class UsersGoodsService {
     }
 
     public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url) {
-        // TODO: 2023/03/09 크롤링 서버로 url을 담아 요청을 보내서 상품 이름, 가격 등의 정보를 가져온다.
-        // TODO: 2023/03/21 이미 기존에 한번 등록한 상품은 다시 등록할 수 없도록 처리해주어야 한다.
-        Goods goods = new Goods("imgUrl", url, "goods1", 100000, Commerce.COUPANG);
+        GoodsRegisterResponseDto goodsInfo = webClientUtil.getGoodsInfo(url);
+        if (goodsInfo.getStatus() == 500) throw new IllegalArgumentException("잘못된 url 정보입니다.");
+        log.info("goodsInfo = {}", goodsInfo);
+
+        Goods goods;
+        try {
+            goods = goodsRepository.findByGoodsUrl(url).get();
+            goods.updateGoodsInfo(goodsInfo);
+        } catch (NoSuchElementException e) {
+            goods = new Goods(goodsInfo.getGoodsImgUrl(), url, goodsInfo.getGoodsName(), goodsInfo.getGoodsPrice(), Commerce.NAVER);
+            goods = goodsRepository.save(goods);
+        }
+
         Users user = usersRepository.getReferenceById(userId);
 
-        Goods savedGoods = goodsRepository.save(goods);
-
-        UsersGoods usersGoods = new UsersGoods(user, savedGoods);
+        UsersGoods usersGoods = new UsersGoods(user, goods);
         UsersGoods savedUsersGoods = usersGoodsRepository.save(usersGoods);
 
         return new UsersGoodsPostResponseDto(savedUsersGoods.getId(),
-                savedGoods.getGoodsImgUrl(),
+                goods.getGoodsImgUrl(),
                 savedUsersGoods.getUpdatedUsersGoodsName(),
                 savedUsersGoods.getUpdatedUsersGoodsPrice());
     }

@@ -18,6 +18,10 @@ spring:
         format_sql: true
 #        show_sql: false
 
+webclient:
+  base:
+    url: http://localhost:5000
+
 #logging:
 #  level:
 #    org.hibernate.SQL: debug

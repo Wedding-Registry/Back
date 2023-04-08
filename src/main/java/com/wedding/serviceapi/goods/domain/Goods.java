@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.goods.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
+import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,24 @@ public class Goods extends BaseEntity {
         this.goodsPrice = goodsPrice;
         this.commerce = commerce;
     }
+
+    public void updateGoodsInfo(GoodsRegisterResponseDto goodsInfo) {
+        this.goodsImgUrl = goodsInfo.getGoodsImgUrl();
+        this.goodsPrice = goodsInfo.getGoodsPrice();
+        this.goodsName = goodsInfo.getGoodsName();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

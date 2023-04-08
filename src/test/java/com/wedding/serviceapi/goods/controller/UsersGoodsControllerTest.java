@@ -62,6 +62,30 @@ class UsersGoodsControllerTest {
     }
 
     @Test
+    @DisplayName("상품 URL 등록 실패")
+    void postUsersGoodsFail() throws Exception {
+        // given
+        Long userId = 1L;
+        String url = "testUrl";
+        PostUsersGoodsRequestVo requestVo = new PostUsersGoodsRequestVo(url);
+        UsersGoodsPostResponseDto usersGoodsPostResponseDto = new UsersGoodsPostResponseDto();
+
+        when(usersGoodsService.postUsersGoods(userId, url)).thenThrow(new IllegalArgumentException("잘못된 url 정보입니다."));
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/{userId}", 1)
+                .content(objectMapper.writeValueAsString(requestVo))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // given
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(false))
+                .andExpect(jsonPath("status").value(400))
+                .andExpect(jsonPath("message").value("잘못된 url 정보입니다."))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("상품 이름 변경 성공")
     void updateUsersGoods() throws Exception {
         // given

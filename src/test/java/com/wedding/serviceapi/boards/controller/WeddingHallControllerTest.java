@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.boards.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.boards.dto.weddinghall.*;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
@@ -15,6 +16,9 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+
+import java.time.DateTimeException;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -107,6 +111,27 @@ class WeddingHallControllerTest {
                 .andExpect(jsonPath("status").value(201))
                 .andExpect(jsonPath("data.weddingDate").value("2023-11-15"))
                 .andExpect(jsonPath("data.weddingTime").value("15:50"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("예식장 날짜 시간 변경 실패")
+    void postWeddingHallDateTimeFail() throws Exception {
+        // given
+        RequestPostWeddingHallTimeVo requestVo = new RequestPostWeddingHallTimeVo("date", "time");
+        when(weddingHallService.postWeddingHallDateTime(1L, "date", "time")).thenThrow(DateTimeException.class);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo))
+        );
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(false))
+                .andExpect(jsonPath("status").value(400))
+                .andExpect(jsonPath("message").value("날짜, 시간 정보가 정확하지 않습니다."))
                 .andDo(print());
     }
 }
