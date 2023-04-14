@@ -1,4 +1,4 @@
-package com.wedding.serviceapi.config.securityconfig;
+package com.wedding.serviceapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
