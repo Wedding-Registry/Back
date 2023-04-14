@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -30,9 +31,10 @@ class AuthServiceTest {
     
     @Mock
     UsersRepository usersRepository;
-
     @Mock
     JwtUtil jwtUtil;
+    @Mock
+    PasswordEncoder passwordEncoder;
     
     @Test
     @DisplayName("입력받은 비밀번호가 서로 다른 경우")
@@ -47,18 +49,18 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("이미 가입한 유저인 경우 실패")
-    void alreadyRegisteredUser() {
+    @DisplayName("이미 존재하는 이메일인 경우 실패")
+    void alreadyExistedEmail() {
         // given
         String name = "test";
         String email = "test";
         String password = "password";
         doReturn(Optional.of(Users.builder().name(name).email(email).build()))
-                .when(usersRepository).findByNameAndEmail(anyString(), anyString());
+                .when(usersRepository).findByEmail(anyString());
         // when
-        AlreadyExistedUserException result = assertThrows(AlreadyExistedUserException.class, () -> authService.registerUser(name, email, password, password, true));
+        IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> authService.registerUser(name, email, password, password, true));
         // then
-        assertThat(result.getMessage()).isEqualTo("이미 존재하는 사용자 입니다.");
+        assertThat(result.getMessage()).isEqualTo("이미 존재하는 이메일 입니다.");
     }
 
     @Test
@@ -69,6 +71,7 @@ class AuthServiceTest {
         doReturn(user).when(usersRepository).save(any(Users.class));
         doReturn("accessToken").when(jwtUtil).makeAccessToken(100L, "user name");
         doReturn("refreshToken").when(jwtUtil).makeRefreshToken(100L, "user name");
+        doReturn("encodedPassword").when(passwordEncoder).encode("password");
         // when
         LoginSuccessDto result = authService.registerUser("user name", "email test", "password", "password", true);
         // then
@@ -77,7 +80,7 @@ class AuthServiceTest {
         assertThat(result.getAccessToken()).isNotNull();
         assertThat(result.getRefreshToken()).isNotNull();
 
-        verify(usersRepository, times(1)).findByNameAndEmail("user name", "email test");
+        verify(usersRepository, times(1)).findByEmail("email test");
         verify(usersRepository, times(1)).save(any(Users.class));
     }
 

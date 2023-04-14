@@ -36,6 +36,8 @@ public class Users extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private LoginType loginType;
 
+    private String refreshToken;
+
     // 생성자 메서드
     public Users(String email, String password, LoginType loginType) {
         this.email = email;
@@ -46,5 +48,10 @@ public class Users extends BaseEntity {
     // 비즈니스 메서드
     public void setParentId(Users parent) {
         if (Objects.isNull(this.parent)) this.parent = parent;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        if (refreshToken == null) throw new IllegalArgumentException("리프레시 토큰은 필수입니다.");
+        this.refreshToken = refreshToken;
     }
 }
