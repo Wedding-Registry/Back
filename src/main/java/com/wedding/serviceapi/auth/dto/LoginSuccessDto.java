@@ -11,4 +11,5 @@ public class LoginSuccessDto {
     private String userName;
     private String accessToken;
     private String refreshToken;
+    private Boolean needMoreInfo;
 }

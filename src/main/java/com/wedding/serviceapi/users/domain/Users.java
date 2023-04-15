@@ -36,6 +36,8 @@ public class Users extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private LoginType loginType;
 
+    private String socialId;
+
     private String refreshToken;
 
     // 생성자 메서드

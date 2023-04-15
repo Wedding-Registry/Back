@@ -69,7 +69,7 @@ public class ServiceLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName);
 
-        String responseBody = objectMapper.writeValueAsString(new LoginSuccessDto(userId, userName, tokenList.get(0), tokenList.get(1)));
+        String responseBody = objectMapper.writeValueAsString(new LoginSuccessDto(userId, userName, tokenList.get(0), tokenList.get(1), false));
         log.info("responseBody = {}", responseBody);
         setResponseBody(response, responseBody);
     }

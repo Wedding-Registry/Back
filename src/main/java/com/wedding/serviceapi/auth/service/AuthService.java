@@ -41,7 +41,7 @@ public class AuthService {
         ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName());
         savedUser.setRefreshToken(tokenList.get(1));
 
-        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1));
+        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1), false);
     }
 
     private void validatePassword(String password, String passwordCheck) {

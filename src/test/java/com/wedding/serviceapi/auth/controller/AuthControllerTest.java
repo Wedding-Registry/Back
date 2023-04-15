@@ -135,7 +135,7 @@ class AuthControllerTest {
         String url = "/auth/signup";
         RegisterUserRequestVo requestBody = new RegisterUserRequestVo("name", "test@naver.com", "password", "password2", true);
         String body = objectMapper.writeValueAsString(requestBody);
-        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", "accessToken", "refreshToken");
+        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", "accessToken", "refreshToken", false);
         doReturn(registeredUser).when(authService).registerUser("name", "test@naver.com", "password", "password2", true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -149,6 +149,7 @@ class AuthControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("data.userName").value("name"))
                 .andExpect(MockMvcResultMatchers.jsonPath("data.accessToken").value("accessToken"))
                 .andExpect(MockMvcResultMatchers.jsonPath("data.refreshToken").value("refreshToken"))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.needMoreInfo").value(false))
                 .andDo(MockMvcResultHandlers.print());
     }
 }
