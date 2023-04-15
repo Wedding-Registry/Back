@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.auth;
 
 import com.wedding.serviceapi.auth.service.CustomServiceLoginUserDetails;
+import com.wedding.serviceapi.exception.NotValidPasswordException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +24,7 @@ public class CustomServiceAuthenticationProvider implements AuthenticationProvid
         AuthUser authUser = (AuthUser) customServiceLoginUserDetails.loadUserByUsername(email);
         String encodedPassword = authUser.getPassword();
         boolean isValidPassword = passwordEncoder.matches(password, encodedPassword);
-        if (!isValidPassword) throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        if (!isValidPassword) throw new NotValidPasswordException("잘못된 비밀번호입니다.");
 
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null);
         return result;

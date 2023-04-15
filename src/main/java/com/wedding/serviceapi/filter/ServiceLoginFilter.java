@@ -6,10 +6,12 @@ import com.wedding.serviceapi.auth.CustomServiceLoginAuthenticationManager;
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
 import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.auth.vo.ServiceLoginRequestVo;
+import com.wedding.serviceapi.common.vo.ErrorResponseVo;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,6 +71,17 @@ public class ServiceLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String responseBody = objectMapper.writeValueAsString(new LoginSuccessDto(userId, userName, accessToken, refreshToken));
         log.info("responseBody = {}", responseBody);
+        setResponseBody(response, responseBody);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        log.error("AuthenticationException ", failed);
+        String responseBody = objectMapper.writeValueAsString(new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), failed.getMessage()));
+        setResponseBody(response, responseBody);
+    }
+
+    private void setResponseBody(HttpServletResponse response, String responseBody) throws IOException {
         response.getWriter().write(responseBody);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     }
