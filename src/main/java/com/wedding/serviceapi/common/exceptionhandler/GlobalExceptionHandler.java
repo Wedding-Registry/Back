@@ -5,6 +5,7 @@ import com.wedding.serviceapi.exception.AlreadyExistedUserException;
 import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.exception.NoSuchPathTypeException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,6 +64,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ErrorResponseVo AlreadyExistedUserException(AlreadyExistedUserException e) {
         log.error("AlreadyExistedUserException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo SignatureException(SignatureException e) {
+        log.error("SignatureException ", e);
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }

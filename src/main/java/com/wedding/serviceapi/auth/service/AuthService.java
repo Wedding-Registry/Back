@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -37,13 +38,10 @@ public class AuthService {
                 .build();
 
         Users savedUser = usersRepository.save(user);
-        // TODO: 2023/04/12 토큰 생성 부분 리팩토링 필요할 듯
-        String accessToken = jwtUtil.makeAccessToken(savedUser.getId(), savedUser.getName());
-        String refreshToken = jwtUtil.makeRefreshToken(savedUser.getId(), savedUser.getName());
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName());
+        savedUser.setRefreshToken(tokenList.get(1));
 
-        savedUser.setRefreshToken(refreshToken);
-
-        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), accessToken, refreshToken);
+        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1));
     }
 
     private void validatePassword(String password, String passwordCheck) {

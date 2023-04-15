@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 @Slf4j
 public class ServiceLoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -66,10 +67,9 @@ public class ServiceLoginFilter extends UsernamePasswordAuthenticationFilter {
         Long userId = authenticatedUser.getUserId();
         String userName = authenticatedUser.getUserName();
 
-        String accessToken = jwtUtil.makeAccessToken(userId, userName);
-        String refreshToken = jwtUtil.makeRefreshToken(userId, userName);
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName);
 
-        String responseBody = objectMapper.writeValueAsString(new LoginSuccessDto(userId, userName, accessToken, refreshToken));
+        String responseBody = objectMapper.writeValueAsString(new LoginSuccessDto(userId, userName, tokenList.get(0), tokenList.get(1)));
         log.info("responseBody = {}", responseBody);
         setResponseBody(response, responseBody);
     }

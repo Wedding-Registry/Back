@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -69,8 +71,7 @@ class AuthServiceTest {
         // given
         Users user = Users.builder().id(100L).name("user name").email("email test").password("password").loginType(LoginType.KAKAO).build();
         doReturn(user).when(usersRepository).save(any(Users.class));
-        doReturn("accessToken").when(jwtUtil).makeAccessToken(100L, "user name");
-        doReturn("refreshToken").when(jwtUtil).makeRefreshToken(100L, "user name");
+        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(100L, "user name");
         doReturn("encodedPassword").when(passwordEncoder).encode("password");
         // when
         LoginSuccessDto result = authService.registerUser("user name", "email test", "password", "password", true);

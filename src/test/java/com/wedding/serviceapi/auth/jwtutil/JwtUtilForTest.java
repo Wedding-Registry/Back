@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
@@ -18,7 +19,14 @@ public class JwtUtilForTest implements JwtUtilBean {
     Long refreshTokenValidTime = 31536000000L;
 
     @Override
-    public String makeAccessToken(Long userId, String userName) {
+    public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName) {
+        ArrayList<String> tokenList = new ArrayList<>();
+        tokenList.add(makeAccessToken(userId, userName));
+        tokenList.add(makeRefreshToken(userId, userName));
+        return tokenList;
+    }
+
+    private String makeAccessToken(Long userId, String userName) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
@@ -30,8 +38,7 @@ public class JwtUtilForTest implements JwtUtilBean {
 
     }
 
-    @Override
-    public String makeRefreshToken(Long userId, String userName) {
+    private String makeRefreshToken(Long userId, String userName) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)

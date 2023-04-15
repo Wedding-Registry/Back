@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtUtil implements JwtUtilBean {
@@ -22,7 +24,14 @@ public class JwtUtil implements JwtUtilBean {
     Long refreshTokenValidTime;
 
     @Override
-    public String makeAccessToken(Long userId, String userName) {
+    public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName) {
+        ArrayList<String> tokenList = new ArrayList<>();
+        tokenList.add(makeAccessToken(userId, userName));
+        tokenList.add(makeRefreshToken(userId, userName));
+        return tokenList;
+    }
+
+    private String makeAccessToken(Long userId, String userName) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
@@ -33,8 +42,7 @@ public class JwtUtil implements JwtUtilBean {
                 .compact();
     }
 
-    @Override
-    public String makeRefreshToken(Long userId, String userName) {
+    private String makeRefreshToken(Long userId, String userName) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
@@ -43,6 +51,11 @@ public class JwtUtil implements JwtUtilBean {
                 .claim("userName", userName)
                 .signWith(key)
                 .compact();
+    }
+
+    private Key makeKey() {
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     @Override
@@ -57,11 +70,6 @@ public class JwtUtil implements JwtUtilBean {
 
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
         return extractLoginUserInfoDto(claims);
-    }
-
-    private Key makeKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private String extractToken(String authorizationHeader) {
