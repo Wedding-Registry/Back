@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Getter
@@ -14,7 +15,7 @@ public class AuthUser extends User {
     private String userName;
 
     public AuthUser(Users users) {
-        super(users.getEmail(), users.getPassword(), null);
+        super(users.getEmail(), users.getPassword(), new ArrayList<>());
         this.userId = users.getId();
         this.userName = users.getName();
     }
