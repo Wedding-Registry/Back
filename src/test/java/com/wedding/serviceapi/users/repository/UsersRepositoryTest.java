@@ -70,6 +70,37 @@ class UsersRepositoryTest {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다.")));
     }
 
+    @Test
+    @DisplayName("소셜 아이디를 통해 사용자 찾기 실패")
+    void findBySocialIFail() {
+        // given
+        Users user = Users.builder().email("test email").name("test").loginType(LoginType.KAKAO).socialId("K1234").build();
+        usersRepository.save(user);
+        em.flush();
+        em.clear();
+        // when
+        assertThrows(NoSuchElementException.class, () -> usersRepository.findBySocialId("k12345")
+                .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다.")));
+    }
+
+    @Test
+    @DisplayName("소셜 아이디를 통해 사용자 찾기 성공")
+    void findBySocialId() {
+        // given
+        Users user = Users.builder().email("test email").name("test").loginType(LoginType.KAKAO).socialId("K1234").build();
+        usersRepository.save(user);
+        em.flush();
+        em.clear();
+        // when
+        Users users = usersRepository.findBySocialId("k1234").get();
+        assertThat(users.getEmail()).isEqualTo("test email");
+        assertThat(users.getName()).isEqualTo("test");
+        assertThat(users.getLoginType()).isEqualTo(LoginType.KAKAO);
+        assertThat(users.getSocialId()).isEqualToIgnoringCase("k1234");
+    }
+
+
+
 
     private void registerUser() {
         Users user = Users.builder().email("test email").name("test").password("test").loginType(LoginType.KAKAO).build();

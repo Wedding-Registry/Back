@@ -19,4 +19,8 @@ public class AuthUser extends User {
         this.userId = users.getId();
         this.userName = users.getName();
     }
+
+    public AuthUser() {
+        super(null, null, new ArrayList<>());
+    }
 }

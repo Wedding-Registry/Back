@@ -15,6 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@DynamicInsert
 public class Users extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
