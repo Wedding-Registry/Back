@@ -13,14 +13,12 @@ import java.util.List;
 @Slf4j
 public class CustomLoginAuthenticationManager implements AuthenticationManager {
 
-    // TODO: 2023/04/16 이후 jwt 로그인과 통합 가능하기 때문에 수정 예정
     private final List<AuthenticationProvider> providers;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         AuthenticationProvider authenticationProvider;
 
-        // TODO: 2023/04/16 AuthenticationProvider의 support 메서드를 이용해서 원하는 provider를 선택해야한다.
         log.info("credentials = {}", authentication.getCredentials());
         if (authentication.getCredentials() != null) {
             log.info("service login provider");
