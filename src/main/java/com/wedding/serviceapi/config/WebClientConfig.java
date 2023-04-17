@@ -1,4 +1,4 @@
-package com.wedding.serviceapi.config.webclientconfig;
+package com.wedding.serviceapi.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,10 +1,11 @@
 package com.wedding.serviceapi.common.exceptionhandler;
 
 import com.wedding.serviceapi.common.vo.ErrorResponseVo;
-import com.wedding.serviceapi.exception.NegativePriceException;
-import com.wedding.serviceapi.exception.NoSuchPathTypeException;
+import com.wedding.serviceapi.exception.*;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -45,4 +46,33 @@ public class GlobalExceptionHandler {
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 
+    @ExceptionHandler
+    public ErrorResponseVo MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValidException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo NotSamePasswordExceptionHandler(NotSamePasswordException e) {
+        log.error("NotSamePasswordException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo AlreadyExistedUserException(AlreadyExistedUserException e) {
+        log.error("AlreadyExistedUserException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo SignatureException(SignatureException e) {
+        log.error("SignatureException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo InvalidSocialIdException(InvalidSocialIdException e) {
+        log.error("InvalidSocialIdException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
 }
