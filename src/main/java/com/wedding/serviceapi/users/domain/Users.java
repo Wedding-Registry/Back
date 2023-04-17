@@ -1,11 +1,9 @@
 package com.wedding.serviceapi.users.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -16,6 +14,8 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @DynamicInsert
+@DynamicUpdate
+@ToString
 public class Users extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

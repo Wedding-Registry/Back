@@ -1,16 +1,22 @@
 package com.wedding.serviceapi.auth.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
 import com.wedding.serviceapi.auth.service.AuthService;
 import com.wedding.serviceapi.auth.vo.RegisterUserRequestVo;
+import com.wedding.serviceapi.auth.vo.SocialLoginRegisterMoreInfoRequestVo;
 import com.wedding.serviceapi.common.exceptionhandler.GlobalExceptionHandler;
 import com.wedding.serviceapi.exception.AlreadyExistedUserException;
+import com.wedding.serviceapi.exception.InvalidSocialIdException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
+import com.wedding.serviceapi.users.domain.Users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -141,6 +147,159 @@ class AuthControllerTest {
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(201))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.userId").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.userName").value("name"))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.accessToken").value("accessToken"))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.refreshToken").value("refreshToken"))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.needMoreInfo").value(false))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("socialId 없이 소셜 추가정보 요청")
+    void socialRegisterMoreInfoWithoutSocialId() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String name = "name";
+        String email = "test@test.com";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(null, name, email, true);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("소셜 아이디 값은 필수입니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("name 없이 소셜 추가정보 요청")
+    void socialRegisterMoreInfoWithoutName() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String socialId = "k1234";
+        String email = "test@test.com";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, null, email, true);
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("사용자 이름 값은 필수입니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("email 없이 소셜 추가정보 요청")
+    void socialRegisterMoreInfoWithoutEmail() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String socialId = "k1234";
+        String name = "name";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, null, true);
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("사용자 이메일 값은 필수입니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("email 형식이 아닌 경우")
+    void socialRegisterMoreInfoWithoutNotValidEmail() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String socialId = "k1234";
+        String name = "name";
+        String email = "testtest";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("이메일 형식이 올바르지 않습니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("socialId를 갖고있는 사용자가 이미 존재하는 경우 실패")
+    void socialRegisterMoreInfoWithAlreadyUser() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String socialId = "k1234";
+        String name = "name";
+        String email = "test@test.com";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
+        doThrow(new AlreadyExistedUserException("이미 존재하는 사용자입니다.")).when(authService).registerSocialUser(socialId, name, email, true);
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("이미 존재하는 사용자입니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("k, g가 앞에 없는 소셜아이디인 경우 실패")
+    void socialRegisterMoreInfoWithInvalidSocialId() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String socialId = "1234";
+        String name = "name";
+        String email = "test@test.com";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
+        doThrow(new InvalidSocialIdException("유효하지 않는 소셜아이디입니다.")).when(authService).registerSocialUser(socialId, name, email, true);
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
+        // then
+        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("유효하지 않는 소셜아이디입니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("social 추가정보 입력 성공")
+    void successSocialRegisterMoreInfo() throws Exception {
+        // given
+        String url = "/auth/social/info";
+        String socialId = "k1234";
+        String name = "name";
+        String email = "test@test.com";
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
+        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", "accessToken", "refreshToken", false);
+        doReturn(registeredUser).when(authService).registerSocialUser(socialId, name, email, true);
+        // when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestVo)));
         // then
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("success").value(true))

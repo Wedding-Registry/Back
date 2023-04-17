@@ -1,10 +1,7 @@
 package com.wedding.serviceapi.common.exceptionhandler;
 
 import com.wedding.serviceapi.common.vo.ErrorResponseVo;
-import com.wedding.serviceapi.exception.AlreadyExistedUserException;
-import com.wedding.serviceapi.exception.NegativePriceException;
-import com.wedding.serviceapi.exception.NoSuchPathTypeException;
-import com.wedding.serviceapi.exception.NotSamePasswordException;
+import com.wedding.serviceapi.exception.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -70,6 +67,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ErrorResponseVo SignatureException(SignatureException e) {
         log.error("SignatureException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo InvalidSocialIdException(InvalidSocialIdException e) {
+        log.error("InvalidSocialIdException ", e);
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }

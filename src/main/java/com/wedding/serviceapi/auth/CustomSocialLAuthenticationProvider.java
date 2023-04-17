@@ -33,6 +33,7 @@ public class CustomSocialLAuthenticationProvider implements AuthenticationProvid
         }
     }
 
+    // TODO: 2023/04/18 소셜 추가정보 입력 부분과 중복 제거 가능여부 확인
     private boolean isValidSocialId(String socialId) {
         return socialId.toLowerCase().startsWith("k") || socialId.toLowerCase().startsWith("g");
     }
