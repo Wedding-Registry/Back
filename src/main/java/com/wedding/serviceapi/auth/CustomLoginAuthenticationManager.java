@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomLoginAuthenticationManager implements AuthenticationManager {
-
+    // TODO: 2023/04/21 map으로 변경하는게 가독성이 좋아보임
     private final List<AuthenticationProvider> providers;
 
     @Override

@@ -37,7 +37,8 @@ public class Users extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private LoginType loginType;
 
-    private String socialId;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     private String refreshToken;
 

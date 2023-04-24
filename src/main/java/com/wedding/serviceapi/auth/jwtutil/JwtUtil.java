@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -60,6 +61,7 @@ public class JwtUtil implements JwtUtilBean {
 
     @Override
     public LoginUserInfoVo decodeJwt(String authorizationHeader) {
+        Claims claims;
         Key key = makeKey();
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -67,8 +69,11 @@ public class JwtUtil implements JwtUtilBean {
         }
 
         String jwt = extractToken(authorizationHeader);
-
-        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
+        try {
+            claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("잘못된 토큰 값입니다.");
+        }
         return extractLoginUserInfoDto(claims);
     }
 

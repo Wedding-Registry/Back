@@ -8,9 +8,5 @@ public interface JwtUtilBean {
 
     List<String> makeAccessTokenAndRefreshToken(Long userId, String userName);
 
-//    String makeAccessToken(Long userId, String userName);
-//
-//    String makeRefreshToken(Long userId, String userName);
-
     LoginUserInfoVo decodeJwt(String jwt);
 }

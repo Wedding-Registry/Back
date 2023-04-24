@@ -1,19 +1,19 @@
 package com.wedding.serviceapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wedding.serviceapi.auth.CustomJwtAuthenticationFilter;
 import com.wedding.serviceapi.auth.CustomServiceAuthenticationProvider;
 import com.wedding.serviceapi.auth.CustomLoginAuthenticationManager;
 import com.wedding.serviceapi.auth.CustomSocialLAuthenticationProvider;
 import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.auth.service.CustomServiceLoginUserDetails;
 import com.wedding.serviceapi.auth.service.CustomSocialLoginUserDetails;
-import com.wedding.serviceapi.filter.ServiceLoginFilter;
+import com.wedding.serviceapi.filter.CustomAuthenticationFilter;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,10 +21,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -40,15 +45,37 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/login/**").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .cors()
                 .and()
                 .addFilterBefore(characterEncodingFilter(), CsrfFilter.class)
-                .addFilter(serviceLoginFilter());
+                .addFilter(serviceLoginFilter())
+                .addFilterAfter(customJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
+    }
+
+    @Bean
+    public CustomJwtAuthenticationFilter customJwtAuthenticationFilter() {
+        return new CustomJwtAuthenticationFilter(jwtUtil);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
@@ -60,11 +87,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public ServiceLoginFilter serviceLoginFilter() {
-        ServiceLoginFilter serviceLoginFilter = new ServiceLoginFilter(jwtUtil, objectMapper);
-        serviceLoginFilter.setFilterProcessesUrl("/login/**");
-        serviceLoginFilter.setAuthenticationManager(customLoginAuthenticationManager());
-        return serviceLoginFilter;
+    public CustomAuthenticationFilter serviceLoginFilter() {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtUtil, objectMapper);
+        customAuthenticationFilter.setFilterProcessesUrl("/login/**");
+        customAuthenticationFilter.setAuthenticationManager(customLoginAuthenticationManager());
+        return customAuthenticationFilter;
     }
 
     @Bean

@@ -20,6 +20,12 @@ public class AuthUser extends User {
         this.userName = users.getName();
     }
 
+    public AuthUser(Long userId, String userName) {
+        super(userName, userName, new ArrayList<>());
+        this.userId = userId;
+        this.userName = userName;
+    }
+
     public AuthUser() {
         super(null, null, new ArrayList<>());
     }

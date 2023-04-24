@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.util.*;
 
 @Slf4j
-public class ServiceLoginFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
-    public ServiceLoginFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
+    public CustomAuthenticationFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
     }

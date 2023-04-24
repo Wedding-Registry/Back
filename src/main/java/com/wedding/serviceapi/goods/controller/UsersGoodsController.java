@@ -12,6 +12,7 @@ import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsPriceRequestVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class UsersGoodsController {
     }
 
     @PostMapping("/add/{userId}")
-    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @RequestBody PostUsersGoodsRequestVo body) {
+    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @Validated @RequestBody PostUsersGoodsRequestVo body) {
         log.info("[postUsersGoods controller] userId = {}, url = {}", userId, body.getUrl());
 
         UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(userId, body.getUrl());
