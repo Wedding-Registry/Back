@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.common.vo;
 
+import com.wedding.serviceapi.users.domain.Role;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,4 +11,5 @@ import lombok.Getter;
 public class LoginUserInfoVo {
     private Long userId;
     private String userName;
+    private Role role;
 }

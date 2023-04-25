@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.auth.jwtutil;
 
 import com.wedding.serviceapi.common.vo.LoginUserInfoVo;
+import com.wedding.serviceapi.users.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -8,11 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtUtil implements JwtUtilBean {
@@ -25,31 +24,33 @@ public class JwtUtil implements JwtUtilBean {
     Long refreshTokenValidTime;
 
     @Override
-    public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName) {
+    public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName, Role role) {
         ArrayList<String> tokenList = new ArrayList<>();
-        tokenList.add(makeAccessToken(userId, userName));
-        tokenList.add(makeRefreshToken(userId, userName));
+        tokenList.add(makeAccessToken(userId, userName, role));
+        tokenList.add(makeRefreshToken(userId, userName, role));
         return tokenList;
     }
 
-    private String makeAccessToken(Long userId, String userName) {
+    private String makeAccessToken(Long userId, String userName, Role role) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
                 .claim("userId", userId)
                 .claim("userName", userName)
+                .claim("role", role.name())
                 .signWith(key)
                 .compact();
     }
 
-    private String makeRefreshToken(Long userId, String userName) {
+    private String makeRefreshToken(Long userId, String userName, Role role) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .claim("userId", userId)
                 .claim("userName", userName)
+                .claim("role", role.name())
                 .signWith(key)
                 .compact();
     }
@@ -84,6 +85,9 @@ public class JwtUtil implements JwtUtilBean {
     private LoginUserInfoVo extractLoginUserInfoDto(Claims body) {
         Long userId = body.get("userId", Long.class);
         String userName = body.get("userName", String.class);
-        return new LoginUserInfoVo(userId, userName);
+        String roleString = body.get("role", String.class);
+        Role role = Role.fromString(roleString);
+
+        return new LoginUserInfoVo(userId, userName, role);
     }
 }

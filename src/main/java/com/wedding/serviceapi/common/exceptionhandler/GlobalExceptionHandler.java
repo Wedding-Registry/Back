@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ErrorResponseVo InvalidSocialIdException(InvalidSocialIdException e) {
+    public ErrorResponseVo InvalidSocialIdException(InvalidSocialPasswordException e) {
         log.error("InvalidSocialIdException ", e);
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }

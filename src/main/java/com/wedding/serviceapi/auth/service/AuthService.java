@@ -3,19 +3,18 @@ package com.wedding.serviceapi.auth.service;
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
 import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.exception.AlreadyExistedUserException;
-import com.wedding.serviceapi.exception.InvalidSocialIdException;
+import com.wedding.serviceapi.exception.InvalidSocialPasswordException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
 import com.wedding.serviceapi.users.domain.LoginType;
+import com.wedding.serviceapi.users.domain.Role;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +35,11 @@ public class AuthService {
                 .password(passwordEncoder.encode(password))
                 .alarmEvent(notification)
                 .loginType(LoginType.SERVICE)
+                .role(Role.USER)
                 .build();
 
         Users savedUser = usersRepository.save(user);
-        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName());
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName(), savedUser.getRole());
         savedUser.setRefreshToken(tokenList.get(1));
 
         return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1), false);
@@ -59,34 +59,36 @@ public class AuthService {
         }
     }
 
-    public LoginSuccessDto registerSocialUser(String socialId, String name, String email, boolean notification) {
-        Users userBySocialId = usersRepository.findBySocialId(socialId).orElse(null);
+    public LoginSuccessDto registerSocialUser(String email, String name, String password, boolean notification) {
+        Users userBySocialId = usersRepository.findByPassword(password).orElse(null);
         if (userBySocialId != null) {
             throw new AlreadyExistedUserException("이미 존재하는 사용자입니다.");
         }
 
-        if (!isValidSocialId(socialId)) {
-            throw new InvalidSocialIdException("유효하지 않는 소셜아이디 입니다.");
+        if (!isValidSocialLoginPassword(password)) {
+            throw new InvalidSocialPasswordException("유효하지 않는 소셜아이디 입니다.");
         }
 
         // TODO: 2023/04/17 기존에 서비스 회원가입을 통해 이메일이 존재하고 다시 소셜 회원가입을 하느라 이메일이 겹치는 경우 해결 필요
+        LoginType loginType = password.startsWith("k") ? LoginType.KAKAO : LoginType.GOOGLE;
         Users user = Users.builder()
-                .socialId(socialId)
                 .name(name)
                 .email(email)
-                .loginType(LoginType.KAKAO)
+                .password(password)
+                .loginType(loginType)
                 .alarmEvent(notification)
+                .role(Role.USER)
                 .build();
 
         Users savedUser = usersRepository.save(user);
-        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName());
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName(), savedUser.getRole());
         savedUser.setRefreshToken(tokenList.get(1));
 
         return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1), false);
     }
 
-    private boolean isValidSocialId(String socialId) {
-        return socialId.toLowerCase().startsWith("k") || socialId.toLowerCase().startsWith("g");
+    private boolean isValidSocialLoginPassword(String password) {
+        return password.toLowerCase().startsWith("k") || password.toLowerCase().startsWith("g");
     }
 }
 

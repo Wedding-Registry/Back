@@ -6,6 +6,7 @@ import com.wedding.serviceapi.auth.vo.SocialLoginRegisterMoreInfoRequestVo;
 import com.wedding.serviceapi.exception.AlreadyExistedUserException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
 import com.wedding.serviceapi.users.domain.LoginType;
+import com.wedding.serviceapi.users.domain.Role;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -71,9 +72,9 @@ class AuthServiceTest {
     @DisplayName("회원가입 성공")
     void registerUserSuccess() {
         // given
-        Users user = Users.builder().id(100L).name("user name").email("email test").password("password").loginType(LoginType.KAKAO).build();
+        Users user = Users.builder().id(100L).name("user name").email("email test").password("password").loginType(LoginType.KAKAO).role(Role.USER).build();
         doReturn(user).when(usersRepository).save(any(Users.class));
-        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(100L, "user name");
+        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(100L, "user name", Role.USER);
         doReturn("encodedPassword").when(passwordEncoder).encode("password");
         // when
         LoginSuccessDto result = authService.registerUser("user name", "email test", "password", "password", true);
@@ -88,15 +89,15 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("소셜로그인 추가정보 입력 시 socialId를 갖는 사용자가 이미 존재하는 경우")
+    @DisplayName("소셜로그인 추가정보 입력 시 password를 갖는 사용자가 이미 존재하는 경우")
     void noNameParamWithSocialMoreInfoRequest() {
         // given
-        String socialId = "socialId";
+        String password = "socialId";
         String name = "social name";
         String email = "social@test.com";
-        doReturn(Optional.of(new Users())).when(usersRepository).findBySocialId(socialId);
+        doReturn(Optional.of(new Users())).when(usersRepository).findByPassword(password);
         // when
-        AlreadyExistedUserException exception = assertThrows(AlreadyExistedUserException.class, () -> authService.registerSocialUser(socialId, name, email, true));
+        AlreadyExistedUserException exception = assertThrows(AlreadyExistedUserException.class, () -> authService.registerSocialUser(email, name, password, true));
         // then
         assertThat(exception.getMessage()).isEqualTo("이미 존재하는 사용자입니다.");
     }
@@ -105,15 +106,15 @@ class AuthServiceTest {
     @DisplayName("소셜로그인 추가정보 입력 성공 및 로그인 완료")
     void successRegisterSocialUser() {
         // given
-        String socialId = "k1234";
+        String password = "k1234";
         String name = "social name";
         String email = "social@test.com";
         boolean notification = true;
-        Users user = Users.builder().id(100L).name(name).build();
+        Users user = Users.builder().id(100L).name(name).role(Role.USER).build();
         doReturn(user).when(usersRepository).save(any(Users.class));
-        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(user.getId(), name);
+        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(user.getId(), name, Role.USER);
         // when
-        LoginSuccessDto loginSuccessDto = authService.registerSocialUser(socialId, name, email, notification);
+        LoginSuccessDto loginSuccessDto = authService.registerSocialUser(email, name, password, notification);
         // then
         assertThat(loginSuccessDto.getUserId()).isEqualTo(100L);
         assertThat(loginSuccessDto.getUserName()).isEqualTo("social name");

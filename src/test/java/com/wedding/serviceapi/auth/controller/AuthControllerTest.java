@@ -1,6 +1,5 @@
 package com.wedding.serviceapi.auth.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
 import com.wedding.serviceapi.auth.service.AuthService;
@@ -8,15 +7,12 @@ import com.wedding.serviceapi.auth.vo.RegisterUserRequestVo;
 import com.wedding.serviceapi.auth.vo.SocialLoginRegisterMoreInfoRequestVo;
 import com.wedding.serviceapi.common.exceptionhandler.GlobalExceptionHandler;
 import com.wedding.serviceapi.exception.AlreadyExistedUserException;
-import com.wedding.serviceapi.exception.InvalidSocialIdException;
+import com.wedding.serviceapi.exception.InvalidSocialPasswordException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
-import com.wedding.serviceapi.users.domain.Users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -160,13 +156,13 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("socialId 없이 소셜 추가정보 요청")
+    @DisplayName("password 없이 소셜 추가정보 요청")
     void socialRegisterMoreInfoWithoutSocialId() throws Exception {
         // given
         String url = "/auth/social/info";
         String name = "name";
         String email = "test@test.com";
-        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(null, name, email, true);
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(email, null, name, true);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -185,9 +181,9 @@ class AuthControllerTest {
     void socialRegisterMoreInfoWithoutName() throws Exception {
         // given
         String url = "/auth/social/info";
-        String socialId = "k1234";
+        String password = "k1234";
         String email = "test@test.com";
-        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, null, email, true);
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(email, password, null, true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -205,9 +201,9 @@ class AuthControllerTest {
     void socialRegisterMoreInfoWithoutEmail() throws Exception {
         // given
         String url = "/auth/social/info";
-        String socialId = "k1234";
+        String password = "k1234";
         String name = "name";
-        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, null, true);
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(null, password, name, true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -246,11 +242,11 @@ class AuthControllerTest {
     void socialRegisterMoreInfoWithAlreadyUser() throws Exception {
         // given
         String url = "/auth/social/info";
-        String socialId = "k1234";
+        String password = "k1234";
         String name = "name";
         String email = "test@test.com";
-        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
-        doThrow(new AlreadyExistedUserException("이미 존재하는 사용자입니다.")).when(authService).registerSocialUser(socialId, name, email, true);
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(email, password, name, true);
+        doThrow(new AlreadyExistedUserException("이미 존재하는 사용자입니다.")).when(authService).registerSocialUser(email, name, password, true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -264,15 +260,15 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("k, g가 앞에 없는 소셜아이디인 경우 실패")
+    @DisplayName("k, g가 앞에 없는 password 인 경우 실패")
     void socialRegisterMoreInfoWithInvalidSocialId() throws Exception {
         // given
         String url = "/auth/social/info";
-        String socialId = "1234";
+        String password = "1234";
         String name = "name";
         String email = "test@test.com";
-        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
-        doThrow(new InvalidSocialIdException("유효하지 않는 소셜아이디입니다.")).when(authService).registerSocialUser(socialId, name, email, true);
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(email, password, name, true);
+        doThrow(new InvalidSocialPasswordException("유효하지 않는 소셜아이디입니다.")).when(authService).registerSocialUser(email, name, password, true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -290,12 +286,12 @@ class AuthControllerTest {
     void successSocialRegisterMoreInfo() throws Exception {
         // given
         String url = "/auth/social/info";
-        String socialId = "k1234";
+        String password = "k1234";
         String name = "name";
         String email = "test@test.com";
-        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(socialId, name, email, true);
+        SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(email, password, name, true);
         LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", "accessToken", "refreshToken", false);
-        doReturn(registeredUser).when(authService).registerSocialUser(socialId, name, email, true);
+        doReturn(registeredUser).when(authService).registerSocialUser(email, name, password, true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)

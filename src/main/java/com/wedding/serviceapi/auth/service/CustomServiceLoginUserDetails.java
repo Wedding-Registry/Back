@@ -1,16 +1,14 @@
 package com.wedding.serviceapi.auth.service;
 
-import com.wedding.serviceapi.auth.AuthUser;
+import com.wedding.serviceapi.auth.securitycustom.AuthUser;
 import com.wedding.serviceapi.exception.NoSuchUserException;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor

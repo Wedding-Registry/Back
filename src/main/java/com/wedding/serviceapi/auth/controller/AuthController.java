@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/social/info")
     public ResponseVo<LoginSuccessDto> registerSocialUser(@Validated @RequestBody SocialLoginRegisterMoreInfoRequestVo body) {
         log.info("registerSocialUser controller body = {}", body);
-        LoginSuccessDto data = authService.registerSocialUser(body.getSocialId(), body.getName(), body.getEmail(), body.getNotification());
+        LoginSuccessDto data = authService.registerSocialUser(body.getEmail(), body.getName(), body.getPassword(), body.getNotification());
 
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }

@@ -1,4 +1,4 @@
-package com.wedding.serviceapi.auth;
+package com.wedding.serviceapi.auth.securitycustom;
 
 import com.wedding.serviceapi.auth.service.CustomServiceLoginUserDetails;
 import com.wedding.serviceapi.exception.NotValidPasswordException;
@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RequiredArgsConstructor
