@@ -20,7 +20,7 @@ public class CustomServiceLoginUserDetails implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users users = usersRepository.findByEmail(username).orElseThrow(() -> new NoSuchUserException("이메일이 틀렸습니다."));
         log.info("user id = {} email = {} name = {}", users.getId(), users.getEmail(), users.getName());
-        // TODO: 2023/04/16 권한 추가는 추가로 여기서 AuthUser 생성시 진행하면 된다.
+        // TODO: 2023/04/16 권한 추가는 추가로 여기서 LoginUser 생성시 진행하면 된다.
         return new AuthUser(users);
     }
 }

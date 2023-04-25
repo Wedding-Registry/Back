@@ -1,5 +1,8 @@
 package com.wedding.serviceapi.goods.controller;
 
+import com.wedding.serviceapi.auth.securitycustom.AuthUser;
+import com.wedding.serviceapi.auth.vo.LoginUser;
+import com.wedding.serviceapi.auth.vo.LoginUserVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsNameDto;
@@ -9,9 +12,11 @@ import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.goods.vo.PostUsersGoodsRequestVo;
 import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsNameRequestVo;
 import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsPriceRequestVo;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +30,14 @@ public class UsersGoodsController {
     // TODO: 2023/03/09 메서드마다 usersId 와 jwt 토큰의 usersId가 같은지 확인
 
     private final UsersGoodsService usersGoodsService;
+
+    @GetMapping("/test")
+    public String test(@LoginUser LoginUserVo loginUserVo) {
+        Long userId = loginUserVo.getUserId();
+        String userName = loginUserVo.getUserName();
+        log.info("userId = {}, userName = {}", userId, userName);
+        return "ok";
+    }
 
     @GetMapping("/all/{userId}")
     public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@PathVariable Long userId) {
