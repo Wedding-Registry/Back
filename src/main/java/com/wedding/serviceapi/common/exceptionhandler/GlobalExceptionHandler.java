@@ -5,6 +5,7 @@ import com.wedding.serviceapi.exception.*;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -71,8 +72,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ErrorResponseVo InvalidSocialIdException(InvalidSocialIdException e) {
+    public ErrorResponseVo InvalidSocialIdException(InvalidSocialPasswordException e) {
         log.error("InvalidSocialIdException ", e);
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo HttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.error("HttpMessageNotReadableException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), "필요한 데이터가 없습니다.");
     }
 }

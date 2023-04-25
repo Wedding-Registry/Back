@@ -1,14 +1,12 @@
-package com.wedding.serviceapi.common.vo;
+package com.wedding.serviceapi.auth.vo;
 
 import com.wedding.serviceapi.users.domain.Role;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@EqualsAndHashCode
 @Getter
 @AllArgsConstructor
-public class LoginUserInfoVo {
+public class LoginUserVo {
     private Long userId;
     private String userName;
     private Role role;

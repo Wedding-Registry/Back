@@ -1,6 +1,6 @@
 package com.wedding.serviceapi.auth.service;
 
-import com.wedding.serviceapi.auth.AuthUser;
+import com.wedding.serviceapi.auth.securitycustom.AuthUser;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,8 @@ public class CustomSocialLoginUserDetails implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users users = usersRepository.findBySocialId(username).orElse(null);
-        // TODO: 2023/04/16 2023/04/16 권한 추가는 추가로 여기서 AuthUser 생성시 진행하면 된다.
+        Users users = usersRepository.findByEmail(username).orElse(null);
+        // TODO: 2023/04/25 기존 서비스로 가입을 한 이메일과 겹치는 경우 어떻게 해결할 것인가...
         if (users == null) {
             return null;
         }

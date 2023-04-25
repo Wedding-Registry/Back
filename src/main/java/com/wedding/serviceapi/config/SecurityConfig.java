@@ -1,13 +1,14 @@
 package com.wedding.serviceapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wedding.serviceapi.auth.CustomServiceAuthenticationProvider;
-import com.wedding.serviceapi.auth.CustomLoginAuthenticationManager;
-import com.wedding.serviceapi.auth.CustomSocialLAuthenticationProvider;
+import com.wedding.serviceapi.filter.CustomAuthorizationFilter;
+import com.wedding.serviceapi.auth.securitycustom.CustomServiceAuthenticationProvider;
+import com.wedding.serviceapi.auth.securitycustom.CustomLoginAuthenticationManager;
+import com.wedding.serviceapi.auth.securitycustom.CustomSocialAuthenticationProvider;
 import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.auth.service.CustomServiceLoginUserDetails;
 import com.wedding.serviceapi.auth.service.CustomSocialLoginUserDetails;
-import com.wedding.serviceapi.filter.ServiceLoginFilter;
+import com.wedding.serviceapi.filter.CustomAuthenticationFilter;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +22,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Configuration
 @EnableWebSecurity
@@ -36,19 +40,45 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
 
+    private final String SERVICE_LOGIN_URI = "/login/service";
+    private final String SOCIAL_LOGIN_KAKAO_URI = "/login/oauth/kakao";
+    private final String SOCIAL_LOGIN_GOOGLE_URI = "/login/oauth/google";
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login/**").permitAll()
-                .anyRequest().permitAll()
+                .antMatchers(HttpMethod.POST, "/login/**", "/auth/signup", "/auth/social/info").permitAll()
+                .anyRequest().hasAuthority("USER")
+                .and()
+                .cors()
                 .and()
                 .addFilterBefore(characterEncodingFilter(), CsrfFilter.class)
-                .addFilter(serviceLoginFilter());
+                .addFilter(serviceLoginFilter())
+                .addFilterBefore(customJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
+    }
+
+    @Bean
+    public CustomAuthorizationFilter customJwtAuthenticationFilter() {
+        return new CustomAuthorizationFilter(jwtUtil, objectMapper);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
@@ -60,18 +90,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public ServiceLoginFilter serviceLoginFilter() {
-        ServiceLoginFilter serviceLoginFilter = new ServiceLoginFilter(jwtUtil, objectMapper);
-        serviceLoginFilter.setFilterProcessesUrl("/login/**");
-        serviceLoginFilter.setAuthenticationManager(customLoginAuthenticationManager());
-        return serviceLoginFilter;
+    public CustomAuthenticationFilter serviceLoginFilter() {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtUtil, objectMapper);
+        customAuthenticationFilter.setFilterProcessesUrl("/login/**");
+        customAuthenticationFilter.setAuthenticationManager(customLoginAuthenticationManager());
+        return customAuthenticationFilter;
     }
 
     @Bean
-    public CustomLoginAuthenticationManager customLoginAuthenticationManager() {
-        return new CustomLoginAuthenticationManager(new ArrayList<>(
-                List.of(customServiceAuthenticationProvider(), customSocialAuthenticationProvider())
-        ));
+    public AuthenticationManager customLoginAuthenticationManager() {
+        Map<String, AuthenticationProvider> authenticationProviderMap = Map.of(SERVICE_LOGIN_URI, customServiceAuthenticationProvider(),
+                SOCIAL_LOGIN_KAKAO_URI, customSocialAuthenticationProvider(),
+                SOCIAL_LOGIN_GOOGLE_URI, customSocialAuthenticationProvider()
+        );
+        return new CustomLoginAuthenticationManager(authenticationProviderMap);
     }
 
     @Bean
@@ -86,7 +118,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider customSocialAuthenticationProvider() {
-        return new CustomSocialLAuthenticationProvider(customSocialLoginUserDetails());
+        return new CustomSocialAuthenticationProvider(customSocialLoginUserDetails());
     }
 
     @Bean

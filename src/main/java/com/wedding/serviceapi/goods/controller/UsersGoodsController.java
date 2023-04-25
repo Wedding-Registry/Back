@@ -1,5 +1,8 @@
 package com.wedding.serviceapi.goods.controller;
 
+import com.wedding.serviceapi.auth.securitycustom.AuthUser;
+import com.wedding.serviceapi.auth.vo.LoginUser;
+import com.wedding.serviceapi.auth.vo.LoginUserVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsNameDto;
@@ -9,9 +12,12 @@ import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.goods.vo.PostUsersGoodsRequestVo;
 import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsNameRequestVo;
 import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsPriceRequestVo;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +31,14 @@ public class UsersGoodsController {
 
     private final UsersGoodsService usersGoodsService;
 
+    @GetMapping("/test")
+    public String test(@LoginUser LoginUserVo loginUserVo) {
+        Long userId = loginUserVo.getUserId();
+        String userName = loginUserVo.getUserName();
+        log.info("userId = {}, userName = {}", userId, userName);
+        return "ok";
+    }
+
     @GetMapping("/all/{userId}")
     public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@PathVariable Long userId) {
         log.info("[findAllUsersGoods controller] userId = {}", userId);
@@ -33,7 +47,7 @@ public class UsersGoodsController {
     }
 
     @PostMapping("/add/{userId}")
-    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @RequestBody PostUsersGoodsRequestVo body) {
+    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @Validated @RequestBody PostUsersGoodsRequestVo body) {
         log.info("[postUsersGoods controller] userId = {}, url = {}", userId, body.getUrl());
 
         UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(userId, body.getUrl());

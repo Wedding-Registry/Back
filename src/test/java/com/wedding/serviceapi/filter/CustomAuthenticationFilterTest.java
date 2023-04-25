@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-class ServiceLoginFilterTest {
+class CustomAuthenticationFilterTest {
 
     @Test
     @DisplayName("map 스트림 변환 테스트")

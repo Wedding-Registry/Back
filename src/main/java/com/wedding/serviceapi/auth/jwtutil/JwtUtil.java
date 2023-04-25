@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.auth.jwtutil;
 
 import com.wedding.serviceapi.common.vo.LoginUserInfoVo;
+import com.wedding.serviceapi.users.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,7 +12,6 @@ import java.security.Key;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtUtil implements JwtUtilBean {
@@ -24,31 +24,33 @@ public class JwtUtil implements JwtUtilBean {
     Long refreshTokenValidTime;
 
     @Override
-    public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName) {
+    public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName, Role role) {
         ArrayList<String> tokenList = new ArrayList<>();
-        tokenList.add(makeAccessToken(userId, userName));
-        tokenList.add(makeRefreshToken(userId, userName));
+        tokenList.add(makeAccessToken(userId, userName, role));
+        tokenList.add(makeRefreshToken(userId, userName, role));
         return tokenList;
     }
 
-    private String makeAccessToken(Long userId, String userName) {
+    private String makeAccessToken(Long userId, String userName, Role role) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
                 .claim("userId", userId)
                 .claim("userName", userName)
+                .claim("role", role.name())
                 .signWith(key)
                 .compact();
     }
 
-    private String makeRefreshToken(Long userId, String userName) {
+    private String makeRefreshToken(Long userId, String userName, Role role) {
         Key key = makeKey();
         Date now = new Date();
         return Jwts.builder().setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .claim("userId", userId)
                 .claim("userName", userName)
+                .claim("role", role.name())
                 .signWith(key)
                 .compact();
     }
@@ -60,6 +62,7 @@ public class JwtUtil implements JwtUtilBean {
 
     @Override
     public LoginUserInfoVo decodeJwt(String authorizationHeader) {
+        Claims claims;
         Key key = makeKey();
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -67,8 +70,11 @@ public class JwtUtil implements JwtUtilBean {
         }
 
         String jwt = extractToken(authorizationHeader);
-
-        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
+        try {
+            claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("잘못된 토큰 값입니다.");
+        }
         return extractLoginUserInfoDto(claims);
     }
 
@@ -79,6 +85,9 @@ public class JwtUtil implements JwtUtilBean {
     private LoginUserInfoVo extractLoginUserInfoDto(Claims body) {
         Long userId = body.get("userId", Long.class);
         String userName = body.get("userName", String.class);
-        return new LoginUserInfoVo(userId, userName);
+        String roleString = body.get("role", String.class);
+        Role role = Role.fromString(roleString);
+
+        return new LoginUserInfoVo(userId, userName, role);
     }
 }
