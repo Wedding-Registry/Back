@@ -11,11 +11,13 @@ import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
+import com.wedding.serviceapi.util.crawling.RegisterUsersGoodsCrawler;
 import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
 import com.wedding.serviceapi.util.webclient.WebClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.internal.Integers;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,7 +59,7 @@ class UsersGoodsServiceTest {
     @Mock
     GoodsRepository goodsRepository;
     @Mock
-    WebClientUtil webClientUtil;
+    RegisterUsersGoodsCrawler crawler;
 
     public String url;
     public Long userId;
@@ -103,8 +105,12 @@ class UsersGoodsServiceTest {
     @DisplayName("상품 URL 등록 - 기존 상품이 있는 경우")
     void postUsersGoodsExistedGoods() {
         // given
-        GoodsRegisterResponseDto goodsRegisterResponseDto = new GoodsRegisterResponseDto(200, "webclient", 250000, "webClient img");
-        doReturn(goodsRegisterResponseDto).when(webClientUtil).getGoodsInfo(anyString());
+        GoodsRegisterResponseDto goodsRegisterResponseDto = new GoodsRegisterResponseDto("webclient", 250000, "webClient img");
+        Document document = new Document(url);
+        doReturn(document).when(crawler).crawlWebPage(url);
+        doReturn("webclient").when(crawler).getProductName(document);
+        doReturn(250000).when(crawler).getProductCurrentPrice(document);
+        doReturn("webClient img").when(crawler).getProductImgUrl(document);
         doReturn(Optional.of(goods)).when(goodsRepository).findByGoodsUrl(anyString());
         doReturn(users).when(usersRepository).getReferenceById(userId);
 
@@ -128,15 +134,20 @@ class UsersGoodsServiceTest {
     @DisplayName("상품 URL 등록 - 기존 상품이 없는 경우")
     void postUsersGoodsNotExistedGoods() {
         // given
-        GoodsRegisterResponseDto data = new GoodsRegisterResponseDto(200, "test", 1000, "test");
+        GoodsRegisterResponseDto data = new GoodsRegisterResponseDto("test", 1000, "test");
         Goods newGoods = new Goods(data.getGoodsImgUrl(), "test", data.getGoodsName(), data.getGoodsPrice(), Commerce.NAVER);
 
         UsersGoods usersGoods = new UsersGoods(users, newGoods);
 
+        Document document = new Document(url);
+        doReturn(document).when(crawler).crawlWebPage(url);
+        doReturn("test").when(crawler).getProductName(document);
+        doReturn(1000).when(crawler).getProductCurrentPrice(document);
+        doReturn("test").when(crawler).getProductImgUrl(document);
+
         doReturn(users).when(usersRepository).getReferenceById(userId);
         doReturn(newGoods).when(goodsRepository).save(any(Goods.class));
         doReturn(usersGoods).when(usersGoodsRepository).save(any(UsersGoods.class));
-        doReturn(data).when(webClientUtil).getGoodsInfo(anyString());
         doThrow(NoSuchElementException.class).when(goodsRepository).findByGoodsUrl(anyString());
         // when
         UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url);

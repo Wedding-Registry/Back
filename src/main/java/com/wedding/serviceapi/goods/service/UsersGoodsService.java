@@ -11,10 +11,12 @@ import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
+import com.wedding.serviceapi.util.crawling.RegisterUsersGoodsCrawler;
 import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
 import com.wedding.serviceapi.util.webclient.WebClientUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +35,7 @@ public class UsersGoodsService {
     private final UsersGoodsRepository usersGoodsRepository;
     private final UsersRepository usersRepository;
     private final GoodsRepository goodsRepository;
-    private final WebClientUtil webClientUtil;
+    private final RegisterUsersGoodsCrawler crawler;
 
     @Transactional
     public List<UsersGoodsInfoDto> findAllUsersGoods(Long userId) {
@@ -42,8 +44,34 @@ public class UsersGoodsService {
         return usersGoodsList.stream().map(UsersGoodsInfoDto::new).collect(Collectors.toList());
     }
 
+//    public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url) {
+//        GoodsRegisterResponseDto goodsInfo = webClientUtil.getGoodsInfo(url);
+//        if (goodsInfo.getStatus() == 500) throw new IllegalArgumentException("잘못된 url 정보입니다.");
+//        log.info("goodsInfo = {}", goodsInfo);
+//
+//        Goods goods;
+//        try {
+//            goods = goodsRepository.findByGoodsUrl(url).get();
+//            goods.updateGoodsInfo(goodsInfo);
+//        } catch (NoSuchElementException e) {
+//            goods = new Goods(goodsInfo.getGoodsImgUrl(), url, goodsInfo.getGoodsName(), goodsInfo.getGoodsPrice(), Commerce.NAVER);
+//            goods = goodsRepository.save(goods);
+//        }
+//
+//        Users user = usersRepository.getReferenceById(userId);
+//
+//        UsersGoods usersGoods = new UsersGoods(user, goods);
+//        UsersGoods savedUsersGoods = usersGoodsRepository.save(usersGoods);
+//
+//        return new UsersGoodsPostResponseDto(savedUsersGoods.getId(),
+//                goods.getGoodsImgUrl(),
+//                savedUsersGoods.getUpdatedUsersGoodsName(),
+//                savedUsersGoods.getUpdatedUsersGoodsPrice());
+//    }
+
     public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url) {
-        GoodsRegisterResponseDto goodsInfo = webClientUtil.getGoodsInfo(url);
+        GoodsRegisterResponseDto goodsInfo = crawlingGoods(url);
+
         if (goodsInfo.getStatus() == 500) throw new IllegalArgumentException("잘못된 url 정보입니다.");
         log.info("goodsInfo = {}", goodsInfo);
 
@@ -65,6 +93,15 @@ public class UsersGoodsService {
                 goods.getGoodsImgUrl(),
                 savedUsersGoods.getUpdatedUsersGoodsName(),
                 savedUsersGoods.getUpdatedUsersGoodsPrice());
+    }
+
+    private GoodsRegisterResponseDto crawlingGoods(String url) {
+        Document document = crawler.crawlWebPage(url);
+        String productName = crawler.getProductName(document);
+        Integer productCurrentPrice = crawler.getProductCurrentPrice(document);
+        String productImgUrl = crawler.getProductImgUrl(document);
+        GoodsRegisterResponseDto goodsInfo = new GoodsRegisterResponseDto(productName, productCurrentPrice, productImgUrl);
+        return goodsInfo;
     }
 
     public UsersGoodsNameDto updateUsersGoodsName(Long userId, Long usersGoodsId, String usersGoodsName) {

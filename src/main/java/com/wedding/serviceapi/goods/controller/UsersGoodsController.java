@@ -39,34 +39,34 @@ public class UsersGoodsController {
         return "ok";
     }
 
-    @GetMapping("/all/{userId}")
-    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@PathVariable Long userId) {
-        log.info("[findAllUsersGoods controller] userId = {}", userId);
-        List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(userId);
+    @GetMapping("/all")
+    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo) {
+        log.info("[findAllUsersGoods controller] userId = {}", loginUserVo.getUserId());
+        List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId());
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
-    @PostMapping("/add/{userId}")
-    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@PathVariable Long userId, @Validated @RequestBody PostUsersGoodsRequestVo body) {
-        log.info("[postUsersGoods controller] userId = {}, url = {}", userId, body.getUrl());
+    @PostMapping("/add")
+    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@LoginUser LoginUserVo loginUserVo, @Validated @RequestBody PostUsersGoodsRequestVo body) {
+        log.info("[postUsersGoods controller] userId = {}, url = {}", loginUserVo.getUserId(), body.getUrl());
 
-        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(userId, body.getUrl());
+        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl());
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
-    @PostMapping("/name/update/{userId}")
-    public ResponseVo<UsersGoodsNameDto> updateUsersGoodsName(@PathVariable Long userId, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsNameRequestVo body) {
-        log.info("[updateUsersGoodsName controller] userId = {}, usersGoodsId = {}, usersGoodsName = {}", userId, usersGoodsId, body.getUsersGoodsName());
+    @PostMapping("/name/update")
+    public ResponseVo<UsersGoodsNameDto> updateUsersGoodsName(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsNameRequestVo body) {
+        log.info("[updateUsersGoodsName controller] userId = {}, usersGoodsId = {}, usersGoodsName = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
 
-        UsersGoodsNameDto data = usersGoodsService.updateUsersGoodsName(userId, usersGoodsId, body.getUsersGoodsName());
+        UsersGoodsNameDto data = usersGoodsService.updateUsersGoodsName(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
-    @PostMapping("/cost/update/{userId}")
-    public ResponseVo<UsersGoodsPriceDto> updateUsersGoodsPrice(@PathVariable Long userId, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsPriceRequestVo body) {
-        log.info("[updateUsersGoodsPrice controller] userId = {}, usersGoodsId = {}, usersGoodsPrice = {}", userId, usersGoodsId, body.getUsersGoodsPrice());
+    @PostMapping("/cost/update")
+    public ResponseVo<UsersGoodsPriceDto> updateUsersGoodsPrice(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsPriceRequestVo body) {
+        log.info("[updateUsersGoodsPrice controller] userId = {}, usersGoodsId = {}, usersGoodsPrice = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
 
-        UsersGoodsPriceDto data = usersGoodsService.updateUsersGoodsPrice(userId, usersGoodsId, body.getUsersGoodsPrice());
+        UsersGoodsPriceDto data = usersGoodsService.updateUsersGoodsPrice(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
