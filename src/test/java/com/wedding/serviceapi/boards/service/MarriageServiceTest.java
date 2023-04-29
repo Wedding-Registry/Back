@@ -42,10 +42,10 @@ class MarriageServiceTest {
         Boards boards = Boards.builder().husband(husband).wife(wife).build();
         String name = "test";
 
-        doReturn(Optional.of(boards)).when(boardsRepository).findById(anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
 
         // when
-        MarriageNameDto data = marriageService.postHusbandOrWifeName(type, anyLong(), name);
+        MarriageNameDto data = marriageService.postHusbandOrWifeName(type, anyLong(), name, anyLong());
 
         // then
         assertThat(data.getName()).isEqualTo("test");
@@ -64,10 +64,10 @@ class MarriageServiceTest {
         Boards boards = Boards.builder().husband(husband).wife(wife).build();
         String name = "test";
 
-        doReturn(Optional.of(boards)).when(boardsRepository).findById(anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
 
         // when
-        NoSuchPathTypeException error = assertThrows(NoSuchPathTypeException.class, () -> marriageService.postHusbandOrWifeName(type, anyLong(), name));
+        NoSuchPathTypeException error = assertThrows(NoSuchPathTypeException.class, () -> marriageService.postHusbandOrWifeName(type, anyLong(), name, anyLong()));
         assertThat(error.getMessage()).isEqualTo("잘못된 url 정보 입니다.");
     }
 
@@ -82,10 +82,10 @@ class MarriageServiceTest {
         String bank = "bank test";
         String account = "account test";
 
-        doReturn(Optional.of(boards)).when(boardsRepository).findById(anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
 
         // when
-        MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, anyLong(), bank, account);
+        MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, anyLong(), bank, account, anyLong());
 
         // then
         assertThat(data.getBank()).isEqualTo("bank test");

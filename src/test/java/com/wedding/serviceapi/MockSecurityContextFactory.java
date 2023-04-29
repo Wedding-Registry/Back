@@ -1,4 +1,4 @@
-package com.wedding.serviceapi.goods.controller;
+package com.wedding.serviceapi;
 
 import com.wedding.serviceapi.auth.securitycustom.AuthUser;
 import com.wedding.serviceapi.users.domain.Role;
@@ -7,10 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
