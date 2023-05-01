@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.goods.domain;
 
+import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.users.domain.Users;
 import lombok.Getter;
@@ -26,14 +27,19 @@ public class UsersGoods {
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "boards_id")
+    private Boards boards;
+
     private String updatedUsersGoodsName;
     private Integer updatedUsersGoodsPrice;
     private Integer usersGoodsTotalDonation;
     private Boolean wishGoods;
 
-    public UsersGoods(Users users, Goods goods) {
+    public UsersGoods(Users users, Goods goods, Boards boards) {
         this.users = users;
         this.goods = goods;
+        this.boards = boards;
         this.updatedUsersGoodsName = goods.getGoodsName();
         this.updatedUsersGoodsPrice = goods.getGoodsPrice();
     }

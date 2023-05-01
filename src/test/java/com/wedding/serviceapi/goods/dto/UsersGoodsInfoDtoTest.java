@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.goods.dto;
 
+import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
@@ -22,7 +23,8 @@ class UsersGoodsInfoDtoTest {
         // given
         Users user = new Users("test", "test", LoginType.KAKAO);
         Goods goods1 = new Goods("goods1", "goods1", "goods1", 10000, Commerce.COUPANG);
-        UsersGoods usersGoods1 = new UsersGoods(user, goods1);
+        Boards board = Boards.builder().uuidFirst("first").uuidSecond("second").build();
+        UsersGoods usersGoods1 = new UsersGoods(user, goods1, board);
         usersGoods1.donateMoney(3340);
 
         // when

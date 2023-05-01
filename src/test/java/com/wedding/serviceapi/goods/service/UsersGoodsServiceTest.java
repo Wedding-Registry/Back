@@ -1,9 +1,12 @@
 package com.wedding.serviceapi.goods.service;
 
+import com.wedding.serviceapi.boards.domain.Boards;
+import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
+import com.wedding.serviceapi.goods.dto.MakeBoardResponseDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
@@ -60,12 +63,15 @@ class UsersGoodsServiceTest {
     GoodsRepository goodsRepository;
     @Mock
     RegisterUsersGoodsCrawler crawler;
+    @Mock
+    BoardsRepository boardsRepository;
 
     public String url;
     public Long userId;
     public Goods goods;
     public Users users;
     public UsersGoods usersGoods;
+    public Boards boards;
 
     @BeforeEach
     void setting() {
@@ -73,7 +79,34 @@ class UsersGoodsServiceTest {
         userId = 1L;
         goods = new Goods("imgUrl", url, "goods1", 100000, Commerce.COUPANG);
         users = Users.builder().id(userId).build();
-        usersGoods = new UsersGoods(users, goods);
+        boards = Boards.builder().id(1L).uuidFirst("first").uuidSecond("second").build();
+        usersGoods = new UsersGoods(users, goods, boards);
+    }
+
+    @Test
+    @DisplayName("상품 등록 게시판 생성 성공")
+    void makeBoardSuccess() {
+        // given
+        doReturn(users).when(usersRepository).getReferenceById(userId);
+        doReturn(Optional.empty()).when(boardsRepository).findByUsersIdNotDeleted(userId);
+        doReturn(boards).when(boardsRepository).save(any(Boards.class));
+        // when
+        MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(userId);
+        // then
+        assertThat(data.getBoardsId()).isEqualTo(1L);
+        assertThat(data.getUuidFirst()).isEqualTo("first");
+        assertThat(data.getUuidSecond()).isEqualTo("second");
+    }
+
+    @Test
+    @DisplayName("이미 게시판이 존재하는 경우 실패")
+    void makeBoardFail() {
+        // given
+        doReturn(users).when(usersRepository).getReferenceById(userId);
+        doReturn(Optional.of(boards)).when(boardsRepository).findByUsersIdNotDeleted(userId);
+        // then
+        assertThatThrownBy(() -> usersGoodsService.makeWeddingBoard(userId))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -83,18 +116,18 @@ class UsersGoodsServiceTest {
         Goods goods1 = new Goods("test1", "test1", "goods1", 10000, Commerce.COUPANG);
         Goods goods2 = new Goods("test2", "test2", "goods2", 20000, Commerce.COUPANG);
         Goods goods3 = new Goods("test3", "test3", "goods3", 30000, Commerce.COUPANG);
-        UsersGoods usersGoods1 = new UsersGoods(users, goods1);
-        UsersGoods usersGoods2 = new UsersGoods(users, goods2);
-        UsersGoods usersGoods3 = new UsersGoods(users, goods3);
+        UsersGoods usersGoods1 = new UsersGoods(users, goods1, boards);
+        UsersGoods usersGoods2 = new UsersGoods(users, goods2, boards);
+        UsersGoods usersGoods3 = new UsersGoods(users, goods3, boards);
         List<UsersGoods> data = new ArrayList<>();
         data.add(usersGoods1);
         data.add(usersGoods2);
         data.add(usersGoods3);
 
-        doReturn(data).when(usersGoodsRepository).findByUsersId(anyLong());
+        doReturn(data).when(usersGoodsRepository).findByUsersIdAndBoardsId(anyLong(), anyLong());
         
         // when
-        List<UsersGoodsInfoDto> result = usersGoodsService.findAllUsersGoods(anyLong());
+        List<UsersGoodsInfoDto> result = usersGoodsService.findAllUsersGoods(anyLong(), anyLong());
 
         // then;
         result.forEach(usersGoodsInfoDto -> assertThat(usersGoodsInfoDto.getUsersGoodsPercent()).isEqualTo(0));
@@ -115,12 +148,12 @@ class UsersGoodsServiceTest {
         doReturn(users).when(usersRepository).getReferenceById(userId);
 
         goods.updateGoodsInfo(goodsRegisterResponseDto);
-        UsersGoods usersgoods = new UsersGoods(users, goods);
+        UsersGoods usersgoods = new UsersGoods(users, goods, boards);
 
         doReturn(usersgoods).when(usersGoodsRepository).save(any(UsersGoods.class));
 
         // when
-        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url);
+        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url, anyLong());
 
         // then
         assertThat(usersGoodsPostResponseDto.getUsersGoodsId()).isEqualTo(usersGoods.getId());
@@ -137,7 +170,7 @@ class UsersGoodsServiceTest {
         GoodsRegisterResponseDto data = new GoodsRegisterResponseDto("test", 1000, "test");
         Goods newGoods = new Goods(data.getGoodsImgUrl(), "test", data.getGoodsName(), data.getGoodsPrice(), Commerce.NAVER);
 
-        UsersGoods usersGoods = new UsersGoods(users, newGoods);
+        UsersGoods usersGoods = new UsersGoods(users, newGoods, boards);
 
         Document document = new Document(url);
         doReturn(document).when(crawler).crawlWebPage(url);
@@ -146,11 +179,12 @@ class UsersGoodsServiceTest {
         doReturn("test").when(crawler).getProductImgUrl(document);
 
         doReturn(users).when(usersRepository).getReferenceById(userId);
+        doReturn(boards).when(boardsRepository).getReferenceById(anyLong());
         doReturn(newGoods).when(goodsRepository).save(any(Goods.class));
         doReturn(usersGoods).when(usersGoodsRepository).save(any(UsersGoods.class));
         doThrow(NoSuchElementException.class).when(goodsRepository).findByGoodsUrl(anyString());
         // when
-        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url);
+        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url, anyLong());
 
         // then
         assertThat(usersGoodsPostResponseDto.getUsersGoodsId()).isEqualTo(this.usersGoods.getId());

@@ -1,5 +1,7 @@
 package com.wedding.serviceapi.goods.repository;
 
+import com.wedding.serviceapi.boards.domain.Boards;
+import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.goods.domain.Commerce;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
@@ -35,6 +37,8 @@ class UsersGoodsRepositoryTest {
     @Autowired
     UsersRepository usersRepository;
     @Autowired
+    BoardsRepository boardsRepository;
+    @Autowired
     EntityManager em;
 
     public String url;
@@ -42,16 +46,20 @@ class UsersGoodsRepositoryTest {
     public Users users;
     public Users savedUsers;
     public UsersGoods usersGoods;
+    public Boards savedBoards;
 
     @BeforeEach
     void setting() {
         url = "testUrl";
         goods = new Goods("imgUrl", url, "goods1", 100000, Commerce.COUPANG);
         users = Users.builder().email("test").password("password").loginType(LoginType.KAKAO).build();
+        Boards boards = Boards.builder().users(users).uuidFirst("first").uuidSecond("second").build();
 
         savedUsers = usersRepository.save(users);
+        savedBoards = boardsRepository.save(boards);
         goodsRepository.save(goods);
-        usersGoods = new UsersGoods(savedUsers, goods);
+
+        usersGoods = new UsersGoods(savedUsers, goods, savedBoards);
         usersGoodsRepository.save(usersGoods);
 
         em.flush();

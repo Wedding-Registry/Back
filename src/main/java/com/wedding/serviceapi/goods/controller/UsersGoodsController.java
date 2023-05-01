@@ -4,10 +4,7 @@ import com.wedding.serviceapi.auth.securitycustom.AuthUser;
 import com.wedding.serviceapi.auth.vo.LoginUser;
 import com.wedding.serviceapi.auth.vo.LoginUserVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
-import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
-import com.wedding.serviceapi.goods.dto.UsersGoodsNameDto;
-import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
-import com.wedding.serviceapi.goods.dto.UsersGoodsPriceDto;
+import com.wedding.serviceapi.goods.dto.*;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.goods.vo.PostUsersGoodsRequestVo;
 import com.wedding.serviceapi.goods.vo.UpdateUsersGoodsNameRequestVo;
@@ -27,30 +24,31 @@ import java.util.List;
 @RequestMapping("/usersgoods")
 @RequiredArgsConstructor
 public class UsersGoodsController {
-    // TODO: 2023/03/09 메서드마다 usersId 와 jwt 토큰의 usersId가 같은지 확인
 
     private final UsersGoodsService usersGoodsService;
 
-    @GetMapping("/test")
-    public String test(@LoginUser LoginUserVo loginUserVo) {
-        Long userId = loginUserVo.getUserId();
-        String userName = loginUserVo.getUserName();
-        log.info("userId = {}, userName = {}", userId, userName);
-        return "ok";
+    @GetMapping("/add/board")
+    public ResponseVo<MakeBoardResponseDto> makeNewBoard(@LoginUser LoginUserVo loginUserVo) {
+        log.info("[makeNewBoard controller] userId = {}", loginUserVo.getUserId());
+        MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(loginUserVo.getUserId());
+
+        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
-    @GetMapping("/all")
-    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[findAllUsersGoods controller] userId = {}", loginUserVo.getUserId());
-        List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId());
+    @GetMapping("/all/{boardId}")
+    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo, @PathVariable Long boardId) {
+        log.info("[findAllUsersGoods controller] userId = {}, boardId = {}", loginUserVo.getUserId(), boardId);
+        List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId(), boardId);
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
-    @PostMapping("/add")
-    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@LoginUser LoginUserVo loginUserVo, @Validated @RequestBody PostUsersGoodsRequestVo body) {
-        log.info("[postUsersGoods controller] userId = {}, url = {}", loginUserVo.getUserId(), body.getUrl());
+    @PostMapping("/add/product/{boardId}")
+    public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@LoginUser LoginUserVo loginUserVo,
+                                                                @Validated @RequestBody PostUsersGoodsRequestVo body,
+                                                                @PathVariable Long boardId) {
+        log.info("[postUsersGoods controller] userId = {}, url = {}, boardId = {}", loginUserVo.getUserId(), body.getUrl(), boardId);
 
-        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl());
+        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), boardId);
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
