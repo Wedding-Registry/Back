@@ -18,7 +18,7 @@ public class MockSecurityContextFactory implements WithSecurityContextFactory<Wi
     public SecurityContext createSecurityContext(WithCustomMockUser annotation) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                new AuthUser(1L, annotation.username(),
+                new AuthUser(1L, annotation.username(), annotation.boardsId(),
                         Role.USER), null,
                 new ArrayList<>(List.of(new SimpleGrantedAuthority(Role.USER.name()))));
 

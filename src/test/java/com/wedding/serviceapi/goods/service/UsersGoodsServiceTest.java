@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.goods.service;
 
+import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.exception.NegativePriceException;
@@ -12,6 +13,7 @@ import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.users.domain.LoginType;
+import com.wedding.serviceapi.users.domain.Role;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import com.wedding.serviceapi.util.crawling.RegisterUsersGoodsCrawler;
@@ -41,10 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.persistence.EntityManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,6 +64,8 @@ class UsersGoodsServiceTest {
     RegisterUsersGoodsCrawler crawler;
     @Mock
     BoardsRepository boardsRepository;
+    @Mock
+    JwtUtil jwtUtil;
 
     public String url;
     public Long userId;
@@ -72,13 +73,15 @@ class UsersGoodsServiceTest {
     public Users users;
     public UsersGoods usersGoods;
     public Boards boards;
+    public String userName;
 
     @BeforeEach
     void setting() {
         url = "testUrl";
         userId = 1L;
         goods = new Goods("imgUrl", url, "goods1", 100000, Commerce.COUPANG);
-        users = Users.builder().id(userId).build();
+        userName = "test";
+        users = Users.builder().id(userId).name(userName).build();
         boards = Boards.builder().id(1L).uuidFirst("first").uuidSecond("second").build();
         usersGoods = new UsersGoods(users, goods, boards);
     }
@@ -90,12 +93,16 @@ class UsersGoodsServiceTest {
         doReturn(users).when(usersRepository).getReferenceById(userId);
         doReturn(Optional.empty()).when(boardsRepository).findByUsersIdNotDeleted(userId);
         doReturn(boards).when(boardsRepository).save(any(Boards.class));
+        ArrayList<String> tokenList = new ArrayList<>(List.of("accessToken", "refreshToken"));
+        doReturn(tokenList).when(jwtUtil).makeAccessTokenAndRefreshToken(userId, userName, boards.getId(), Role.USER);
         // when
-        MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(userId);
+        MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(userId, userName);
         // then
         assertThat(data.getBoardsId()).isEqualTo(1L);
         assertThat(data.getUuidFirst()).isEqualTo("first");
         assertThat(data.getUuidSecond()).isEqualTo("second");
+        assertThat(data.getAccessToken()).isEqualTo("accessToken");
+        assertThat(data.getRefreshToken()).isEqualTo("refreshToken");
     }
 
     @Test
@@ -105,7 +112,7 @@ class UsersGoodsServiceTest {
         doReturn(users).when(usersRepository).getReferenceById(userId);
         doReturn(Optional.of(boards)).when(boardsRepository).findByUsersIdNotDeleted(userId);
         // then
-        assertThatThrownBy(() -> usersGoodsService.makeWeddingBoard(userId))
+        assertThatThrownBy(() -> usersGoodsService.makeWeddingBoard(userId, userName))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

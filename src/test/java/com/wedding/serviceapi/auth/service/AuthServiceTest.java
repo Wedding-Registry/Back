@@ -74,7 +74,7 @@ class AuthServiceTest {
         // given
         Users user = Users.builder().id(100L).name("user name").email("email test").password("password").loginType(LoginType.KAKAO).role(Role.USER).build();
         doReturn(user).when(usersRepository).save(any(Users.class));
-        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(100L, "user name", Role.USER);
+        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(100L, "user name", null, Role.USER);
         doReturn("encodedPassword").when(passwordEncoder).encode("password");
         // when
         LoginSuccessDto result = authService.registerUser("user name", "email test", "password", "password", true);
@@ -112,7 +112,7 @@ class AuthServiceTest {
         boolean notification = true;
         Users user = Users.builder().id(100L).name(name).role(Role.USER).build();
         doReturn(user).when(usersRepository).save(any(Users.class));
-        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(user.getId(), name, Role.USER);
+        doReturn(new ArrayList<>(List.of("accessToken", "refreshToken"))).when(jwtUtil).makeAccessTokenAndRefreshToken(user.getId(), name, null, Role.USER);
         // when
         LoginSuccessDto loginSuccessDto = authService.registerSocialUser(email, name, password, notification);
         // then

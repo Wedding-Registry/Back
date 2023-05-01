@@ -39,10 +39,10 @@ public class AuthService {
                 .build();
 
         Users savedUser = usersRepository.save(user);
-        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName(), savedUser.getRole());
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName(), null, savedUser.getRole());
         savedUser.setRefreshToken(tokenList.get(1));
 
-        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1), false);
+        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), null, tokenList.get(0), tokenList.get(1), false);
     }
 
     private void validatePassword(String password, String passwordCheck) {
@@ -81,10 +81,10 @@ public class AuthService {
                 .build();
 
         Users savedUser = usersRepository.save(user);
-        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName(), savedUser.getRole());
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(savedUser.getId(), savedUser.getName(), null, savedUser.getRole());
         savedUser.setRefreshToken(tokenList.get(1));
 
-        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), tokenList.get(0), tokenList.get(1), false);
+        return new LoginSuccessDto(savedUser.getId(), savedUser.getName(), null, tokenList.get(0), tokenList.get(1), false);
     }
 
     private boolean isValidSocialLoginPassword(String password) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface JwtUtilBean {
 
-    List<String> makeAccessTokenAndRefreshToken(Long userId, String userName, Role role);
+    List<String> makeAccessTokenAndRefreshToken(Long userId, String userName, Long boardsId, Role role);
 
     LoginUserInfoVo decodeJwt(String jwt);
 }

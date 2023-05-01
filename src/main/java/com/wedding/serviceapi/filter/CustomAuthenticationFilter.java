@@ -69,17 +69,18 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         log.info("authenticatedUser = {}", authenticatedUser);
         // token 발행
         if (authenticatedUser == null) {
-            LoginSuccessDto data = new LoginSuccessDto(null, null, null, null, true);
+            LoginSuccessDto data = new LoginSuccessDto(null, null, null, null, null, true);
             String responseBody = objectMapper.writeValueAsString(new ResponseVo<>(true, HttpStatus.OK.value(), data));
             setResponseBody(response, responseBody);
         } else {
             Long userId = authenticatedUser.getUserId();
             String userName = authenticatedUser.getUserName();
+            Long boardsId = authenticatedUser.getBoardsId();
             Role role = authenticatedUser.getUsers().getRole();
 
-            ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, role);
+            ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, boardsId, role);
 
-            LoginSuccessDto data = new LoginSuccessDto(userId, userName, tokenList.get(0), tokenList.get(1), false);
+            LoginSuccessDto data = new LoginSuccessDto(userId, userName, boardsId, tokenList.get(0), tokenList.get(1), false);
             String responseBody = objectMapper.writeValueAsString(new ResponseVo<>(true, HttpStatus.OK.value(), data));
             log.info("responseBody = {}", responseBody);
             setResponseBody(response, responseBody);

@@ -1,6 +1,8 @@
 package com.wedding.serviceapi.auth.service;
 
 import com.wedding.serviceapi.auth.securitycustom.AuthUser;
+import com.wedding.serviceapi.boards.domain.Boards;
+import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +10,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class CustomSocialLoginUserDetails implements UserDetailsService {
 
     private final UsersRepository usersRepository;
+    private final BoardsRepository boardsRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -20,6 +25,12 @@ public class CustomSocialLoginUserDetails implements UserDetailsService {
         if (users == null) {
             return null;
         }
-        return new AuthUser(users);
+
+        Optional<Boards> optionalBoards = boardsRepository.findByUsersIdNotDeleted(users.getId());
+        if (optionalBoards.isPresent()) {
+            return new AuthUser(users, optionalBoards.get().getId());
+        } else {
+            return new AuthUser(users, null);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.goods.service;
 
+import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.goods.domain.Commerce;
@@ -8,6 +9,7 @@ import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.*;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
+import com.wedding.serviceapi.users.domain.Role;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import com.wedding.serviceapi.util.crawling.RegisterUsersGoodsCrawler;
@@ -22,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,8 +39,9 @@ public class UsersGoodsService {
     private final GoodsRepository goodsRepository;
     private final RegisterUsersGoodsCrawler crawler;
     private final BoardsRepository boardsRepository;
+    private final JwtUtil jwtUtil;
 
-    public MakeBoardResponseDto makeWeddingBoard(Long userId) {
+    public MakeBoardResponseDto makeWeddingBoard(Long userId, String userName) {
         Users users = usersRepository.getReferenceById(userId);
         String uuidFirst = UUID.randomUUID().toString();
         String uuidSecond = UUID.randomUUID().toString();
@@ -53,7 +53,9 @@ public class UsersGoodsService {
             throw new IllegalArgumentException("이미 만들고 있는 청첩장이 존재합니다.");
         }
         Boards savedBoards = boardsRepository.save(boards);
-        return new MakeBoardResponseDto(savedBoards);
+        ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, savedBoards.getId(), Role.USER);
+        users.setRefreshToken(tokenList.get(1));
+        return new MakeBoardResponseDto(savedBoards, tokenList.get(0), tokenList.get(1));
     }
 
     public List<UsersGoodsInfoDto> findAllUsersGoods(Long userId, Long boardId) {

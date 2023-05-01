@@ -24,12 +24,14 @@ public class JwtUtilTest {
     private Long userId;
     private String userName;
     private Role role;
+    private Long boardsId;
 
     @BeforeEach
     void init() {
         userId = 1L;
         userName = "test";
         role = Role.USER;
+        boardsId = 1L;
     }
 
     @BeforeEach
@@ -41,7 +43,7 @@ public class JwtUtilTest {
     @DisplayName("token 생성 테스트")
     void makeTokens() {
         // when
-        List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, role);
+        List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, boardsId, role);
         // then
         assertThat(tokenList.size()).isEqualTo(2);
         assertThat(tokenList.get(0)).isNotNull();
@@ -53,7 +55,7 @@ public class JwtUtilTest {
     @ValueSource(strings = {"Bearer", "bearer", "bear"})
     @DisplayName("Bearer token 형식이 아닌 경우 에러")
     void validBearerToken(String bearer) {
-        List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, role);
+        List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, boardsId, role);
         String bearerJwt = bearer + tokenList.get(0);
         // when
         assertThrows(IllegalArgumentException.class, () -> jwtUtil.decodeJwt(bearerJwt));
@@ -83,7 +85,7 @@ public class JwtUtilTest {
     @DisplayName("jwt token 해석")
     void decodeJwt() {
         // given
-        List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, role);
+        List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, boardsId, role);
         String token = "Bearer " + tokenList.get(0);
         // when
         LoginUserInfoVo userInfo = jwtUtil.decodeJwt(token);

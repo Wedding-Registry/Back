@@ -10,4 +10,6 @@ import java.lang.annotation.RetentionPolicy;
 @WithSecurityContext(factory = MockSecurityContextFactory.class)
 public @interface WithCustomMockUser {
     String username() default "test";
+
+    long boardsId() default 1l;
 }

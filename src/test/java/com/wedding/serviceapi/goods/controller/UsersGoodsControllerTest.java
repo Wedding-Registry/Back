@@ -45,10 +45,12 @@ class UsersGoodsControllerTest {
     Long userId;
     Long boardsId;
     Long usersGoodsId;
+    String userName;
 
     @BeforeEach
     void init() {
         userId = 1L;
+        userName = "test";
         boardsId = 1L;
         usersGoodsId = 1L;
     }
@@ -58,7 +60,7 @@ class UsersGoodsControllerTest {
     @WithCustomMockUser
     void failMakeWeddingBoard() throws Exception {
         // given
-        when(usersGoodsService.makeWeddingBoard(userId)).thenThrow(new IllegalArgumentException("이미 존재하는 게시판입니다."));
+        when(usersGoodsService.makeWeddingBoard(userId, userName)).thenThrow(new IllegalArgumentException("이미 존재하는 게시판입니다."));
         // when
         ResultActions resultActions = mockMvc.perform(get("/usersgoods/add/board")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -76,8 +78,8 @@ class UsersGoodsControllerTest {
     void successMakeWeddingBoard() throws Exception {
         // given
         Boards boards = Boards.builder().id(boardsId).uuidFirst("first").uuidSecond("second").build();
-        MakeBoardResponseDto data = new MakeBoardResponseDto(boards);
-        doReturn(data).when(usersGoodsService).makeWeddingBoard(userId);
+        MakeBoardResponseDto data = new MakeBoardResponseDto(boards, "accessToken", "refreshToken");
+        doReturn(data).when(usersGoodsService).makeWeddingBoard(userId, userName);
         // when
         ResultActions resultActions = mockMvc.perform(get("/usersgoods/add/board")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -102,7 +104,7 @@ class UsersGoodsControllerTest {
         BDDMockito.given(usersGoodsService.postUsersGoods(userId, url, boardsId)).willReturn(usersGoodsPostResponseDto);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/product/{boardsId}", boardsId)
+        ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/product")
                 .content(objectMapper.writeValueAsString(requestVo))
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -123,8 +125,7 @@ class UsersGoodsControllerTest {
 
         when(usersGoodsService.postUsersGoods(userId, url, boardsId)).thenThrow(new IllegalArgumentException("잘못된 url 정보입니다."));
         // when
-        ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/product/{boardsId}", boardsId)
-//                .with(authentication(authentication))
+        ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/product")
                 .content(objectMapper.writeValueAsString(requestVo))
                 .contentType(MediaType.APPLICATION_JSON)
         );

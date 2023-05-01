@@ -30,6 +30,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
         }
 
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
-        return new LoginUserVo(authUser.getUserId(), authUser.getUserName(), authUser.getUsers().getRole());
+        return new LoginUserVo(authUser.getUserId(), authUser.getUserName(), authUser.getBoardsId(), authUser.getUsers().getRole());
     }
 }

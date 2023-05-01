@@ -9,6 +9,7 @@ import lombok.Setter;
 public class LoginSuccessDto {
     private Long userId;
     private String userName;
+    private Long boardsId;
     private String accessToken;
     private String refreshToken;
     private Boolean needMoreInfo;

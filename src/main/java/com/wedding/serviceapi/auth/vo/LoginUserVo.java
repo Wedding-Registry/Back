@@ -9,5 +9,6 @@ import lombok.Getter;
 public class LoginUserVo {
     private Long userId;
     private String userName;
+    private Long boardsId;
     private Role role;
 }

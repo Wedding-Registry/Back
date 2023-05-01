@@ -29,26 +29,25 @@ public class UsersGoodsController {
 
     @GetMapping("/add/board")
     public ResponseVo<MakeBoardResponseDto> makeNewBoard(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[makeNewBoard controller] userId = {}", loginUserVo.getUserId());
-        MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(loginUserVo.getUserId());
+        log.info("[makeNewBoard controller] userId = {}, userName = {}", loginUserVo.getUserId(), loginUserVo.getUserName());
+        MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(loginUserVo.getUserId(), loginUserVo.getUserName());
 
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
-    @GetMapping("/all/{boardId}")
-    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo, @PathVariable Long boardId) {
-        log.info("[findAllUsersGoods controller] userId = {}, boardId = {}", loginUserVo.getUserId(), boardId);
-        List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId(), boardId);
+    @GetMapping("/all")
+    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo) {
+        log.info("[findAllUsersGoods controller] userId = {}, boardId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
+        List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId(), loginUserVo.getBoardsId());
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
-    @PostMapping("/add/product/{boardId}")
+    @PostMapping("/add/product")
     public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@LoginUser LoginUserVo loginUserVo,
-                                                                @Validated @RequestBody PostUsersGoodsRequestVo body,
-                                                                @PathVariable Long boardId) {
-        log.info("[postUsersGoods controller] userId = {}, url = {}, boardId = {}", loginUserVo.getUserId(), body.getUrl(), boardId);
+                                                                @Validated @RequestBody PostUsersGoodsRequestVo body) {
+        log.info("[postUsersGoods controller] userId = {}, url = {}, boardId = {}", loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId());
 
-        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), boardId);
+        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId());
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
