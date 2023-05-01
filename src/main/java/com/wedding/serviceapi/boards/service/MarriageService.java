@@ -24,9 +24,9 @@ public class MarriageService {
     private static String HUSBAND_TYPE = "husband";
     private static String WIFE_TYPE = "wife";
 
-    public MarriageNameDto postHusbandOrWifeName(String type, Long boardsId, String name) {
+    public MarriageNameDto postHusbandOrWifeName(String type, Long boardsId, String name, Long userId) {
         // TODO: 2023/03/19 사용자 자신의 게시판인지 결혼 상대의 게시판인지 확인 필요
-        Boards boards = boardsRepository.findById(boardsId).orElseThrow(() -> new NoSuchElementException("해당하는 게시판이 없습니다."));
+        Boards boards = boardsRepository.findByIdAndUsersId(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 게시판이 없습니다."));
 
         if (type.equals(HUSBAND_TYPE)) {
             boards.getHusband().changeName(name);
@@ -38,9 +38,9 @@ public class MarriageService {
         return new MarriageNameDto(name);
     }
 
-    public MarriageBankAccountDto postMarriageBankAndAccount(String type, Long boardsId, String bank, String account) {
+    public MarriageBankAccountDto postMarriageBankAndAccount(String type, Long boardsId, String bank, String account, Long userId) {
         // TODO: 2023/03/19 사용자 자신의 게시판인지 결혼 상대의 게시판인지 확인 필요
-        Boards boards = boardsRepository.findById(boardsId).orElseThrow(() -> new NoSuchElementException("해당하는 게시판이 없습니다."));
+        Boards boards = boardsRepository.findByIdAndUsersId(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 게시판이 없습니다."));
         if (type.equals(HUSBAND_TYPE)) {
             boards.getHusband().changeBank(bank);
             boards.getHusband().changeAccount(account);

@@ -61,7 +61,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 LoginUserInfoVo loginUserInfoVo = jwtUtil.decodeJwt(bearerToken);
                 log.info("login role = {}", loginUserInfoVo.getRole().name());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        new AuthUser(loginUserInfoVo.getUserId(), loginUserInfoVo.getUserName(),
+                        new AuthUser(loginUserInfoVo.getUserId(), loginUserInfoVo.getUserName(), loginUserInfoVo.getBoardsId(),
                                 loginUserInfoVo.getRole()), null,
                         new ArrayList<>(List.of(new SimpleGrantedAuthority(loginUserInfoVo.getRole().name()))));
 

@@ -137,7 +137,7 @@ class AuthControllerTest {
         String url = "/auth/signup";
         RegisterUserRequestVo requestBody = new RegisterUserRequestVo("name", "test@naver.com", "password", "password2", true);
         String body = objectMapper.writeValueAsString(requestBody);
-        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", "accessToken", "refreshToken", false);
+        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", null, "accessToken", "refreshToken", false);
         doReturn(registeredUser).when(authService).registerUser("name", "test@naver.com", "password", "password2", true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -290,7 +290,7 @@ class AuthControllerTest {
         String name = "name";
         String email = "test@test.com";
         SocialLoginRegisterMoreInfoRequestVo requestVo = new SocialLoginRegisterMoreInfoRequestVo(email, password, name, true);
-        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", "accessToken", "refreshToken", false);
+        LoginSuccessDto registeredUser = new LoginSuccessDto(1L, "name", null,"accessToken", "refreshToken", false);
         doReturn(registeredUser).when(authService).registerSocialUser(email, name, password, true);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(url)

@@ -11,5 +11,6 @@ import lombok.Getter;
 public class LoginUserInfoVo {
     private Long userId;
     private String userName;
+    private Long boardsId;
     private Role role;
 }

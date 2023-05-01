@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.filter.CustomAuthorizationFilter;
 import com.wedding.serviceapi.auth.securitycustom.CustomServiceAuthenticationProvider;
 import com.wedding.serviceapi.auth.securitycustom.CustomLoginAuthenticationManager;
@@ -39,6 +40,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
+    private final BoardsRepository boardsRepository;
 
     private final String SERVICE_LOGIN_URI = "/login/service";
     private final String SOCIAL_LOGIN_KAKAO_URI = "/login/oauth/kakao";
@@ -113,7 +115,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomServiceLoginUserDetails customServiceLoginUserDetails() {
-        return new CustomServiceLoginUserDetails(usersRepository);
+        return new CustomServiceLoginUserDetails(usersRepository, boardsRepository);
     }
 
     @Bean
@@ -123,7 +125,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomSocialLoginUserDetails customSocialLoginUserDetails() {
-        return new CustomSocialLoginUserDetails(usersRepository);
+        return new CustomSocialLoginUserDetails(usersRepository, boardsRepository);
     }
 
     @Bean

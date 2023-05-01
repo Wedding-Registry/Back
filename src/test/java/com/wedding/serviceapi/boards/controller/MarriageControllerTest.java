@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.boards.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wedding.serviceapi.WithCustomMockUser;
 import com.wedding.serviceapi.boards.dto.marriage.MarriageBankAccountDto;
 import com.wedding.serviceapi.boards.dto.marriage.MarriageNameDto;
 import com.wedding.serviceapi.boards.service.MarriageService;
@@ -37,6 +38,7 @@ class MarriageControllerTest {
 
     @Test
     @DisplayName("신랑 혹인 신부 이름 수정")
+    @WithCustomMockUser
     void changeHusbandOrWifeName() throws Exception {
         // given
         String type = "husband";
@@ -44,8 +46,9 @@ class MarriageControllerTest {
         String name = "husband name";
         MarriageNameDto data = new MarriageNameDto(name);
         PostHusbandOrWifeNameRequestVo requestVo = new PostHusbandOrWifeNameRequestVo(name);
+        Long userId = 1L;
 
-        doReturn(data).when(marriageService).postHusbandOrWifeName(type, boardsId, name);
+        doReturn(data).when(marriageService).postHusbandOrWifeName(type, boardsId, name, userId);
         // when
         ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/name/{boardsId}", type, boardsId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -61,14 +64,16 @@ class MarriageControllerTest {
 
     @Test
     @DisplayName("신랑 혹은 신부 은행 정보 수정")
+    @WithCustomMockUser
     void changeHusbandOrWifeBandAndAccount() throws Exception {
         // given
         String type = "husband";
         Long boardsId = 1L;
         RequestPostMarriageBankAccountVo body = new RequestPostMarriageBankAccountVo("bank test", "account test");
         MarriageBankAccountDto data = new MarriageBankAccountDto(body.getBank(), body.getAccount());
+        Long userId = 1L;
 
-        doReturn(data).when(marriageService).postMarriageBankAndAccount(type, boardsId, data.getBank(), data.getAccount());
+        doReturn(data).when(marriageService).postMarriageBankAndAccount(type, boardsId, data.getBank(), data.getAccount(), userId);
         // when
         ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/account/{boardsId}", type, boardsId)
                 .contentType(MediaType.APPLICATION_JSON)

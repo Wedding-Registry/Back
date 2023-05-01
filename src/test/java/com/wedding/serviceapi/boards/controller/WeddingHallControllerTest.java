@@ -2,10 +2,12 @@ package com.wedding.serviceapi.boards.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wedding.serviceapi.WithCustomMockUser;
 import com.wedding.serviceapi.boards.dto.weddinghall.*;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
 import com.wedding.serviceapi.boards.vo.weddinghall.PostWeddingHallAddressRequestVo;
 import com.wedding.serviceapi.boards.vo.weddinghall.RequestPostWeddingHallTimeVo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +40,25 @@ class WeddingHallControllerTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    private Long boardsId;
+    private Long usersId;
+
+    @BeforeEach
+    void init() {
+        boardsId = 1L;
+        usersId = 1L;
+    }
+
     @Test
     @DisplayName("예식장 정보 가져오기")
+    @WithCustomMockUser
     void getWeddingHallInfo() throws Exception {
         // given
         WeddingHallInfoDto weddingHallInfoDto = makeResultData();
-        doReturn(weddingHallInfoDto).when(weddingHallService).getWeddingHallInfo(anyLong());
+        doReturn(weddingHallInfoDto).when(weddingHallService).getWeddingHallInfo(boardsId, usersId);
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/weddingHall/all/{boardsId}", anyLong()));
+        ResultActions resultActions = mockMvc.perform(get("/weddingHall/all/{boardsId}", boardsId));
 
         // then
         resultActions.andExpect(status().isOk())
@@ -68,6 +80,7 @@ class WeddingHallControllerTest {
 
     @Test
     @DisplayName("예식장 주소 변경")
+    @WithCustomMockUser
     void postWeddingHallAddressSuccess() throws Exception {
         // given
         String newAddress = "testAddress";
@@ -75,10 +88,10 @@ class WeddingHallControllerTest {
 
         PostWeddingHallAddressRequestVo requestVo = new PostWeddingHallAddressRequestVo(newAddress);
 
-        doReturn(data).when(weddingHallService).postWeddingHallAddress(1L, newAddress);
+        doReturn(data).when(weddingHallService).postWeddingHallAddress(boardsId, newAddress, usersId);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/weddingHall/location/{boardsId}", 1L)
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/location/{boardsId}", boardsId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );
@@ -91,6 +104,7 @@ class WeddingHallControllerTest {
 
     @Test
     @DisplayName("예식장 날짜 시간 변경")
+    @WithCustomMockUser
     void postWeddingHallDateTimeSuccess() throws Exception {
         // given
         String date = "20231115";
@@ -98,10 +112,10 @@ class WeddingHallControllerTest {
         RequestPostWeddingHallTimeVo requestVo = new RequestPostWeddingHallTimeVo(date, time);
         WeddingHallDateTimeDto data = new WeddingHallDateTimeDto("2023-11-15", "15:50");
 
-        doReturn(data).when(weddingHallService).postWeddingHallDateTime(1L, date, time);
+        doReturn(data).when(weddingHallService).postWeddingHallDateTime(boardsId, date, time, usersId);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", 1L)
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", boardsId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );
@@ -116,13 +130,14 @@ class WeddingHallControllerTest {
 
     @Test
     @DisplayName("예식장 날짜 시간 변경 실패")
+    @WithCustomMockUser
     void postWeddingHallDateTimeFail() throws Exception {
         // given
         RequestPostWeddingHallTimeVo requestVo = new RequestPostWeddingHallTimeVo("date", "time");
-        when(weddingHallService.postWeddingHallDateTime(1L, "date", "time")).thenThrow(DateTimeException.class);
+        when(weddingHallService.postWeddingHallDateTime(boardsId, "date", "time", usersId)).thenThrow(DateTimeException.class);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", 1L)
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", boardsId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );

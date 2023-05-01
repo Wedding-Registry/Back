@@ -30,4 +30,8 @@ public class BaseEntity {
         this.deletedAt = false;
     }
 
+    public void deleteEntity() {
+        this.deletedAt = true;
+    }
+
 }

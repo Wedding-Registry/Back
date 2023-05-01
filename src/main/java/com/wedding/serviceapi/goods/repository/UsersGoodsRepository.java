@@ -14,7 +14,7 @@ public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
 //    @EntityGraph(attributePaths = {"goods", "users"})
     Optional<UsersGoods> findByIdAndUsersId(Long id, Long usersId);
 
-    @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId")
-    List<UsersGoods> findByUsersId(@Param("userId") Long userId);
+    @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId and u.boards.id = :boardId")
+    List<UsersGoods> findByUsersIdAndBoardsId(@Param("userId") Long userId, @Param("boardId") Long boardId);
 
 }
