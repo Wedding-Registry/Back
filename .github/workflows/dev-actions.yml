@@ -28,7 +28,7 @@ jobs:
         distribution: 'zulu'
         java-version: '11'
     - name: Do Unit Test
-      run: ./gradlw :test
+      run: ./gradlew :test
         
         
 
