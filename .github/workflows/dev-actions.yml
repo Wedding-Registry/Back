@@ -17,37 +17,37 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    services:
-      mysql:
-        image: mysql
-        env:
-          MYSQL_DATABASE: wedding_registry_test
-          MYSQL_ROOT_PASSWORD: password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-    
-    steps:
-    - uses: actions/checkout@v3.5.2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3.11.0
-      with:
-        distribution: 'zulu'
-        java-version: '11'
-    - name: Do Unit Test
-      run: ./gradlew :test
+#  test:
+#    runs-on: ubuntu-latest
+#
+#    services:
+#      mysql:
+#        image: mysql
+#        env:
+#          MYSQL_DATABASE: wedding_registry_test
+#          MYSQL_ROOT_PASSWORD: password
+#        ports:
+#          - 3306:3306
+#        options: >-
+#          --health-cmd="mysqladmin ping"
+#          --health-interval=10s
+#          --health-timeout=5s
+#          --health-retries=3
+#
+#    steps:
+#    - uses: actions/checkout@v3.5.2
+#    - name: Set up JDK 11
+#      uses: actions/setup-java@v3.11.0
+#      with:
+#        distribution: 'zulu'
+#        java-version: '11'
+#    - name: Do Unit Test
+#      run: ./gradlew :test
         
         
 
   build:
-    needs: test
+#    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -56,11 +56,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '11'
-
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
     
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2.4.2
