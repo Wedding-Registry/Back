@@ -80,7 +80,7 @@ jobs:
     - name: docker image build
       run: docker build -t wedding-backend:dev --build-arg profile=dev .   
     - name: docker image push to container registry
-      run : docker push ghcr.io/Wedding-Registry/wedding-backend:dev
+      run : docker push ghcr.io/wedding-registry/wedding-backend:dev
 
 
 
