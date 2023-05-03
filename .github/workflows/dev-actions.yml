@@ -12,9 +12,11 @@ on:
     branches:
     - feature/WEDPRO-62
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  USERNAME: Jin-Mook
 
-permissions:
-  contents: read
 
 jobs:
 #  test:
@@ -46,10 +48,15 @@ jobs:
         
         
 
-  build:
+  build-and-push-image:
 #    needs: test
     runs-on: ubuntu-latest
-
+    environment: dev
+    
+    permissions:
+      contents: read
+      packages: write
+    
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-java@v3
@@ -62,8 +69,18 @@ jobs:
       
     - name: Execute Gradle build
       run: ./gradlew bootJar
+      
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ env.USERNAME }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-
+    - name: docker image build
+      run: docker build -t wedding-backend:dev --build-arg profile=dev .   
+    - name: docker image push to container registry
+      run : docker push ghcr.io/Wedding-Registry/wedding-backend:dev
 
 
 
