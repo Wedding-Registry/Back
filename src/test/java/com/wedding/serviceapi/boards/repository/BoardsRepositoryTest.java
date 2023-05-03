@@ -59,7 +59,7 @@ class BoardsRepositoryTest {
         // when
         Boards foundBoard = boardsRepository.findByIdAndUsersId(savedBoard.getId(), savedUser.getId()).get();
         // then
-        assertThat(foundBoard.getUsers().getName()).isEqualTo("test");
+        assertThat(foundBoard.getUsers().getName()).isEqualTo("test1");
         assertThat(foundBoard.getUuidFirst()).isEqualTo("first");
         assertThat(foundBoard.getUuidSecond()).isEqualTo("second");
     }
