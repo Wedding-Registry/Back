@@ -79,7 +79,7 @@ jobs:
 
     - name: docker image build
 #      run: "docker build -t wedding-backend:dev --build-arg profile=dev . "
-      run: docker build -t ${{ REGISTRY }}/${{ IMAGE_NAME }}:dev --build-arg profile=dev .
+      run: docker build -t $REGISTRY/$IMAGE_NAME:dev --build-arg profile=dev .
     - name: docker image push to container registry
       run : docker push ghcr.io/wedding-registry/wedding-backend:dev
 
