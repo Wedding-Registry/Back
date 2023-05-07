@@ -23,20 +23,20 @@ public class WeddingHallService {
 
     @Transactional(readOnly = true)
     public WeddingHallInfoDto getWeddingHallInfo(Long boardsId, Long userId) {
-        Boards board = boardsRepository.findByIdAndUsersId(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
+        Boards board = boardsRepository.findByIdAndUsersIdNotDeleted(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
         return new WeddingHallInfoDto(board);
     }
 
 
     public WeddingHallAddressDto postWeddingHallAddress(Long boardsId, String address, Long userId) {
-        Boards board = boardsRepository.findByIdAndUsersId(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
+        Boards board = boardsRepository.findByIdAndUsersIdNotDeleted(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
         board.updateAddress(address);
 
         return new WeddingHallAddressDto(address);
     }
 
     public WeddingHallDateTimeDto postWeddingHallDateTime(Long boardsId, String date, String time, Long userId) {
-        Boards board = boardsRepository.findByIdAndUsersId(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
+        Boards board = boardsRepository.findByIdAndUsersIdNotDeleted(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
         board.updateDateAndTime(date, time);
 
         return new WeddingHallDateTimeDto(board.getDate(), board.getTime());

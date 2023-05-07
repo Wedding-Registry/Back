@@ -57,7 +57,7 @@ class BoardsRepositoryTest {
     @DisplayName("보드 아이디와 유저 아이디를 통해 보드 찾기")
     void findByIdAndUsersId() {
         // when
-        Boards foundBoard = boardsRepository.findByIdAndUsersId(savedBoard.getId(), savedUser.getId()).get();
+        Boards foundBoard = boardsRepository.findByIdAndUsersIdNotDeleted(savedBoard.getId(), savedUser.getId()).get();
         // then
         assertThat(foundBoard.getUsers().getName()).isEqualTo("test");
         assertThat(foundBoard.getUuidFirst()).isEqualTo("first");
