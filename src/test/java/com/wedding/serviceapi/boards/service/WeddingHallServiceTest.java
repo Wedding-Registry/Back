@@ -46,7 +46,7 @@ class WeddingHallServiceTest {
         HusbandAndWifeEachInfo wife = new HusbandAndWifeEachInfo("wife name", "wife bank", "wife account");
         Boards board = Boards.builder().husband(husband).wife(wife).address("test address").date("2023-02-16").time("15:50").build();
 
-        doReturn(Optional.of(board)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.of(board)).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         WeddingHallInfoDto data = weddingHallService.getWeddingHallInfo(anyLong(), anyLong());
@@ -71,7 +71,7 @@ class WeddingHallServiceTest {
     @DisplayName("결혼 주소 업데이트 성공")
     void updateWeddingHallAddressSuccess() {
         // given
-        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         WeddingHallAddressDto result = weddingHallService.postWeddingHallAddress(anyLong(), address, anyLong());
@@ -84,7 +84,7 @@ class WeddingHallServiceTest {
     @DisplayName("결혼 게시판을 못찾는 경우 실패")
     void failToSearchBoards() {
         // given
-        doReturn(Optional.empty()).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.empty()).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         assertThrows(NoSuchElementException.class, () -> weddingHallService.postWeddingHallAddress(anyLong(), address, anyLong()));
@@ -96,7 +96,7 @@ class WeddingHallServiceTest {
         // given
         String date = "20231115";
         String time = "1500";
-        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         WeddingHallDateTimeDto result = weddingHallService.postWeddingHallDateTime(anyLong(), date, time, anyLong());

@@ -42,7 +42,7 @@ class MarriageServiceTest {
         Boards boards = Boards.builder().husband(husband).wife(wife).build();
         String name = "test";
 
-        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         MarriageNameDto data = marriageService.postHusbandOrWifeName(type, anyLong(), name, anyLong());
@@ -64,7 +64,7 @@ class MarriageServiceTest {
         Boards boards = Boards.builder().husband(husband).wife(wife).build();
         String name = "test";
 
-        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         NoSuchPathTypeException error = assertThrows(NoSuchPathTypeException.class, () -> marriageService.postHusbandOrWifeName(type, anyLong(), name, anyLong()));
@@ -82,7 +82,7 @@ class MarriageServiceTest {
         String bank = "bank test";
         String account = "account test";
 
-        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersId(anyLong(), anyLong());
+        doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersIdNotDeleted(anyLong(), anyLong());
 
         // when
         MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, anyLong(), bank, account, anyLong());
