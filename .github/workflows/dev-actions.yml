@@ -16,12 +16,12 @@ env:
   REGISTRY: ghcr.io/wedding-registry
   IMAGE_NAME: wedding-backend
   USERNAME: Jin-Mook
+  CONTAINER_NAME: wedding-backend
 
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     services:
       mysql:
         image: mysql
@@ -47,7 +47,6 @@ jobs:
       run: ./gradlew :test
         
         
-
   build-and-push-image:
     needs: test
     runs-on: ubuntu-latest
@@ -63,24 +62,37 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '11'
-    
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2.4.2
-      
     - name: Execute Gradle build
       run: ./gradlew bootJar
-      
-    - name: Log in to the Container registry
+    - name: Login to Container registry
       uses: docker/login-action@v2.1.0
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ env.USERNAME }}
         password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-
     - name: docker image build
       run: docker build -t $REGISTRY/$IMAGE_NAME:dev --build-arg profile=dev .
     - name: docker image push to container registry
       run : docker push $REGISTRY/$IMAGE_NAME:dev
+  
+
+  deploy:
+    needs: build-and-push-image
+    runs-on: [ self-hosted, label-dev ]
+    
+    steps:
+      - name: Login to Container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+      - name: stop existed backend container
+        run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME && docker rmi $REGISTRY/$IMAGE_NAME:dev
+      - name: restart new backend container
+        run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
 
 
 
