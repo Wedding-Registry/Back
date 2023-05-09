@@ -13,20 +13,16 @@ import com.wedding.serviceapi.users.domain.Role;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import com.wedding.serviceapi.util.crawling.RegisterUsersGoodsCrawler;
-import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
-import com.wedding.serviceapi.util.webclient.WebClientUtil;
+import com.wedding.serviceapi.util.crawling.GoodsRegisterResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.jsoup.nodes.Document;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j

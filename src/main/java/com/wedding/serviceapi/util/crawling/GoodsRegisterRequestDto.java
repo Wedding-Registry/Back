@@ -1,4 +1,4 @@
-package com.wedding.serviceapi.util.webclient;
+package com.wedding.serviceapi.util.crawling;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
