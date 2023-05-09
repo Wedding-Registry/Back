@@ -17,7 +17,6 @@ env:
   IMAGE_NAME: wedding-backend
   USERNAME: Jin-Mook
   CONTAINER_NAME: wedding-backend
-  PASSWORD: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
 
 
 jobs:
@@ -89,11 +88,11 @@ jobs:
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ env.USERNAME }}
-        password: ${{ env.PERSONAL_GITHUB_TOKEN }}
+        password: $PERSONAL_GITHUB_TOKEN
     - name: stop existed backend container
       run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME && docker rmi $REGISTRY/$IMAGE_NAME:dev
     - name: restart new backend container
-      run: docker run -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
+      run: docker run -d -p $SERVER_PORT:$SERVER_PORT --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
 
 
 
