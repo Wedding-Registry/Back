@@ -91,7 +91,6 @@ jobs:
         username: ${{ env.USERNAME }}
         password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
     - name: stop existed backend container
-#       run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME && docker rmi $REGISTRY/$IMAGE_NAME:dev
       run: |
         if [ 'docker ps -q --filter "name=$CONTAINER_NAME"' ]; then
           docker stop $CONTAINER_NAME
