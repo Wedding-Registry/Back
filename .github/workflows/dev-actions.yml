@@ -74,7 +74,7 @@ jobs:
         password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
     - name: setting application-dev.yaml
       run: |
-        echo ${{ secrets.PROPERTIES_DEV_YAML }} | base64 --decode > ./src/main/resources/application-dev.properties
+        echo ${{ secrets.PROPERTIES_DEV_YAML }} | base64 --decode > ./src/main/resources/application-dev.yaml
     - name: docker image build
       run: docker build -t $REGISTRY/$IMAGE_NAME:dev --build-arg profile="dev" .
     - name: docker image push to container registry
