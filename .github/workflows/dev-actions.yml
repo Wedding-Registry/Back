@@ -101,7 +101,11 @@ jobs:
     - name: remove existed backend image
       if: success()
       run: |
-        docker rmi $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
+        existed_image=`docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q`
+        echo $existed_image
+        if [[ ! -z $existed_image ]]; then
+          docker rmi $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
+        fi
     - name: restart new backend container
       run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
 
