@@ -67,9 +67,9 @@ jobs:
     - name: setting application-dev.yaml
       run: |
         cd ./src/main/resources
-        touch ./application-dev.yaml
-        echo ${{ secrets.APPLICATION_DEV_YAML }} > ./application-dev.yaml | base64 --decode
-        echo application-dev.yaml
+        touch application-dev.yaml
+        echo ${{ secrets.APPLICATION_DEV_YAML }} | base64 --decode > ./application-dev.yaml 
+        cat application-dev.yaml
     - name: Execute Gradle build
       run: ./gradlew clean bootJar
     - name: Login to Container registry
