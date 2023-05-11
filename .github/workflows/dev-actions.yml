@@ -66,7 +66,10 @@ jobs:
       uses: gradle/gradle-build-action@v2.4.2
     - name: setting application-dev.yaml
       run: |
-        echo ${{ secrets.PROPERTIES_DEV_YAML }} | base64 --decode > ./src/main/resources/application-dev.yaml
+        cd ./src/main/resources
+        touch ./application-dev.yaml
+        echo ${{ secrets.PROPERTIES_DEV_YAML }} | base64 --decode > ./application-dev.yaml
+        cat ./application-dev.yaml
     - name: Execute Gradle build
       run: ./gradlew clean bootJar
     - name: Login to Container registry
