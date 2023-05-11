@@ -1,0 +1,129 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches:
+    - dev
+
+env:
+  REGISTRY: ghcr.io/wedding-registry
+  IMAGE_NAME: wedding-backend
+  USERNAME: Jin-Mook
+  CONTAINER_NAME: wedding-backend
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql
+        env:
+          MYSQL_DATABASE: wedding_registry_test
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3.5.2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3.11.0
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    - name: Do Unit Test
+      run: ./gradlew :test
+
+
+  build-and-push-image:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: dev
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2.4.2
+    - name: setting application-dev.yaml
+      run: |
+        cd ./src/main/resources
+        touch application-dev.yaml
+        echo ${{ secrets.APPLICATION_DEV_YAML }} | base64 --decode > ./application-dev.yaml 
+        cat application-dev.yaml
+    - name: Execute Gradle build
+      run: ./gradlew clean bootJar
+    - name: Login to Container registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ env.USERNAME }}
+        password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+    - name: docker image build
+      run: docker build -t $REGISTRY/$IMAGE_NAME:dev --build-arg profile="dev" .
+    - name: docker image push to container registry
+      run : docker push $REGISTRY/$IMAGE_NAME:dev
+
+
+  deploy:
+    needs: build-and-push-image
+    runs-on: [ self-hosted, label-dev ]
+    environment: dev
+    
+    steps:
+    - name: Login to Container registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ env.USERNAME }}
+        password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+    - name: stop existed backend container
+      run: |
+        existed_backend=`docker ps -q --filter "name=$CONTAINER_NAME"`
+        echo $existed_backend
+        if [[ ! -z $existed_backend ]]; then
+          docker stop $CONTAINER_NAME
+          docker rm $CONTAINER_NAME
+        fi
+    - name: remove existed backend image
+      if: success()
+      run: |
+        existed_image=`docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q`
+        echo $existed_image
+        if [[ ! -z $existed_image ]]; then
+          docker rmi -f $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
+        fi
+    - name: restart new backend container
+      run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
+
+
+
+
+
+
+
+
+
+
+
+
+

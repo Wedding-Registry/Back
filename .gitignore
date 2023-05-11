@@ -3,10 +3,10 @@
 docker-compose-local.yml
 .idea
 .gradle
+spy.log
 
 build
 src/main/resources/application-local.yml
-src/main/resources/application-prod.yml
 db
 
 out

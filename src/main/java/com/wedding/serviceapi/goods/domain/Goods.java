@@ -1,7 +1,7 @@
 package com.wedding.serviceapi.goods.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
-import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
+import com.wedding.serviceapi.util.crawling.GoodsRegisterResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

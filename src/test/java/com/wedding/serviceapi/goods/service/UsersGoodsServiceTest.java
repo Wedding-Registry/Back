@@ -12,16 +12,12 @@ import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
-import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Role;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import com.wedding.serviceapi.util.crawling.RegisterUsersGoodsCrawler;
-import com.wedding.serviceapi.util.webclient.GoodsRegisterResponseDto;
-import com.wedding.serviceapi.util.webclient.WebClientUtil;
+import com.wedding.serviceapi.util.crawling.GoodsRegisterResponseDto;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.internal.Integers;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,16 +28,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import javax.persistence.EntityManager;
 
 import java.util.*;
 
