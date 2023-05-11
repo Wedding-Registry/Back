@@ -90,9 +90,17 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ env.USERNAME }}
         password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-      #run: echo $PERSONAL_GITHUB_TOKEN | docker login -u ${{ env.USERNAME }} --password-stdin ghcr.io
     - name: stop existed backend container
-      run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME && docker rmi $REGISTRY/$IMAGE_NAME:dev
+#       run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME && docker rmi $REGISTRY/$IMAGE_NAME:dev
+      run: |
+        if [ 'docker ps -q --filter "name=$CONTAINER_NAME"' ]; then
+          docker stop $CONTAINER_NAME
+          docker rm $CONTAINER_NAME
+        fi
+    - name: remove existed backend image
+      if: success()
+      run: |
+        docker rmi $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
     - name: restart new backend container
       run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
 
