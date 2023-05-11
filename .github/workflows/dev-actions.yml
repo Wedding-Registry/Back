@@ -94,7 +94,7 @@ jobs:
     - name: stop existed backend container
       run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME && docker rmi $REGISTRY/$IMAGE_NAME:dev
     - name: restart new backend container
-      run: docker run -d -p $SERVER_PORT:$SERVER_PORT --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
+      run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
 
 
 
