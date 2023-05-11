@@ -92,7 +92,9 @@ jobs:
         password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
     - name: stop existed backend container
       run: |
-        if [ 'docker ps -q --filter "name=$CONTAINER_NAME"' ]; then
+        existed_backend=`docker ps -q --filter "name=$CONTAINER_NAME"`
+        echo $existed_backend
+        if [[ ! -z $existed_backend ]]; then
           docker stop $CONTAINER_NAME
           docker rm $CONTAINER_NAME
         fi
