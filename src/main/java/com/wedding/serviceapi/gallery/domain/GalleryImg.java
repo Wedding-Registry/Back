@@ -1,15 +1,15 @@
 package com.wedding.serviceapi.gallery.domain;
 
 import com.wedding.serviceapi.boards.domain.Boards;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 public class GalleryImg {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
