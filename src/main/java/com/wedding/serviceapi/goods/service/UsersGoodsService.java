@@ -55,7 +55,7 @@ public class UsersGoodsService {
     }
 
     public List<UsersGoodsInfoDto> findAllUsersGoods(Long userId, Long boardId) {
-        List<UsersGoods> usersGoodsList = usersGoodsRepository.findByUsersIdAndBoardsId(userId, boardId);
+        List<UsersGoods> usersGoodsList = usersGoodsRepository.findAllByUsersIdAndBoardsIdNotWish(userId, boardId);
 
         return usersGoodsList.stream().map(UsersGoodsInfoDto::new).collect(Collectors.toList());
     }

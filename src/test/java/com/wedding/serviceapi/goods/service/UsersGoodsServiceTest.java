@@ -120,7 +120,7 @@ class UsersGoodsServiceTest {
         data.add(usersGoods2);
         data.add(usersGoods3);
 
-        doReturn(data).when(usersGoodsRepository).findByUsersIdAndBoardsId(anyLong(), anyLong());
+        doReturn(data).when(usersGoodsRepository).findAllByUsersIdAndBoardsIdNotWish(anyLong(), anyLong());
         
         // when
         List<UsersGoodsInfoDto> result = usersGoodsService.findAllUsersGoods(anyLong(), anyLong());
