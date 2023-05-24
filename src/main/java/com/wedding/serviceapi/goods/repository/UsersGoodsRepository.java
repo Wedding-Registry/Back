@@ -11,10 +11,9 @@ import java.util.Optional;
 
 public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
 
-//    @EntityGraph(attributePaths = {"goods", "users"})
     Optional<UsersGoods> findByIdAndUsersId(Long id, Long usersId);
 
-    @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId and u.boards.id = :boardId")
-    List<UsersGoods> findByUsersIdAndBoardsId(@Param("userId") Long userId, @Param("boardId") Long boardId);
+    @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
+    List<UsersGoods> findAllByUsersIdAndBoardsIdNotWish(@Param("userId") Long userId, @Param("boardId") Long boardId);
 
 }

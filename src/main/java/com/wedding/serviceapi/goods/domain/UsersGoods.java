@@ -3,15 +3,15 @@ package com.wedding.serviceapi.goods.domain;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.users.domain.Users;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @ToString
 public class UsersGoods {
 
