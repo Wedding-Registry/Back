@@ -70,7 +70,7 @@ public class AuthService {
         }
 
         // TODO: 2023/04/17 기존에 서비스 회원가입을 통해 이메일이 존재하고 다시 소셜 회원가입을 하느라 이메일이 겹치는 경우 해결 필요
-        LoginType loginType = password.startsWith("k") ? LoginType.KAKAO : LoginType.GOOGLE;
+        LoginType loginType = password.startsWith("k") || password.startsWith("K") ? LoginType.KAKAO : LoginType.GOOGLE;
         Users user = Users.builder()
                 .name(name)
                 .email(email)
