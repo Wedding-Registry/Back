@@ -2,10 +2,15 @@ package com.wedding.serviceapi.goods.domain;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.exception.NegativePriceException;
+import com.wedding.serviceapi.guests.domain.GoodsDonation;
 import com.wedding.serviceapi.users.domain.Users;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -13,6 +18,8 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @ToString
+@DynamicInsert
+@DynamicUpdate
 public class UsersGoods {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +42,9 @@ public class UsersGoods {
     private Integer updatedUsersGoodsPrice;
     private Integer usersGoodsTotalDonation;
     private Boolean wishGoods;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usersGoods")
+    List<GoodsDonation> donationList = new ArrayList<>();
 
     public UsersGoods(Users users, Goods goods, Boards boards) {
         this.users = users;

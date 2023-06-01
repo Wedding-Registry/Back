@@ -21,7 +21,7 @@ public class Guests extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "guests_id")
+    @JoinColumn(name = "users_id")
     private Users users;
 
     @ManyToOne(fetch = FetchType.LAZY)

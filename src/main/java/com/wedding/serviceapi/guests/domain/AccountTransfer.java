@@ -2,12 +2,15 @@ package com.wedding.serviceapi.guests.domain;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.common.domain.BaseEntity;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class AccountTransfer extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +22,8 @@ public class AccountTransfer extends BaseEntity {
     private Boards boards;
 
     private String transferMemo;
+
+    public void changeMemo(String transferMemo) {
+        this.transferMemo = transferMemo;
+    }
 }
