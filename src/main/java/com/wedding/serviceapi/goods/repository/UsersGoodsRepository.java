@@ -1,6 +1,8 @@
 package com.wedding.serviceapi.goods.repository;
 
 import com.wedding.serviceapi.goods.domain.UsersGoods;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,6 @@ public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
 
     @Query("select distinct u from UsersGoods u join fetch u.goods join fetch u.donationList where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
     List<UsersGoods> findAllDistinctByUsersIdAndBoardsIdNotWishWithUrlAndDonationId(@Param("userId") Long userId, @Param("boardId") Long boardId);
+
+    Slice<UsersGoods> findByUsersIdAndBoardsIdAndIdLessThan(Long usersId, Long boardsId, Long usersGoodsId, Pageable pageable);
 }

@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.goods.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.exception.NegativePriceException;
 import com.wedding.serviceapi.guests.domain.GoodsDonation;
@@ -26,14 +27,17 @@ public class UsersGoods {
     @Column(name = "users_goods_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Users users;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goods_id")
     private Goods goods;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boards_id")
     private Boards boards;
@@ -43,6 +47,7 @@ public class UsersGoods {
     private Integer usersGoodsTotalDonation;
     private Boolean wishGoods;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usersGoods")
     List<GoodsDonation> donationList = new ArrayList<>();
 
