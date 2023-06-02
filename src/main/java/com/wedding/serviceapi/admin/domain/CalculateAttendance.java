@@ -77,25 +77,3 @@ public class CalculateAttendance {
         return AttendanceResponseDto.of(yesInfoDto, noInfoDto, unknownInfoDto);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
