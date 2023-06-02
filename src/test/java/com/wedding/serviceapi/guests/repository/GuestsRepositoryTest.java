@@ -2,6 +2,7 @@ package com.wedding.serviceapi.guests.repository;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
+import com.wedding.serviceapi.guests.domain.AttendanceType;
 import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 
 import javax.persistence.EntityManager;
 
@@ -53,7 +55,7 @@ class GuestsRepositoryTest {
         savedUser = usersRepository.save(user);
         savedGuest = usersRepository.save(guest);
         savedBoard = boardsRepository.save(boards);
-        Guests newGuest = Guests.builder().users(savedGuest).boards(savedBoard).build();
+        Guests newGuest = Guests.builder().users(savedGuest).boards(savedBoard).attendance(AttendanceType.YES).build();
         guestsRepository.save(newGuest);
         em.flush();
     }
@@ -76,5 +78,22 @@ class GuestsRepositoryTest {
         Assertions.assertThat(guestsList.size()).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("boardsId를 통해 guest 테이블에서 유저 정보와 함께 데이터 가져오기")
+    void findAllGuestsWithUsers() {
+        // when
+        List<Guests> guestsList = guestsRepository.findAllByBoardsIdWithUsers(savedBoard.getId());
+        // then
+        Assertions.assertThat(guestsList.size()).isEqualTo(1);
+        Assertions.assertThat(guestsList.get(0).getUsers().getName()).isEqualTo("guest");
+    }
 
+    @Test
+    @DisplayName("")
+    void findByUsersIdAndBoardsId() {
+        // when
+        Guests guests = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId()).get();
+        // then
+        Assertions.assertThat(guests.getAttendance()).isEqualTo(AttendanceType.YES);
+    }
 }

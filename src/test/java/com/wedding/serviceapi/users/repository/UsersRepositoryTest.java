@@ -132,7 +132,7 @@ class UsersRepositoryTest {
         Map<Long, Users> resultMap = usersRepository.findByIdInByMap(usersIdList);
         // then
         assertThat(resultMap.size()).isEqualTo(3);
-        assertThat(resultMap.get(2L).getName()).isEqualTo("test2");
+        assertThat(resultMap.get(users.get(1).getId()).getName()).isEqualTo("test2");
     }
 
     private void registerUser() {

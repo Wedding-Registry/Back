@@ -30,4 +30,9 @@ public class Guests extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private AttendanceType attendance;
+
+    public void changeAttendanceType(AttendanceType attendanceType) {
+        // TODO: 2023/06/02 참석 여부 수정이 yes/no/unknown 형태가 아닌 다른 형태로 올때 에러처리 필요
+        this.attendance = attendanceType;
+    }
 }
