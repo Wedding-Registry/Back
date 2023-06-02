@@ -1,6 +1,18 @@
 server:
   port: ${{ secrets.SERVER_PORT }}
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${{ secrets.AWS_ACCESS_KEY }}
+      secret-key: ${{ secrets.AWS_SECRET_KEY }}
+    s3:
+      url: ${{ secrets.AWS_S3_URL }}
+    region:
+      static: ${{ secrets.AWS_REGION }}
+    stack:
+      auto: false
+
 spring:
   datasource:
     url: ${{ secrets.DATABASE_URL }}
