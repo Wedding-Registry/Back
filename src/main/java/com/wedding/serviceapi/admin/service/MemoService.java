@@ -17,8 +17,8 @@ public class MemoService {
 
     private final UsersGoodsRepository usersGoodsRepository;
 
-    public Slice<UsersGoods> getAllItemWish(Long usersId, Long boardsId, Pageable pageable) {
-        Slice<UsersGoods> usersGoods = usersGoodsRepository.findByUsersIdAndBoardsIdAndIdLessThan(usersId, boardsId, 5L, pageable);
+    public Slice<UsersGoods> getAllItemWish(Long usersId, Long boardsId, Long lastId, Pageable pageable) {
+        Slice<UsersGoods> usersGoods = usersGoodsRepository.findByUsersIdAndBoardsIdAndIdLessThan(usersId, boardsId, lastId, pageable);
         return usersGoods;
     }
 }

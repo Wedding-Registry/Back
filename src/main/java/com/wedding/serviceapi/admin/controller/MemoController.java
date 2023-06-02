@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,10 +27,12 @@ public class MemoController {
 
     @GetMapping("/item/wish")
 //    public ResponseVo<List<WishItemDto>> getWishItemList(@LoginUser LoginUserVo loginUserVo, Pageable pageable) {
-    public Slice<UsersGoods> getWishItemList(@LoginUser LoginUserVo loginUserVo, Pageable pageable) {
+    public Slice<UsersGoods> getWishItemList(@LoginUser LoginUserVo loginUserVo,
+                                             @RequestParam("lastId") Long lastId,
+                                             Pageable pageable) {
         log.info("[getWishItemList controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
-        log.info("page = {}, size = {}, sort = {}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
-        return memoService.getAllItemWish(loginUserVo.getUserId(), loginUserVo.getBoardsId(), pageable);
+        log.info("lastId = {}, size = {}, sort = {}", lastId, pageable.getPageSize(), pageable.getSort());
+        return memoService.getAllItemWish(loginUserVo.getUserId(), loginUserVo.getBoardsId(), lastId, pageable);
 //        return "ok";
     }
 
