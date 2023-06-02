@@ -10,7 +10,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -99,8 +103,37 @@ class UsersRepositoryTest {
         assertThat(users.getPassword()).isEqualToIgnoringCase("k1234");
     }
 
+    @Test
+    @DisplayName("in쿼리 작동 확인 테스트")
+    void in쿼리_사용하기() {
+        // given
+        Users user1 = Users.builder().email("test email").name("test1").password("test1").loginType(LoginType.KAKAO).build();
+        Users user2 = Users.builder().email("test email").name("test1").password("test1").loginType(LoginType.KAKAO).build();
+        Users user3 = Users.builder().email("test email").name("test1").password("test1").loginType(LoginType.KAKAO).build();
+        List<Users> users = usersRepository.saveAllAndFlush(List.of(user1, user2, user3));
+        List<Long> usersIdList = users.stream().map(Users::getId).collect(Collectors.toList());
 
+        // when
+        List<Users> foundUserList = usersRepository.findByIdIn(usersIdList);
+        // then
+        assertThat(foundUserList.size()).isEqualTo(3);
+    }
 
+    @Test
+    @DisplayName("list 형태를 map으로 변환하는 테스트")
+    void map변환_테스트() {
+        // given
+        Users user1 = Users.builder().email("test1 email").name("test1").password("test1").loginType(LoginType.KAKAO).build();
+        Users user2 = Users.builder().email("test2 email").name("test2").password("test1").loginType(LoginType.KAKAO).build();
+        Users user3 = Users.builder().email("test3 email").name("test3").password("test1").loginType(LoginType.KAKAO).build();
+        List<Users> users = usersRepository.saveAllAndFlush(List.of(user1, user2, user3));
+        List<Long> usersIdList = users.stream().map(Users::getId).collect(Collectors.toList());
+        // when
+        Map<Long, Users> resultMap = usersRepository.findByIdInByMap(usersIdList);
+        // then
+        assertThat(resultMap.size()).isEqualTo(3);
+        assertThat(resultMap.get(users.get(1).getId()).getName()).isEqualTo("test2");
+    }
 
     private void registerUser() {
         Users user = Users.builder().email("test email").name("test").password("test").loginType(LoginType.KAKAO).build();

@@ -43,7 +43,8 @@ class SummaryControllerTest {
     void getAttendanceSummary(int total) throws Exception {
         // given
         String url = "/admin/summary/attendance";
-        AttendanceSummaryDto result = null;
+
+        AttendanceSummaryDto result;
         if (total == 0) {
             result = AttendanceSummaryDto.emptyGuests();
         } else {

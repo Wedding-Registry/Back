@@ -1,12 +1,15 @@
 package com.wedding.serviceapi.guests.domain;
 
 import com.wedding.serviceapi.goods.domain.UsersGoods;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class GoodsDonation {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
