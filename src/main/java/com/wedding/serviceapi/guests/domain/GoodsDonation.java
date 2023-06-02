@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.guests.domain;
 
+import com.wedding.serviceapi.common.domain.BaseEntity;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class GoodsDonation {
+public class GoodsDonation extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "goods_donation_id")
