@@ -24,7 +24,7 @@ class UsersGoodsInfoDtoTest {
         Users user = new Users("test", "test", LoginType.KAKAO);
         Goods goods1 = new Goods("goods1", "goods1", "goods1", 10000, Commerce.COUPANG);
         Boards board = Boards.builder().uuidFirst("first").uuidSecond("second").build();
-        UsersGoods usersGoods1 = new UsersGoods(user, goods1, board);
+        UsersGoods usersGoods1 = new UsersGoods(user, goods1, board, false);
         usersGoods1.donateMoney(3340);
 
         // when

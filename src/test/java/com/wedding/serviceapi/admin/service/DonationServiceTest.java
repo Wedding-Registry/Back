@@ -137,7 +137,7 @@ class DonationServiceTest {
     void 계좌이체메모_실패() {
         // given
         String transferMemo = "testMemo";
-        Long boardsId = 1L;
+        Long boardsId = 100L;
         // then
         assertThatThrownBy(() -> donationService.postAccountTransferMemo(boardsId, transferMemo))
                 .isInstanceOf(NoSuchElementException.class);

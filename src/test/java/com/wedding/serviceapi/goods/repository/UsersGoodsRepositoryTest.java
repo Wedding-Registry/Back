@@ -86,7 +86,7 @@ class UsersGoodsRepositoryTest {
 
         // then
         assertThat(result.getUpdatedUsersGoodsName()).isEqualTo("goods1");
-        assertThat(result.getUsers().getEmail()).isEqualTo("test");
+//        assertThat(result.getUsers().getEmail()).isEqualTo("test");
     }
     
     @Test

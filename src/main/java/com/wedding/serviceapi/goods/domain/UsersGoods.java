@@ -51,12 +51,13 @@ public class UsersGoods {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usersGoods")
     List<GoodsDonation> donationList = new ArrayList<>();
 
-    public UsersGoods(Users users, Goods goods, Boards boards) {
+    public UsersGoods(Users users, Goods goods, Boards boards, boolean wishGoods) {
         this.users = users;
         this.goods = goods;
         this.boards = boards;
         this.updatedUsersGoodsName = goods.getGoodsName();
         this.updatedUsersGoodsPrice = goods.getGoodsPrice();
+        this.wishGoods = wishGoods;
     }
 
 

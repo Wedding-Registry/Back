@@ -60,7 +60,7 @@ public class UsersGoodsService {
         return usersGoodsList.stream().map(UsersGoodsInfoDto::new).collect(Collectors.toList());
     }
 
-    public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url, Long boardId) {
+    public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url, Long boardId, boolean wishItem) {
         GoodsRegisterResponseDto goodsInfo = crawlingGoods(url);
 
         if (goodsInfo.getStatus() == 500) throw new IllegalArgumentException("잘못된 url 정보입니다.");
@@ -78,7 +78,7 @@ public class UsersGoodsService {
         Users user = usersRepository.getReferenceById(userId);
         Boards board = boardsRepository.getReferenceById(boardId);
 
-        UsersGoods usersGoods = new UsersGoods(user, goods, board);
+        UsersGoods usersGoods = new UsersGoods(user, goods, board, wishItem);
         UsersGoods savedUsersGoods;
         try {
             savedUsersGoods = usersGoodsRepository.save(usersGoods);

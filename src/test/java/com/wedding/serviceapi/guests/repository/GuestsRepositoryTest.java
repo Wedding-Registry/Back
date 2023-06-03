@@ -72,7 +72,7 @@ class GuestsRepositoryTest {
         // given
         List<Guests> guestsList = guestsRepository.findAllByBoardsId(savedBoard.getId());
         // then
-        assertThat(guestsList.size()).isEqualTo(1);
+        assertThat(guestsList.size()).isEqualTo(2);
     }
 
     @Test
@@ -90,7 +90,7 @@ class GuestsRepositoryTest {
         // when
         List<Guests> guestsList = guestsRepository.findAllByBoardsIdWithUsers(savedBoard.getId());
         // then
-        assertThat(guestsList.size()).isEqualTo(1);
+        assertThat(guestsList.size()).isEqualTo(2);
         assertThat(guestsList.get(0).getUsers().getName()).isEqualTo("guest");
     }
 

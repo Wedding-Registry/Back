@@ -23,7 +23,7 @@ class UsersGoodsTest {
         users = new Users("email", "password", LoginType.KAKAO);
         goods = new Goods("imgUrl", "url", "goodsName", 10000, Commerce.COUPANG);
         boards = Boards.builder().id(1L).uuidFirst("first").uuidSecond("second").build();
-        usersGoods = new UsersGoods(users, goods, boards);
+        usersGoods = new UsersGoods(users, goods, boards, false);
     }
 
     @Test

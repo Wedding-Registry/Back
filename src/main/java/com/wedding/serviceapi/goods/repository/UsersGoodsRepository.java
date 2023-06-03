@@ -13,7 +13,6 @@ import java.util.Optional;
 
 public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
 
-    @EntityGraph(attributePaths = {"users"})
     Optional<UsersGoods> findByIdAndUsersId(Long id, Long usersId);
 
     @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
@@ -22,5 +21,6 @@ public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
     @Query("select distinct u from UsersGoods u join fetch u.goods join fetch u.donationList where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
     List<UsersGoods> findAllDistinctByUsersIdAndBoardsIdNotWishWithUrlAndDonationId(@Param("userId") Long userId, @Param("boardId") Long boardId);
 
-    Slice<UsersGoods> findByUsersIdAndBoardsIdAndIdLessThan(Long usersId, Long boardsId, Long usersGoodsId, Pageable pageable);
+    @EntityGraph(attributePaths = {"goods"})
+    Slice<UsersGoods> findByUsersIdAndBoardsIdAndWishGoodsAndIdLessThan(Long usersId, Long boardsId, Boolean wishGoods, Long usersGoodsId, Pageable pageable);
 }
