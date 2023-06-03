@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 public class AttendanceUserInfoDto {
     private Long userId;
     private String name;
-
+  
     private String date;
     private String time;
     private AttendanceType attend;
