@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -48,15 +49,20 @@ class GuestsRepositoryTest {
     private Boards savedBoard;
 
     @BeforeEach
-    void init() {
+    void init() throws InterruptedException {
         Users user = Users.builder().email("user@test.com").password("user").name("user").loginType(LoginType.SERVICE).build();
         Users guest = Users.builder().email("guest@test.com").password("guest").name("guest").loginType(LoginType.SERVICE).build();
+        Users guest2 = Users.builder().email("guest2@test.com").password("guest2").name("guest2").loginType(LoginType.SERVICE).build();
         Boards boards = Boards.builder().users(user).uuidFirst("uuid1").uuidSecond("uuid2").build();
         savedUser = usersRepository.save(user);
         savedGuest = usersRepository.save(guest);
+        Users savedGuest2 = usersRepository.save(guest2);
         savedBoard = boardsRepository.save(boards);
         Guests newGuest = Guests.builder().users(savedGuest).boards(savedBoard).attendance(AttendanceType.YES).build();
+        Thread.sleep(50);
+        Guests newGuest2 = Guests.builder().users(savedGuest2).boards(savedBoard).attendance(AttendanceType.YES).build();
         guestsRepository.save(newGuest);
+        guestsRepository.save(newGuest2);
         em.flush();
     }
 
@@ -66,7 +72,7 @@ class GuestsRepositoryTest {
         // given
         List<Guests> guestsList = guestsRepository.findAllByBoardsId(savedBoard.getId());
         // then
-        Assertions.assertThat(guestsList.size()).isEqualTo(1);
+        assertThat(guestsList.size()).isEqualTo(2);
     }
 
     @Test
@@ -75,7 +81,7 @@ class GuestsRepositoryTest {
         // given
         List<Guests> guestsList = guestsRepository.findAllByBoardsId(100L);
         // then
-        Assertions.assertThat(guestsList.size()).isEqualTo(0);
+        assertThat(guestsList.size()).isEqualTo(0);
     }
 
     @Test
@@ -84,16 +90,26 @@ class GuestsRepositoryTest {
         // when
         List<Guests> guestsList = guestsRepository.findAllByBoardsIdWithUsers(savedBoard.getId());
         // then
-        Assertions.assertThat(guestsList.size()).isEqualTo(1);
-        Assertions.assertThat(guestsList.get(0).getUsers().getName()).isEqualTo("guest");
+        assertThat(guestsList.size()).isEqualTo(2);
+        assertThat(guestsList.get(0).getUsers().getName()).isEqualTo("guest");
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("usersId 와 boardsId 를 통해 guest 정보 가져오기")
     void findByUsersIdAndBoardsId() {
         // when
         Guests guests = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId()).get();
         // then
-        Assertions.assertThat(guests.getAttendance()).isEqualTo(AttendanceType.YES);
+        assertThat(guests.getAttendance()).isEqualTo(AttendanceType.YES);
+    }
+
+    @Test
+    @DisplayName("참석자 목록 데이터 테스트")
+    void findAllByBoardsIdOrderByUpdatedAtDesc() {
+        // when
+        List<Guests> guestsList = guestsRepository.findAllByBoardsIdOrderByUpdatedAtDesc(savedBoard.getId());
+        // then
+        assertThat(guestsList.size()).isEqualTo(2);
+        assertThat(guestsList.get(0).getUsers().getName()).isEqualTo("guest2");
     }
 }

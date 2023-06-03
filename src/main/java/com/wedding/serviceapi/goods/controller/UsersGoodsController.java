@@ -47,7 +47,7 @@ public class UsersGoodsController {
                                                                 @Validated @RequestBody PostUsersGoodsRequestVo body) {
         log.info("[postUsersGoods controller] userId = {}, url = {}, boardId = {}", loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId());
 
-        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId());
+        UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId(), false);
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 

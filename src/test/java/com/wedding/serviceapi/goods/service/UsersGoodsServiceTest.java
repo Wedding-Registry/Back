@@ -72,7 +72,7 @@ class UsersGoodsServiceTest {
         userName = "test";
         users = Users.builder().id(userId).name(userName).build();
         boards = Boards.builder().id(1L).uuidFirst("first").uuidSecond("second").build();
-        usersGoods = new UsersGoods(users, goods, boards);
+        usersGoods = new UsersGoods(users, goods, boards, false);
     }
 
     @Test
@@ -112,9 +112,9 @@ class UsersGoodsServiceTest {
         Goods goods1 = new Goods("test1", "test1", "goods1", 10000, Commerce.COUPANG);
         Goods goods2 = new Goods("test2", "test2", "goods2", 20000, Commerce.COUPANG);
         Goods goods3 = new Goods("test3", "test3", "goods3", 30000, Commerce.COUPANG);
-        UsersGoods usersGoods1 = new UsersGoods(users, goods1, boards);
-        UsersGoods usersGoods2 = new UsersGoods(users, goods2, boards);
-        UsersGoods usersGoods3 = new UsersGoods(users, goods3, boards);
+        UsersGoods usersGoods1 = new UsersGoods(users, goods1, boards, false);
+        UsersGoods usersGoods2 = new UsersGoods(users, goods2, boards, false);
+        UsersGoods usersGoods3 = new UsersGoods(users, goods3, boards, false);
         List<UsersGoods> data = new ArrayList<>();
         data.add(usersGoods1);
         data.add(usersGoods2);
@@ -144,12 +144,12 @@ class UsersGoodsServiceTest {
         doReturn(users).when(usersRepository).getReferenceById(userId);
 
         goods.updateGoodsInfo(goodsRegisterResponseDto);
-        UsersGoods usersgoods = new UsersGoods(users, goods, boards);
+        UsersGoods usersgoods = new UsersGoods(users, goods, boards, false);
 
         doReturn(usersgoods).when(usersGoodsRepository).save(any(UsersGoods.class));
 
         // when
-        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url, anyLong());
+        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url, anyLong(), false);
 
         // then
         assertThat(usersGoodsPostResponseDto.getUsersGoodsId()).isEqualTo(usersGoods.getId());
@@ -166,7 +166,7 @@ class UsersGoodsServiceTest {
         GoodsRegisterResponseDto data = new GoodsRegisterResponseDto("test", 1000, "test");
         Goods newGoods = new Goods(data.getGoodsImgUrl(), "test", data.getGoodsName(), data.getGoodsPrice(), Commerce.NAVER);
 
-        UsersGoods usersGoods = new UsersGoods(users, newGoods, boards);
+        UsersGoods usersGoods = new UsersGoods(users, newGoods, boards, false);
 
         Document document = new Document(url);
         doReturn(document).when(crawler).crawlWebPage(url);
@@ -180,7 +180,7 @@ class UsersGoodsServiceTest {
         doReturn(usersGoods).when(usersGoodsRepository).save(any(UsersGoods.class));
         doThrow(NoSuchElementException.class).when(goodsRepository).findByGoodsUrl(anyString());
         // when
-        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url, anyLong());
+        UsersGoodsPostResponseDto usersGoodsPostResponseDto = usersGoodsService.postUsersGoods(userId, url, anyLong(), false);
 
         // then
         assertThat(usersGoodsPostResponseDto.getUsersGoodsId()).isEqualTo(this.usersGoods.getId());

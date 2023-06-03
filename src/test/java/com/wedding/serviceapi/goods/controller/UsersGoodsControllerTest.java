@@ -101,7 +101,7 @@ class UsersGoodsControllerTest {
         PostUsersGoodsRequestVo requestVo = new PostUsersGoodsRequestVo(url);
         UsersGoodsPostResponseDto usersGoodsPostResponseDto = new UsersGoodsPostResponseDto();
 
-        BDDMockito.given(usersGoodsService.postUsersGoods(userId, url, boardsId)).willReturn(usersGoodsPostResponseDto);
+        BDDMockito.given(usersGoodsService.postUsersGoods(userId, url, boardsId, false)).willReturn(usersGoodsPostResponseDto);
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/product")
@@ -123,7 +123,7 @@ class UsersGoodsControllerTest {
         String url = "testUrl";
         PostUsersGoodsRequestVo requestVo = new PostUsersGoodsRequestVo(url);
 
-        when(usersGoodsService.postUsersGoods(userId, url, boardsId)).thenThrow(new IllegalArgumentException("잘못된 url 정보입니다."));
+        when(usersGoodsService.postUsersGoods(userId, url, boardsId, false)).thenThrow(new IllegalArgumentException("잘못된 url 정보입니다."));
         // when
         ResultActions resultActions = mockMvc.perform(post("/usersgoods/add/product")
                 .content(objectMapper.writeValueAsString(requestVo))

@@ -20,12 +20,10 @@ class RegisterUsersGoodsCrawlerTest {
 
     private final RegisterUsersGoodsCrawler crawler = new RegisterUsersGoodsCrawler();
 
-    String url;
     File file;
 
     @BeforeEach
     void init() {
-        url = "https://shopping.naver.com/logistics/products/5533808584?NaPm=ct%3Dlgwhx75j%7Cci%3Dshoppingvertical%7Ctr%3Davgts%7Chk%3D0cb27be3bf4989cdc7da49962c1b31a7f31653d2";
         String url = System.getProperty("user.dir");
         String path = url + "/src/test/java/com/wedding/serviceapi/util/crawling/test.html";
         file = new File(path);
@@ -39,16 +37,6 @@ class RegisterUsersGoodsCrawlerTest {
         // when
         assertThatThrownBy(() -> crawler.crawlWebPage(wrongUrl))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("주소를 통해 html document 가져오기 성공")
-    void successCrawlingWebPage() {
-        // when
-        Document document = crawler.crawlWebPage(url);
-        // then
-        log.info(document.toString());
-        assertThat(document).isNotNull();
     }
 
     @Test

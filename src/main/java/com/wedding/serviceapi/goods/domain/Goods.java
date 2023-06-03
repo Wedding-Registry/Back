@@ -2,6 +2,8 @@ package com.wedding.serviceapi.goods.domain;
 
 import com.wedding.serviceapi.common.domain.BaseEntity;
 import com.wedding.serviceapi.util.crawling.GoodsRegisterResponseDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Goods extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
