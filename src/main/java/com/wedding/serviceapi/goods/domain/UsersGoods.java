@@ -27,6 +27,7 @@ public class UsersGoods {
     @Column(name = "users_goods_id")
     private Long id;
 
+    // TODO: 2023/06/03 추후 삭제 예정
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")

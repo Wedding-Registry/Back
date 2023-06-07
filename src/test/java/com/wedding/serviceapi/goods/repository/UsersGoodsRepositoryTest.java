@@ -114,32 +114,6 @@ class UsersGoodsRepositoryTest {
         assertThat(usersGoodsList.size()).isEqualTo(1);
         assertThat(usersGoodsList.get(0).getDonationList().size()).isEqualTo(2);
     }
-    
-    @Test
-    @DisplayName("후원 정보까지 한번에 가져오는지 테스트")
-    @Rollback(value = false)
-    void findUsersGoodsWithGoodsDonation() {
-        // given
-        // 게스트 유저 추가
-        Users guest1 = Users.builder().name("guest1").email("guest1").password("password1").loginType(LoginType.KAKAO).build();
-        Users guest2 = Users.builder().name("guest2").email("guest2").password("password2").loginType(LoginType.KAKAO).build();
-        usersRepository.saveAllAndFlush(List.of(guest1, guest2));
-        // 게스트 테이블 추가
-        Guests invitedGuest1 = Guests.builder().users(guest1).boards(savedBoards).build();
-        Guests invitedGuest2 = Guests.builder().users(guest2).boards(savedBoards).build();
-        guestsRepository.saveAllAndFlush(List.of(invitedGuest1, invitedGuest2));
-        // goodsDonation 테이블 추가
-        GoodsDonation goodsDonation1 = GoodsDonation.builder().guests(invitedGuest1).usersGoods(usersGoods).goodsDonationAmount(10000).build();
-        GoodsDonation goodsDonation2 = GoodsDonation.builder().guests(invitedGuest2).usersGoods(usersGoods).goodsDonationAmount(20000).build();
-        goodsDonationRepository.saveAllAndFlush(List.of(goodsDonation1, goodsDonation2));
-
-        // when
-        List<UsersGoods> usersGoodsList = usersGoodsRepository.findAllDistinctByUsersIdAndBoardsIdNotWishWithUrlAndDonationId(savedUsers.getId(), savedBoards.getId());
-
-        // then
-        assertThat(usersGoodsList.size()).isEqualTo(1);
-        assertThat(usersGoodsList.get(0).getDonationList().size()).isEqualTo(2);
-    }
 }
 
 
