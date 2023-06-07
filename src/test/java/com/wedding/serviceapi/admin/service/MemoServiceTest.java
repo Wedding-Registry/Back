@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.admin.service;
 
+import com.wedding.serviceapi.admin.dto.memo.PadContentsDto;
 import com.wedding.serviceapi.admin.dto.memo.WishItemPagingDto;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
@@ -93,4 +94,34 @@ class MemoServiceTest {
         assertThat(result.getIsLast()).isFalse();
     }
 
+    @Test
+    @DisplayName("메모를 정상적으로 가져오는지 확이하는 테스트")
+    void getMemoTest() {
+        // given
+        savedBoards.updateMemo("test Memo");
+        boardsRepository.saveAndFlush(savedBoards);
+
+        // when
+        PadContentsDto memoContents = memoService.getMemoContents(savedUsers.getId(), savedBoards.getId());
+        // then
+        assertThat(memoContents.getContents()).isEqualTo("test Memo");
+    }
+
+    @Test
+    @DisplayName("메모를 정상적으로 업데이트 하는지 확인하는 테스트")
+    void postMemoTest() {
+        // when
+        PadContentsDto memoContents = memoService.postMemoContents(savedUsers.getId(), savedBoards.getId(), "test Memo");
+        // then
+        assertThat(memoContents.getContents()).isEqualTo("test Memo");
+    }
+
+    @Test
+    @DisplayName("메모 정상 삭제 테스트")
+    void deleteMemoTest() {
+        // given
+        memoService.deleteMemoContents(savedUsers.getId(), savedBoards.getId());
+        PadContentsDto memoContents = memoService.getMemoContents(savedUsers.getId(), savedBoards.getId());
+        assertThat(memoContents.getContents()).isEmpty();
+    }
 }

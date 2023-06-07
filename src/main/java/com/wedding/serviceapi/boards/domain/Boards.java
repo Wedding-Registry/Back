@@ -4,6 +4,7 @@ import com.wedding.serviceapi.common.domain.BaseEntity;
 import com.wedding.serviceapi.users.domain.Users;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 @Entity
 @DynamicInsert
+@DynamicUpdate
 @Getter
 @Builder
 @AllArgsConstructor
@@ -82,6 +84,14 @@ public class Boards extends BaseEntity {
         int hour = Integer.parseInt(time.substring(0, 2));
         int minute = Integer.parseInt(time.substring(2));
         return LocalTime.of(hour, minute);
+    }
+
+    public void updateMemo(String memo) {
+        this.boardsMemo = memo;
+    }
+
+    public void deleteMemo() {
+        updateMemo("");
     }
 
 }
