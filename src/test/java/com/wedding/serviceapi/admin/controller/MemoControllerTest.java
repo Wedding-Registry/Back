@@ -152,5 +152,4 @@ class MemoControllerTest {
                 .andExpect(jsonPath("data").isEmpty())
                 .andDo(print());
     }
-
 }
