@@ -116,3 +116,8 @@ jobs:
       run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:dev
 
 
+
+
+
+
+
