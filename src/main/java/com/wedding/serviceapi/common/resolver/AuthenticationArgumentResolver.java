@@ -30,6 +30,7 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
         }
 
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
+        // TODO: 2023/06/10 boardsId가 없는 경우 처리해주는 로직 필요
         return new LoginUserVo(authUser.getUserId(), authUser.getUserName(), authUser.getBoardsId(), authUser.getUsers().getRole());
     }
 }
