@@ -13,4 +13,6 @@ public interface BoardsRepository extends JpaRepository<Boards, Long> {
 
     @Query("select b from Boards b where b.users.id = :usersId and b.deletedAt = false")
     Optional<Boards> findByUsersIdNotDeleted(@Param("usersId") Long usersId);
+
+    Optional<Boards> findByUuidFirstAndUuidSecond(String uuidFirst, String uuidSecond);
 }

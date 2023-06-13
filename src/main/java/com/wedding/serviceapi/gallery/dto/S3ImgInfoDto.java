@@ -13,4 +13,8 @@ public class S3ImgInfoDto {
         this.galleryImgId = galleryImg.getId();
         this.galleryImgUrl = galleryImg.getGalleryImgUrl();
     }
+
+    public static S3ImgInfoDto from(GalleryImg galleryImg) {
+        return new S3ImgInfoDto(galleryImg);
+    }
 }
