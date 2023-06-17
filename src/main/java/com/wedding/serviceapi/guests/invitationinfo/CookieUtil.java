@@ -1,7 +1,12 @@
-package com.wedding.serviceapi.common.invitationinfo;
+package com.wedding.serviceapi.guests.invitationinfo;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
+import com.wedding.serviceapi.exception.NoBoardsIdCookieExistException;
+import com.wedding.serviceapi.guests.domain.Guests;
+import com.wedding.serviceapi.guests.repository.GuestsRepository;
+import com.wedding.serviceapi.users.domain.Users;
+import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CookieUtil implements InvitationInfoSetter {
 
     private final BoardsRepository boardsRepository;
+    private final UsersRepository usersRepository;
+    private final GuestsRepository guestsRepository;
 
     private final String BOARDS_ID = "boardsId";
     private final String IS_REGISTERED = "isRegistered";
@@ -53,6 +59,15 @@ public class CookieUtil implements InvitationInfoSetter {
     }
 
     @Override
+    public long getBoardsId(HttpServletRequest request) {
+        String boardsId = Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(BOARDS_ID))
+                .map(Cookie::getValue)
+                .findFirst().orElseThrow(() -> new NoBoardsIdCookieExistException("해당하는 boardsId값이 없습니다."));
+        return Long.parseLong(boardsId);
+    }
+
+    @Override
     public boolean checkIsRegisteredGuest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
@@ -67,5 +82,18 @@ public class CookieUtil implements InvitationInfoSetter {
     public void setRegisteredGuest(HttpServletResponse response) {
         Cookie cookie = new Cookie(IS_REGISTERED, String.valueOf(true));
         response.addCookie(cookie);
+    }
+
+    public void saveGuest(Long usersId, Long boardsId) {
+        boolean isNewInvitedUser = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).isEmpty();
+        if (isNewInvitedUser) {
+            Users invitedUser = usersRepository.getReferenceById(usersId);
+            Boards board = boardsRepository.getReferenceById(boardsId);
+            Guests guest = Guests.builder()
+                    .boards(board)
+                    .users(invitedUser)
+                    .build();
+            guestsRepository.save(guest);
+        }
     }
 }

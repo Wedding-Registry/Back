@@ -91,4 +91,10 @@ public class GlobalExceptionHandler {
         String message = e.getParameterName() + " 값이 없습니다.";
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), message);
     }
+
+    @ExceptionHandler
+    public ErrorResponseVo NoBoardsIdCookieExistException(NoBoardsIdCookieExistException e) {
+        log.error("NoBoardsIdCookieExistException ", e);
+        return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
 }

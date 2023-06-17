@@ -2,12 +2,13 @@ package com.wedding.serviceapi.common.invitationinfo;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.wedding.serviceapi.guests.invitationinfo.CookieUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,15 +24,11 @@ import static org.assertj.core.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class CookieUtilTest {
 
+    @InjectMocks
     private CookieUtil cookieUtil;
 
     @Mock
     BoardsRepository boardsRepository;
-
-    @BeforeEach
-    void set() {
-        cookieUtil = new CookieUtil(boardsRepository);
-    }
 
     @Test
     @DisplayName("요청의 쿠키중 key가 boardsId인 쿠키가 없는 경우")
@@ -86,6 +83,19 @@ class CookieUtilTest {
         cookieUtil.setBoardsId(response, "first", "second");
         // then
         assertThat(response.getCookie("boardsId").getValue()).isEqualTo("1");
+    }
+
+    @Test
+    @DisplayName("쿠키에 boardsId 값이 있을때 정상적으로 가져온다.")
+    void getBoardsId() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        Cookie cookie = new Cookie("boardsId", "1");
+        request.setCookies(cookie);
+        // when
+        long boardsId = cookieUtil.getBoardsId(request);
+        // then
+        assertThat(boardsId).isEqualTo(1L);
     }
 
     @Test
