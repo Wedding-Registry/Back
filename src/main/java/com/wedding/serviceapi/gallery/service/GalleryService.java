@@ -33,13 +33,19 @@ public class GalleryService {
 
         GalleryImg galleryImg = new GalleryImg(boards, galleryImgUrl);
         GalleryImg savedGalleryImg = galleryImgRepository.save(galleryImg);
-        return new S3ImgInfoDto(savedGalleryImg);
+        return S3ImgInfoDto.from(savedGalleryImg);
     }
 
     public List<S3ImgInfoDto> findAllGalleryImg(Long usersId, Long boardsId) {
         List<GalleryImg> galleryImgList = galleryImgRepository.findAllByBoardsIdAndUsersIdNotDeleted(boardsId, usersId);
 
-        return galleryImgList.stream().map(S3ImgInfoDto::new).collect(Collectors.toList());
+        return galleryImgList.stream().map(S3ImgInfoDto::from).collect(Collectors.toList());
+    }
+
+    public List<S3ImgInfoDto> findAllGalleryImg(Long boardsId) {
+        List<GalleryImg> galleryImgList = galleryImgRepository.findAllByBoardsId(boardsId);
+
+        return galleryImgList.stream().map(S3ImgInfoDto::from).collect(Collectors.toList());
     }
 
     public void deleteGalleryImg(Long galleryImgId, Long usersId, Long boardsId) {

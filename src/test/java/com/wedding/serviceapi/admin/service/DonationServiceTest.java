@@ -19,6 +19,7 @@ import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,6 +99,15 @@ class DonationServiceTest {
         GoodsDonation goodsDonation3 = GoodsDonation.builder().guests(invitedGuest2).usersGoods(usersGoods2).goodsDonationAmount(30000).build();
         GoodsDonation goodsDonation4 = GoodsDonation.builder().guests(invitedGuest3).usersGoods(usersGoods2).goodsDonationAmount(40000).build();
         goodsDonationRepository.saveAllAndFlush(List.of(goodsDonation1, goodsDonation2, goodsDonation3, goodsDonation4));
+    }
+
+    @AfterEach
+    void clear() {
+        goodsDonationRepository.deleteAll();
+        goodsRepository.deleteAll();
+        guestsRepository.deleteAll();
+        boardsRepository.deleteAll();
+        usersRepository.deleteAll();
     }
 
     @Test
