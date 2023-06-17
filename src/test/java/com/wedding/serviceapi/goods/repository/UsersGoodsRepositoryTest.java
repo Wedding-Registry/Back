@@ -88,6 +88,26 @@ class UsersGoodsRepositoryTest {
         assertThat(result.getUpdatedUsersGoodsName()).isEqualTo("goods1");
 //        assertThat(result.getUsers().getEmail()).isEqualTo("test");
     }
+
+    @Test
+    @DisplayName("usersId와 boardsId를 통해 usersGoods 목록 가져오기")
+    void findByUsersIdAndBoardsId() {
+        // when
+        List<UsersGoods> result = usersGoodsRepository.findAllByUsersIdAndBoardsIdNotWish(savedUsers.getId(), savedBoards.getId());
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUpdatedUsersGoodsName()).isEqualTo("goods1");
+    }
+
+    @Test
+    @DisplayName("boardsId를 통해 usersGoods 목록 가져오기")
+    void findByBoardsId() {
+        // when
+        List<UsersGoods> result = usersGoodsRepository.findAllByBoardsIdNotWish(savedBoards.getId());
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUpdatedUsersGoodsName()).isEqualTo("goods1");
+    }
     
     @Test
     @DisplayName("후원 정보까지 한번에 가져오는지 테스트")

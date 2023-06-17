@@ -60,6 +60,12 @@ public class UsersGoodsService {
         return usersGoodsList.stream().map(UsersGoodsInfoDto::new).collect(Collectors.toList());
     }
 
+    public List<UsersGoodsInfoDto> findAllUsersGoods(Long boardId) {
+        List<UsersGoods> usersGoodsList = usersGoodsRepository.findAllByBoardsIdNotWish(boardId);
+
+        return usersGoodsList.stream().map(UsersGoodsInfoDto::new).collect(Collectors.toList());
+    }
+
     public UsersGoodsPostResponseDto postUsersGoods(Long userId, String url, Long boardId, boolean wishItem) {
         GoodsRegisterResponseDto goodsInfo = crawlingGoods(url);
 

@@ -15,8 +15,12 @@ public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
 
     Optional<UsersGoods> findByIdAndUsersId(Long id, Long usersId);
 
+    // TODO: 2023/06/17 queryDsl 이용해서 동적쿼리로 생성 가능
     @Query("select u from UsersGoods u join fetch u.goods where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
     List<UsersGoods> findAllByUsersIdAndBoardsIdNotWish(@Param("userId") Long userId, @Param("boardId") Long boardId);
+
+    @Query("select u from UsersGoods u join fetch u.goods where u.boards.id = :boardId and u.wishGoods = false")
+    List<UsersGoods> findAllByBoardsIdNotWish(@Param("boardId") Long boardId);
 
     @Query("select distinct u from UsersGoods u join fetch u.goods join fetch u.donationList where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
     List<UsersGoods> findAllDistinctByUsersIdAndBoardsIdNotWishWithUrlAndDonationId(@Param("userId") Long userId, @Param("boardId") Long boardId);

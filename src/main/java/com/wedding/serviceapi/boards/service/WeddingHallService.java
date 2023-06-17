@@ -27,6 +27,12 @@ public class WeddingHallService {
         return new WeddingHallInfoDto(board);
     }
 
+    @Transactional(readOnly = true)
+    public WeddingHallInfoDto getWeddingHallInfo(Long boardsId) {
+        Boards board = boardsRepository.findById(boardsId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
+        return new WeddingHallInfoDto(board);
+    }
+
 
     public WeddingHallAddressDto postWeddingHallAddress(Long boardsId, String address, Long userId) {
         Boards board = boardsRepository.findByIdAndUsersIdNotDeleted(boardsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
