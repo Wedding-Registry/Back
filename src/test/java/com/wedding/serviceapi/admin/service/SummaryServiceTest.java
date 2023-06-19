@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
+
 @ExtendWith(MockitoExtension.class)
 @Slf4j
 class SummaryServiceTest {
@@ -44,7 +46,7 @@ class SummaryServiceTest {
         // when
         AttendanceSummaryDto attendanceSummary = summaryService.getAttendanceSummary(Mockito.anyLong());
         // then
-        Assertions.assertThat(attendanceSummary.getYesRate()).isZero();
+        assertThat(attendanceSummary.getYesRate()).isZero();
     }
 
     @Test
@@ -63,17 +65,17 @@ class SummaryServiceTest {
         // when
         AttendanceSummaryDto attendanceSummary = summaryService.getAttendanceSummary(Mockito.anyLong());
         // then
-        Assertions.assertThat(attendanceSummary.getTotal()).isEqualTo(7);
-        Assertions.assertThat(attendanceSummary.getYes()).isEqualTo(2);
-        Assertions.assertThat(attendanceSummary.getYesRate()).isEqualTo(29);
-        Assertions.assertThat(attendanceSummary.getNo()).isEqualTo(2);
-        Assertions.assertThat(attendanceSummary.getNoRate()).isEqualTo(29);
-        Assertions.assertThat(attendanceSummary.getUnknown()).isEqualTo(3);
-        Assertions.assertThat(attendanceSummary.getUnknownRate()).isEqualTo(43);
+        assertThat(attendanceSummary.getTotal()).isEqualTo(7);
+        assertThat(attendanceSummary.getYes()).isEqualTo(2);
+        assertThat(attendanceSummary.getYesRate()).isEqualTo(29);
+        assertThat(attendanceSummary.getNo()).isEqualTo(2);
+        assertThat(attendanceSummary.getNoRate()).isEqualTo(29);
+        assertThat(attendanceSummary.getUnknown()).isEqualTo(3);
+        assertThat(attendanceSummary.getUnknownRate()).isEqualTo(43);
     }
 
     @Test
-    @DisplayName("내림차순 정렬 테스트")
+    @DisplayName("내림차순 정렬 테스트 시 상품이 5개 이상인 경우 3개의 상품만 보여준다.")
     void sortUsersGoods() {
         // given
         UsersGoods goods1 = UsersGoods.builder().id(1L).updatedUsersGoodsName("goods1").updatedUsersGoodsPrice(100).usersGoodsTotalDonation(90).build();
@@ -86,8 +88,48 @@ class SummaryServiceTest {
         // when
         List<DonationSummaryDto> donationSummary = summaryService.getDonationSummary(1L, 1L);
         // then
-        Assertions.assertThat(donationSummary.size()).isEqualTo(3);
-        Assertions.assertThat(donationSummary.get(0).getUsersGoodsTotalDonation()).isEqualTo(95);
+        assertThat(donationSummary.size()).isEqualTo(3);
+        assertThat(donationSummary.get(0).getUsersGoodsTotalDonation()).isEqualTo(95);
+    }
+
+    @Test
+    @DisplayName("내림차순 정렬 테스트 시 상품이 3개 미만인 경우 전체 상품을 보여준다.")
+    void sortUsersGoodsOnlyTwoProduct() {
+        // given
+        UsersGoods goods1 = UsersGoods.builder().id(1L).updatedUsersGoodsName("goods1").updatedUsersGoodsPrice(100).usersGoodsTotalDonation(80).build();
+        UsersGoods goods2 = UsersGoods.builder().id(1L).updatedUsersGoodsName("goods2").updatedUsersGoodsPrice(100).usersGoodsTotalDonation(90).build();
+        List<UsersGoods> goodsList = List.of(goods1, goods2);
+        Mockito.doReturn(goodsList).when(usersGoodsRepository).findAllByUsersIdAndBoardsIdNotWish(1L, 1L);
+        // when
+        List<DonationSummaryDto> donationSummary = summaryService.getDonationSummary(1L, 1L);
+        // then
+        assertThat(donationSummary.size()).isEqualTo(2);
+        assertThat(donationSummary).extracting("usersGoodsName", "usersGoodsTotalDonation")
+                .containsExactly(
+                        tuple("goods2", 90),
+                        tuple("goods1", 80)
+                );
+    }
+
+    @Test
+    @DisplayName("내림차순 정렬 테스트 시 상품이 3개 경우 전체 상품을 보여준다.")
+    void sortUsersGoodsOnlyThreeProduct() {
+        // given
+        UsersGoods goods1 = UsersGoods.builder().id(1L).updatedUsersGoodsName("goods1").updatedUsersGoodsPrice(100).usersGoodsTotalDonation(80).build();
+        UsersGoods goods2 = UsersGoods.builder().id(1L).updatedUsersGoodsName("goods2").updatedUsersGoodsPrice(100).usersGoodsTotalDonation(90).build();
+        UsersGoods goods3 = UsersGoods.builder().id(1L).updatedUsersGoodsName("goods3").updatedUsersGoodsPrice(100).usersGoodsTotalDonation(95).build();
+        List<UsersGoods> goodsList = List.of(goods1, goods2, goods3);
+        Mockito.doReturn(goodsList).when(usersGoodsRepository).findAllByUsersIdAndBoardsIdNotWish(1L, 1L);
+        // when
+        List<DonationSummaryDto> donationSummary = summaryService.getDonationSummary(1L, 1L);
+        // then
+        assertThat(donationSummary.size()).isEqualTo(3);
+        assertThat(donationSummary).extracting("usersGoodsName", "usersGoodsTotalDonation")
+                .containsExactly(
+                        tuple("goods3", 95),
+                        tuple("goods2", 90),
+                        tuple("goods1", 80)
+                );
     }
 }
 
