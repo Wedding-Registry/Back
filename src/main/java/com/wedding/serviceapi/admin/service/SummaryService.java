@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,13 @@ public class SummaryService {
 
     public List<DonationSummaryDto> getDonationSummary(Long usersId, Long boardsId) {
         List<UsersGoods> usersGoodsList = usersGoodsRepository.findAllByUsersIdAndBoardsIdNotWish(usersId, boardsId);
-        return usersGoodsList.stream().map(DonationSummaryDto::of)
+        List<DonationSummaryDto> allDonationSummary = usersGoodsList.stream().map(DonationSummaryDto::of)
                 .sorted()
-                .collect(Collectors.toList()).subList(0, 3);
+                .collect(Collectors.toList());
+
+        int firstIndex = 0;
+        int endIndex = 3;
+
+        return (allDonationSummary.size() < 3) ? allDonationSummary : new ArrayList<>(allDonationSummary.subList(firstIndex, endIndex));
     }
 }
