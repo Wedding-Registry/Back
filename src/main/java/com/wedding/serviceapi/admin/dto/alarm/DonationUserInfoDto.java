@@ -4,10 +4,12 @@ import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.guests.domain.GoodsDonation;
 import com.wedding.serviceapi.users.domain.Users;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
+@Getter
 public class DonationUserInfoDto {
     private Long goodsDonationId;
     private String name;
