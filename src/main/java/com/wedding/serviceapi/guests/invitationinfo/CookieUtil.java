@@ -58,6 +58,8 @@ public class CookieUtil implements InvitationInfoSetter {
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(86400);
+        cookie.setPath("/");
+        cookie.setDomain("localhost:5173");
         response.addCookie(cookie);
     }
 
