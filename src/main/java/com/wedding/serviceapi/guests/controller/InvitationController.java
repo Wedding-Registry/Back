@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -42,6 +43,12 @@ public class InvitationController {
     @GetMapping("/gallery/images")
     public ResponseVo<List<S3ImgInfoDto>> findAllGalleryImg(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
         log.info("[findAllGalleryImg guest controller] usersId = {}", loginUserVo.getUserId());
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                log.info("cookie info key = {}, value = {}", cookie.getName(), cookie.getValue());
+            }
+        }
         List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request, response, loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
