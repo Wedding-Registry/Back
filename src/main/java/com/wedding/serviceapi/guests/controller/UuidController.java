@@ -3,15 +3,15 @@ package com.wedding.serviceapi.guests.controller;
 import com.wedding.serviceapi.auth.vo.LoginUser;
 import com.wedding.serviceapi.auth.vo.LoginUserVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
+import com.wedding.serviceapi.guests.dto.UuidRequestDto;
 import com.wedding.serviceapi.guests.dto.UuidResponseDto;
 import com.wedding.serviceapi.guests.service.UuidService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
@@ -30,9 +30,15 @@ public class UuidController {
     }
 
     @PostMapping
-    public ResponseVo<Void> postBoardsIdCookie(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[postBoardsIdCookie controller] usersId = {}", loginUserVo.getUserId());
-        return null;
+    public ResponseVo<Void> postBoardsIdCookie(@LoginUser LoginUserVo loginUserVo,
+                                               @RequestBody UuidRequestDto uuidRequestDto,
+                                               HttpServletResponse response
+    ) {
+        log.info("[postBoardsIdCookie controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
+                loginUserVo.getUserId(), uuidRequestDto.getUuidFirst(), uuidRequestDto.getUuidSecond());
+        uuidService.setBoardsIdCookie(uuidRequestDto.getUuidFirst(), uuidRequestDto.getUuidSecond(), response);
+
+        return new ResponseVo<>(true, HttpStatus.OK.value(), null);
     }
 }
 
