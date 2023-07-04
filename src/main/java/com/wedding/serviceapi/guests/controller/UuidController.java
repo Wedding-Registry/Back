@@ -38,7 +38,8 @@ public class UuidController {
         log.info("[postBoardsIdCookie controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
                 loginUserVo.getUserId(), uuidRequestDto.getUuidFirst(), uuidRequestDto.getUuidSecond());
         uuidService.setBoardsIdCookie(uuidRequestDto.getUuidFirst(), uuidRequestDto.getUuidSecond(), response);
-
+        String cookie = response.getHeader("set-cookie");
+        log.info("cookie value = {}", cookie);
         return new ResponseVo<>(true, HttpStatus.OK.value(), null);
     }
 }

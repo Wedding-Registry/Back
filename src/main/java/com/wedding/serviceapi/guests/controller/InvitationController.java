@@ -43,12 +43,14 @@ public class InvitationController {
     @GetMapping("/gallery/images")
     public ResponseVo<List<S3ImgInfoDto>> findAllGalleryImg(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
         log.info("[findAllGalleryImg guest controller] usersId = {}", loginUserVo.getUserId());
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                log.info("cookie info key = {}, value = {}", cookie.getName(), cookie.getValue());
-            }
-        }
+        String cookie = request.getHeader("set-cookie");
+        log.info("request cookie = {}", cookie);
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                log.info("cookie info key = {}, value = {}", cookie.getName(), cookie.getValue());
+//            }
+//        }
         List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request, response, loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
