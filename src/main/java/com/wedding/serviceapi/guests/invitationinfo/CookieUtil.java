@@ -55,6 +55,9 @@ public class CookieUtil implements InvitationInfoSetter {
         Boards boards = boardsRepository.findByUuidFirstAndUuidSecond(uuidFirst, uuidSecond)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
         Cookie cookie = new Cookie(BOARDS_ID, String.valueOf(boards.getId()));
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(86400);
         response.addCookie(cookie);
     }
 
@@ -82,6 +85,7 @@ public class CookieUtil implements InvitationInfoSetter {
     public void setRegisteredGuest(HttpServletResponse response) {
         Cookie cookie = new Cookie(IS_REGISTERED, String.valueOf(true));
         response.addCookie(cookie);
+        // TODO: 2023/07/04 http only 쿠키 등 추가 설정 필요
     }
 
     public void saveGuest(Long usersId, Long boardsId) {

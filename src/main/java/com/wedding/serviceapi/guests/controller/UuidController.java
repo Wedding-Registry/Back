@@ -9,6 +9,7 @@ import com.wedding.serviceapi.guests.service.UuidService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +32,7 @@ public class UuidController {
 
     @PostMapping
     public ResponseVo<Void> postBoardsIdCookie(@LoginUser LoginUserVo loginUserVo,
-                                               @RequestBody UuidRequestDto uuidRequestDto,
+                                               @Validated @RequestBody UuidRequestDto uuidRequestDto,
                                                HttpServletResponse response
     ) {
         log.info("[postBoardsIdCookie controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
