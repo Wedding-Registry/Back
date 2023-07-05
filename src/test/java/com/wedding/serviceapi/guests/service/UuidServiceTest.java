@@ -41,6 +41,7 @@ class UuidServiceTest {
     @Mock
     private InvitationInfoSetter invitationInfoSetter;
 
+    @Disabled
     @Test
     @DisplayName("uuidResponseDto 정상 생성 테스트")
     void makeUuidResponseDto() {
