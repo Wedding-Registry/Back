@@ -15,16 +15,21 @@ import com.wedding.serviceapi.goods.controller.UsersGoodsController;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
+import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
 import com.wedding.serviceapi.guests.invitationinfo.InvitationInfoSetter;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.guests.service.InvitationService;
 import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
+import com.wedding.serviceapi.guests.vo.RequestDonationVo;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -70,6 +75,8 @@ class InvitationControllerTest {
     WeddingHallService weddingHallService;
     @MockBean
     GuestsRepository guestsRepository;
+    @MockBean
+    UsersGoodsRepository usersGoodsRepository;
 
     @Autowired
     MockMvc mockMvc;
@@ -215,6 +222,76 @@ class InvitationControllerTest {
                 .andExpect(jsonPath("data").isEmpty())
                 .andExpect(cookie().exists("isRegistered"))
                 .andExpect(cookie().value("isRegistered", "true"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("상품 후원 시 상품 아이디가 없으면 안된다.")
+    @WithCustomMockUser
+    void postDonationWithoutId() throws Exception {
+        // given
+        String url = "/invitation/weddingHall/donation";
+        RequestDonationVo requestBody = RequestDonationVo.builder().donation(1000).build();
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBody)));
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(false))
+                .andExpect(jsonPath("status").value(400))
+                .andExpect(jsonPath("message").value("상품 번호는 필수입니다."))
+                .andDo(print());
+    }
+
+    @ParameterizedTest
+    @DisplayName("상품 후원 시 축의금 금액 값이 0이거나 음수이면 안된다.")
+    @ValueSource(ints = {0, -1000})
+    @WithCustomMockUser
+    void postDonationWithoutDonation(int donation) throws Exception {
+        // given
+        String url = "/invitation/weddingHall/donation";
+        RequestDonationVo requestBody = RequestDonationVo.builder().usersGoodsId(1L).donation(donation).build();
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBody)));
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(false))
+                .andExpect(jsonPath("status").value(400))
+                .andExpect(jsonPath("message").value("상품 후원 금액이 옳바르지 않습니다."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("상품 후원 시 해당 상품 관련 후원 정보를 얻을 수 있습니다.")
+    @WithCustomMockUser
+    void postDonation() throws Exception {
+        // given
+        String url = "/invitation/weddingHall/donation";
+        RequestDonationVo requestBody = RequestDonationVo.builder().usersGoodsId(1L).donation(1000).build();
+        UsersGoodsInfoResponseDto result = UsersGoodsInfoResponseDto.builder()
+                .usersGoods(UsersGoods.builder()
+                        .id(1L)
+                        .updatedUsersGoodsName("test")
+                        .updatedUsersGoodsPrice(10000)
+                        .usersGoodsTotalDonation(3000)
+                        .goods(Goods.builder().goodsImgUrl("imgUrl").build())
+                        .build()
+                ).build();
+        doReturn(result).when(invitationService).donateUsersGoods(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), anyLong(), anyInt(), anyLong());
+        // when
+        ResultActions resultActions = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBody)));
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(true))
+                .andExpect(jsonPath("status").value(202))
+                .andExpect(jsonPath("data.size()").value(6))
                 .andDo(print());
     }
 }

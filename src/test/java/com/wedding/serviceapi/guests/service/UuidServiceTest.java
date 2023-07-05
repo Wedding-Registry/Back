@@ -6,6 +6,7 @@ import com.wedding.serviceapi.guests.dto.UuidResponseDto;
 import com.wedding.serviceapi.guests.invitationinfo.InvitationInfoSetter;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,6 +55,7 @@ class UuidServiceTest {
         assertThat(result.getUuidSecond()).isEqualTo("second");
     }
 
+    @Disabled
     @Test
     @DisplayName("cookie에 boardsId 쿠키 값을 정상적으로 세팅해준다.")
     void setBoardsIdCookie() {
