@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -51,6 +52,10 @@ public class InvitationController {
 //                log.info("cookie info key = {}, value = {}", cookie.getName(), cookie.getValue());
 //            }
 //        }
+
+        HttpSession session = request.getSession();
+        Long boardsId = (Long) session.getAttribute("boardsId");
+        log.info("boardsId = {}", boardsId);
         List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request, response, loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);

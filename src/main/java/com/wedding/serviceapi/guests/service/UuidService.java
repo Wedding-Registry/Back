@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class UuidService {
         return UuidResponseDto.from(boards);
     }
 
-    public void setBoardsIdCookie(String uuidFirst, String uuidSecond, HttpServletResponse response) {
-        invitationInfoSetter.setBoardsId(response, uuidFirst, uuidSecond);
+    public void setBoardsIdCookie(String uuidFirst, String uuidSecond, HttpServletResponse response, HttpServletRequest request) {
+        invitationInfoSetter.setBoardsId(request, response, uuidFirst, uuidSecond);
     }
 }

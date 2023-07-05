@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
@@ -51,15 +52,20 @@ public class CookieUtil implements InvitationInfoSetter {
      * uuid1, uuid2 를 이용해 boardsId를 찾아서 쿠키에 저장한다.
      */
     @Override
-    public void setBoardsId(HttpServletResponse response, String uuidFirst, String uuidSecond) {
+    public void setBoardsId(HttpServletRequest request, HttpServletResponse response, String uuidFirst, String uuidSecond) {
         Boards boards = boardsRepository.findByUuidFirstAndUuidSecond(uuidFirst, uuidSecond)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 웨딩 게시판이 없습니다."));
         Cookie cookie = new Cookie(BOARDS_ID, String.valueOf(boards.getId()));
+        cookie.setDomain("localhost");
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(86400);
-        cookie.setPath("https://localhost:5173");
+        cookie.setPath("/");
         response.addCookie(cookie);
+
+        HttpSession session = request.getSession();
+        session.setAttribute("boardsId", boards.getId());
+
     }
 
     @Override

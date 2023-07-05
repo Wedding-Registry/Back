@@ -11,7 +11,7 @@ on:
   push:
     branches:
     - dev
-    - feature/WEDPRO-88
+#    - feature/WEDPRO-88
 
 env:
   REGISTRY: ghcr.io/wedding-registry

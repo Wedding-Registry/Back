@@ -23,7 +23,7 @@ public interface InvitationInfoSetter {
 
     boolean checkIsBoardsIdExist(HttpServletRequest request);
 
-    void setBoardsId(HttpServletResponse response, String uuidFirst, String uuidSecond);
+    void setBoardsId(HttpServletRequest request, HttpServletResponse response, String uuidFirst, String uuidSecond);
 
     long getBoardsId(HttpServletRequest request);
 
