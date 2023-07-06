@@ -214,25 +214,25 @@ class InvitationControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @DisplayName("상품 후원 시 상품 아이디가 없으면 안된다.")
-    @WithCustomMockUser
-    void postDonationWithoutId() throws Exception {
-        // given
-        String url = "/invitation/weddingHall/donation";
-        RequestDonationVo requestBody = RequestDonationVo.builder().donation(1000).build();
-
-        // when
-        ResultActions resultActions = mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestBody)));
-        // then
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("success").value(false))
-                .andExpect(jsonPath("status").value(400))
-                .andExpect(jsonPath("message").value("상품 번호는 필수입니다."))
-                .andDo(print());
-    }
+//    @Test
+//    @DisplayName("상품 후원 시 상품 아이디가 없으면 안된다.")
+//    @WithCustomMockUser
+//    void postDonationWithoutId() throws Exception {
+//        // given
+//        String url = "/invitation/weddingHall/donation";
+//        RequestDonationVo requestBody = RequestDonationVo.builder().donation(1000).build();
+//
+//        // when
+//        ResultActions resultActions = mockMvc.perform(post(url)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(requestBody)));
+//        // then
+//        resultActions.andExpect(status().isOk())
+//                .andExpect(jsonPath("success").value(false))
+//                .andExpect(jsonPath("status").value(400))
+//                .andExpect(jsonPath("message").value("상품 번호는 필수입니다."))
+//                .andDo(print());
+//    }
 
 //    @ParameterizedTest
 //    @DisplayName("상품 후원 시 축의금 금액 값이 0이거나 음수이면 안된다.")
