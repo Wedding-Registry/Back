@@ -2,7 +2,7 @@ package com.wedding.serviceapi.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.auth.securitycustom.AuthUser;
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.common.vo.ErrorResponseVo;
 import com.wedding.serviceapi.common.vo.LoginUserInfoVo;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final AuthJwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
     private final List<String> URL_MATCHER = new ArrayList<>(

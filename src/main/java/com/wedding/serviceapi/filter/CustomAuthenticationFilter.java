@@ -1,9 +1,9 @@
 package com.wedding.serviceapi.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.auth.securitycustom.AuthUser;
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
 import com.wedding.serviceapi.auth.vo.LoginRequestVo;
 import com.wedding.serviceapi.common.vo.ErrorResponseVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -29,10 +28,10 @@ import java.util.*;
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final JwtUtil jwtUtil;
+    private final AuthJwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
-    public CustomAuthenticationFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
+    public CustomAuthenticationFilter(AuthJwtUtil jwtUtil, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
     }

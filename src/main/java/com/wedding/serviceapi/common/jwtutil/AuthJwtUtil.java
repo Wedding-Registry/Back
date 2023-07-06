@@ -1,11 +1,10 @@
-package com.wedding.serviceapi.auth.jwtutil;
+package com.wedding.serviceapi.common.jwtutil;
 
 import com.wedding.serviceapi.common.vo.LoginUserInfoVo;
 import com.wedding.serviceapi.users.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -14,14 +13,19 @@ import java.util.Base64;
 import java.util.Date;
 
 @Component
-public class JwtUtil implements JwtUtilBean {
+public class AuthJwtUtil extends JwtUtilBean<LoginUserInfoVo> {
 
-    @Value("${jwt.secret.key}")
-    String secret;
-    @Value("${jwt.secret.access-valid-time}")
-    Long accessTokenValidTime;
-    @Value("${jwt.secret.refresh-valid-time}")
-    Long refreshTokenValidTime;
+//    @Value("${jwt.secret.key}")
+//    String secret;
+//    @Value("${jwt.secret.access-valid-time}")
+//    Long accessTokenValidTime;
+//    @Value("${jwt.secret.refresh-valid-time}")
+//    Long refreshTokenValidTime;
+
+    @Override
+    public String makeGuestInfoJwt(Long boardsId, Long usersId) {
+        return null;
+    }
 
     @Override
     public ArrayList<String> makeAccessTokenAndRefreshToken(Long userId, String userName, Long boardsId, Role role) {
@@ -57,10 +61,10 @@ public class JwtUtil implements JwtUtilBean {
                 .compact();
     }
 
-    private Key makeKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+//    private Key makeKey() {
+//        byte[] keyBytes = Base64.getDecoder().decode(secret);
+//        return Keys.hmacShaKeyFor(keyBytes);
+//    }
 
     @Override
     public LoginUserInfoVo decodeJwt(String authorizationHeader) {

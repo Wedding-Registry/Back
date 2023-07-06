@@ -1,7 +1,7 @@
 package com.wedding.serviceapi.auth.service;
 
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.exception.AlreadyExistedUserException;
 import com.wedding.serviceapi.exception.InvalidSocialPasswordException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class AuthService {
 
     private final UsersRepository usersRepository;
-    private final JwtUtil jwtUtil;
+    private final AuthJwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
     public LoginSuccessDto registerUser(String name, String email, String password, String passwordCheck, boolean notification) {

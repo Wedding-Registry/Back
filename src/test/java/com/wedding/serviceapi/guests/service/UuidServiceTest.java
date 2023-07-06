@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.mock.http.client.MockClientHttpResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.Cookie;
@@ -58,14 +59,15 @@ class UuidServiceTest {
     @DisplayName("cookie에 boardsId 쿠키 값을 정상적으로 세팅해준다.")
     void setBoardsIdCookie() {
         // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         doAnswer(invocation -> {
-            HttpServletResponse res = invocation.getArgument(0);
+            HttpServletResponse res = invocation.getArgument(1);
             res.addCookie(new Cookie("boardsId", "1"));
             return null;
-        }).when(invitationInfoSetter).setBoardsId(response, "first", "second");
+        }).when(invitationInfoSetter).setBoardsId(request, response, "first", "second");
         // when
-        uuidService.setBoardsIdCookie("first", "second", response);
+        uuidService.setBoardsIdCookie("first", "second", response, request);
         // then
         assertThat(response.getCookie("boardsId").getValue()).isEqualTo("1");
     }

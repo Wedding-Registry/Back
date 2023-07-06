@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -55,7 +56,7 @@ class UuidControllerTest {
             HttpServletResponse res = invocation.getArgument(2);
             res.addCookie(new Cookie("boardsId", "1"));
             return null;
-        }).when(uuidService).setBoardsIdCookie(anyString(), anyString(), any(MockHttpServletResponse.class));
+        }).when(uuidService).setBoardsIdCookie(anyString(), anyString(), any(MockHttpServletResponse.class), any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON)

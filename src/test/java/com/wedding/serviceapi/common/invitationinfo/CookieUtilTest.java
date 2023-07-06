@@ -79,8 +79,9 @@ class CookieUtilTest {
         Boards boards = Boards.builder().id(1L).uuidFirst("first").uuidSecond("second").build();
         Mockito.doReturn(Optional.of(boards)).when(boardsRepository).findByUuidFirstAndUuidSecond("first", "second");
         MockHttpServletResponse response = new MockHttpServletResponse();
+        MockHttpServletRequest request = new MockHttpServletRequest();
         // when
-        cookieUtil.setBoardsId(response, "first", "second");
+        cookieUtil.setBoardsId(request, response, "first", "second");
         // then
         assertThat(response.getCookie("boardsId").getValue()).isEqualTo("1");
     }
