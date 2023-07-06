@@ -73,8 +73,7 @@ public class UsersGoods {
     }
 
     public void donateMoney(Integer money) {
-        // TODO: 2023/03/18 money 유효성 검사 설정한 값보다 많은 돈이 들어와도 되는가
-        this.usersGoodsTotalDonation = this.usersGoodsTotalDonation == null ? money : ++money;
+        this.usersGoodsTotalDonation = this.usersGoodsTotalDonation == null ? money : this.usersGoodsTotalDonation + money;
     }
 }
 

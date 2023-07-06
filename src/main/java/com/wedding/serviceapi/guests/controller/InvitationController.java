@@ -8,11 +8,14 @@ import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
 import com.wedding.serviceapi.guests.service.InvitationService;
 import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
+import com.wedding.serviceapi.guests.vo.RequestDonationVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -86,6 +89,18 @@ public class InvitationController {
 
         return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
     }
+
+//    @PostMapping("/weddingHall/donation")
+//    public ResponseVo<UsersGoodsInfoResponseDto> postDonation(@LoginUser LoginUserVo loginUserVo,
+//                                                              HttpServletRequest request,
+//                                                              HttpServletResponse response,
+//                                                              @Validated @RequestBody RequestDonationVo requestDonationVo) {
+//        log.info("[postDonation controller] usersId = {}, usersGoodsId = {}, donation = {}",
+//                loginUserVo.getUserId(), requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation());
+//        UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, response, requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation(), loginUserVo.getUserId());
+//
+//        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
+//    }
 }
 
 

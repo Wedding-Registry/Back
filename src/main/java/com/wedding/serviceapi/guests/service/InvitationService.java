@@ -56,4 +56,11 @@ public class InvitationService {
         Guests guests = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).orElseThrow(() -> new NoSuchElementException("해당 사용자는 초대되지 않았습니다."));
         guests.changeAttendanceType(attendanceType);
     }
+
+//    public UsersGoodsInfoResponseDto donateUsersGoods(HttpServletRequest request, HttpServletResponse response, Long usersGoodsId, int donation, Long usersId) {
+//        invitationInfoSetter.checkInvitationInfoAndSettingInfoIfNotExist(request, response, usersId);
+//        UsersGoods usersGoods = usersGoodsRepository.findById(usersGoodsId).orElseThrow(() -> new NoSuchElementException("해당하는 상품 항목이 없습니다."));
+//        usersGoods.donateMoney(donation);
+//        return UsersGoodsInfoResponseDto.from(usersGoods);
+//    }
 }
