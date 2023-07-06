@@ -1,6 +1,5 @@
 package com.wedding.serviceapi.guests.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.WithCustomMockUser;
 import com.wedding.serviceapi.boards.domain.Boards;
@@ -11,13 +10,11 @@ import com.wedding.serviceapi.exception.NoBoardsIdCookieExistException;
 import com.wedding.serviceapi.gallery.domain.GalleryImg;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.gallery.service.GalleryService;
-import com.wedding.serviceapi.goods.controller.UsersGoodsController;
 import com.wedding.serviceapi.goods.domain.Goods;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
-import com.wedding.serviceapi.guests.invitationinfo.InvitationInfoSetter;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.guests.service.InvitationService;
 import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
@@ -25,7 +22,6 @@ import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,12 +35,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;

@@ -1,10 +1,13 @@
 package com.wedding.serviceapi.common.vo;
 
-public class GuestInfoBoardVo {
+import lombok.Getter;
+
+@Getter
+public class GuestBoardInfoVo {
     private Long boardsId;
     private Boolean isRegistered;
 
-    public GuestInfoBoardVo(Long boardsId, Boolean isRegistered) {
+    public GuestBoardInfoVo(Long boardsId, Boolean isRegistered) {
         this.boardsId = boardsId;
         this.isRegistered = isRegistered;
     }

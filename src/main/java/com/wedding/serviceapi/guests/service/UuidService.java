@@ -2,17 +2,15 @@ package com.wedding.serviceapi.guests.service;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
+import com.wedding.serviceapi.guests.dto.GuestInfoJwtDto;
 import com.wedding.serviceapi.guests.dto.UuidResponseDto;
-import com.wedding.serviceapi.guests.invitationinfo.InvitationInfoSetter;
+import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,7 +19,7 @@ import java.util.Optional;
 public class UuidService {
 
     private final BoardsRepository boardsRepository;
-    private final InvitationInfoSetter invitationInfoSetter;
+    private final GuestInvitationInfoCheck headerUtil;
 
     public UuidResponseDto getUuid(Long boardsId, Long usersId) {
         Boards boards = boardsRepository.findByIdAndUsersIdNotDeleted(boardsId, usersId)
@@ -29,7 +27,11 @@ public class UuidService {
         return UuidResponseDto.from(boards);
     }
 
-    public void setBoardsIdCookie(String uuidFirst, String uuidSecond, HttpServletResponse response, HttpServletRequest request) {
-        invitationInfoSetter.setBoardsId(request, response, uuidFirst, uuidSecond);
+    public GuestInfoJwtDto makeGuestInfoJwt(String uuidFirst, String uuidSecond, Long usersId) {
+        Boards boards = boardsRepository.findByUuidFirstAndUuidSecond(uuidFirst, uuidSecond)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 결혼 게시판이 없습니다."));
+
+        String jwt = headerUtil.makeGuestBoardInfoJwt(boards.getId(), usersId);
+        return GuestInfoJwtDto.of(jwt);
     }
 }

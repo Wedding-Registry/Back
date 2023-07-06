@@ -1,7 +1,7 @@
 package com.wedding.serviceapi.common.jwtutil;
 
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
-import com.wedding.serviceapi.common.vo.GuestInfoBoardVo;
+import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
 import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.users.domain.Role;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class GuestInfoJwtUtil extends JwtUtilBean<GuestInfoBoardVo>{
+public class GuestInfoJwtUtil extends JwtUtilBean<GuestBoardInfoVo>{
 
     private final GuestsRepository guestsRepository;
     private final UsersRepository usersRepository;
@@ -58,7 +58,7 @@ public class GuestInfoJwtUtil extends JwtUtilBean<GuestInfoBoardVo>{
     }
 
     @Override
-    public GuestInfoBoardVo decodeJwt(String jwt) {
+    public GuestBoardInfoVo decodeJwt(String jwt) {
         Key key = makeKey();
 
         Claims claims;
@@ -71,6 +71,6 @@ public class GuestInfoJwtUtil extends JwtUtilBean<GuestInfoBoardVo>{
         Long boardsId = claims.get(BOARDS_ID, Long.class);
         Boolean isRegistered = claims.get(IS_REGISTERED, Boolean.class);
 
-        return new GuestInfoBoardVo(boardsId, isRegistered);
+        return new GuestBoardInfoVo(boardsId, isRegistered);
     }
 }

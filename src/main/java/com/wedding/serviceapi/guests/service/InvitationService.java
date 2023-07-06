@@ -6,7 +6,6 @@ import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
 import com.wedding.serviceapi.guests.domain.Guests;
-import com.wedding.serviceapi.guests.invitationinfo.InvitationInfoSetter;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.gallery.service.GalleryService;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional

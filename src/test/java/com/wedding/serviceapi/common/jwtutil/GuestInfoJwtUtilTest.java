@@ -2,17 +2,20 @@ package com.wedding.serviceapi.common.jwtutil;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
-import com.wedding.serviceapi.common.vo.GuestInfoBoardVo;
+import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
 import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,13 +24,15 @@ import static org.assertj.core.api.Assertions.*;
 class GuestInfoJwtUtilTest {
 
     @Autowired
-    JwtUtilBean<GuestInfoBoardVo> jwtUtil;
+    JwtUtilBean<GuestBoardInfoVo> jwtUtil;
     @Autowired
     UsersRepository usersRepository;
     @Autowired
     BoardsRepository boardsRepository;
     @Autowired
     GuestsRepository guestsRepository;
+
+    String jwt;
 
     @DisplayName("guest 테이블에 등록되지 않은 사용자라면 테이블에 등록해주고 jwt를 발급한다.")
     @Test
@@ -56,15 +61,28 @@ class GuestInfoJwtUtilTest {
                 .hasMessage("잘못된 토큰 값입니다.");
     }
 
-    @DisplayName("다이나믹 테스트로 토큰 검사하기")
-    @Test
-    void dynamicTest() {
-        // given
-
-        // when
-
-        // then
-
+    @TestFactory
+    Collection<DynamicTest> guestInfoJwtDynamicTest() {
+//        AtomicReference<String> jwt;
+        return List.of(
+                DynamicTest.dynamicTest("올바른 요청이라면 jwt 토큰을 발급해준다.", () -> {
+                    // given
+                    Users users = makeUser("user");
+                    Users guest = makeUser("guest");
+                    Boards boards = makeBoard(users);
+                    // when
+                    jwt = jwtUtil.makeGuestInfoJwt(boards.getId(), guest.getId());
+                    // then
+                    assertThat(jwt).isNotEmpty();
+                    Optional<Guests> optional = guestsRepository.findByUsersIdAndBoardsId(guest.getId(), boards.getId());
+                    assertThat(optional.isPresent()).isTrue();
+                }),
+                DynamicTest.dynamicTest("jwt를 전달받으면 정상적으로 토큰을 해석해준다.", () -> {
+                    GuestBoardInfoVo guestInfoBoardVo = jwtUtil.decodeJwt(jwt);
+                    assertThat(guestInfoBoardVo.getBoardsId()).isNotNull();
+                    assertThat(guestInfoBoardVo.getIsRegistered()).isTrue();
+                })
+        );
     }
 
 
