@@ -181,7 +181,7 @@ class DonationServiceTest {
     void 계좌이체메모수정_성공() {
         // given
         String transferMemo = "testMemo";
-        Long boardsId = 1L;
+        Long boardsId = savedBoards.getId();
         AccountTransferInfoDto accountTransferInfoDto = donationService.postAccountTransferMemo(boardsId, transferMemo);
         String newTransferMemo = "new test memo";
         // when

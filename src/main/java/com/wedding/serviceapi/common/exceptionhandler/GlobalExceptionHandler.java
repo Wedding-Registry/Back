@@ -93,8 +93,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ErrorResponseVo NoBoardsIdCookieExistException(NoBoardsIdCookieExistException e) {
-        log.error("NoBoardsIdCookieExistException ", e);
+    public ErrorResponseVo NoGuestBoardsInfoJwtExistException(NoGuestBoardsInfoJwtExistException e) {
+        log.error("NoGuestBoardsInfoJwtExistException ", e);
         return new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }

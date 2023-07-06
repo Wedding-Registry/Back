@@ -6,7 +6,7 @@ import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.domain.HusbandAndWifeEachInfo;
 import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
-import com.wedding.serviceapi.exception.NoBoardsIdCookieExistException;
+import com.wedding.serviceapi.exception.NoGuestBoardsInfoJwtExistException;
 import com.wedding.serviceapi.gallery.domain.GalleryImg;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.gallery.service.GalleryService;
@@ -15,6 +15,7 @@ import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.guests.service.InvitationService;
 import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
@@ -35,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
@@ -57,13 +59,13 @@ class InvitationControllerTest {
     @MockBean
     GalleryService galleryService;
     @MockBean
-    InvitationInfoSetter invitationInfoSetter;
-    @MockBean
     UsersGoodsService usersGoodsService;
     @MockBean
     WeddingHallService weddingHallService;
     @MockBean
     GuestsRepository guestsRepository;
+    @MockBean
+    GuestInvitationInfoCheck guestInvitationInfoCheck;
 
     @Autowired
     MockMvc mockMvc;
@@ -74,7 +76,7 @@ class InvitationControllerTest {
     void boardsIdCookieNotExist() throws Exception {
         // given
         String url = "/invitation/gallery/images";
-        doThrow(new NoBoardsIdCookieExistException("어떤 게시판인지 알 수 없습니다. 게시판 정보를 보내주세요")).when(invitationInfoSetter).checkInvitationInfoAndSettingInfoIfNotExist(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), anyLong());
+        doThrow(new NoGuestBoardsInfoJwtExistException("Guest-Info 헤더값이 없습니다.")).when(guestInvitationInfoCheck).getGuestBoardInfo(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -83,7 +85,7 @@ class InvitationControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(false))
                 .andExpect(jsonPath("status").value(400))
-                .andExpect(jsonPath("message").value("어떤 게시판인지 알 수 없습니다. 게시판 정보를 보내주세요"))
+                .andExpect(jsonPath("message").value("Guest-Info 헤더값이 없습니다."))
                 .andDo(print());
     }
 
@@ -98,11 +100,12 @@ class InvitationControllerTest {
         GalleryImg galleryImg2 = GalleryImg.builder().id(2L).galleryImgUrl("url2").build();
         S3ImgInfoDto s3ImgInfoDto1 = new S3ImgInfoDto(galleryImg1);
         S3ImgInfoDto s3ImgInfoDto2 = new S3ImgInfoDto(galleryImg2);
-        doAnswer(invocation -> {
-            HttpServletResponse res = invocation.getArgument(1);
-            res.addCookie(new Cookie("isRegistered", "true"));
-            return List.of(s3ImgInfoDto1, s3ImgInfoDto2);
-        }).when(invitationService).findAllGalleryImg(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), anyLong());
+//        doAnswer(invocation -> {
+//            HttpServletRequest request = invocation.getArgument(0);
+//            request.
+//            return List.of(s3ImgInfoDto1, s3ImgInfoDto2);
+//        })
+        doReturn(List.of(s3ImgInfoDto1, s3ImgInfoDto2)).when(invitationService).findAllGalleryImg(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -111,8 +114,6 @@ class InvitationControllerTest {
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(200))
                 .andExpect(jsonPath("data.size()").value(2))
-                .andExpect(cookie().exists("isRegistered"))
-                .andExpect(cookie().value("isRegistered", "true"))
                 .andDo(print());
     }
 
@@ -128,11 +129,12 @@ class InvitationControllerTest {
         UsersGoods usersGoods2 = UsersGoods.builder().id(2L).goods(goods2).updatedUsersGoodsName("goods2").updatedUsersGoodsPrice(30000).usersGoodsTotalDonation(5000).build();
         UsersGoodsInfoDto data1 = new UsersGoodsInfoDto(usersGoods1);
         UsersGoodsInfoDto data2 = new UsersGoodsInfoDto(usersGoods2);
-        doAnswer(invocation -> {
-            HttpServletResponse res = invocation.getArgument(1);
-            res.addCookie(new Cookie("isRegistered", "true"));
-            return List.of(data1, data2);
-        }).when(invitationService).findAllUsersGoods(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), anyLong());
+//        doAnswer(invocation -> {
+//            HttpServletResponse res = invocation.getArgument(1);
+//            res.addCookie(new Cookie("isRegistered", "true"));
+//            return List.of(data1, data2);
+//        })
+        doReturn(List.of(data1, data2)).when(invitationService).findAllUsersGoods(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -141,8 +143,6 @@ class InvitationControllerTest {
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(200))
                 .andExpect(jsonPath("data.size()").value(2))
-                .andExpect(cookie().exists("isRegistered"))
-                .andExpect(cookie().value("isRegistered", "true"))
                 .andDo(print());
     }
 
@@ -157,11 +157,12 @@ class InvitationControllerTest {
                 .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
                 .address("강남").date("2023-06-17").time("15:30").build();
         WeddingHallInfoDto data = new WeddingHallInfoDto(boards);
-        doAnswer(invocation -> {
-            HttpServletResponse res = invocation.getArgument(1);
-            res.addCookie(new Cookie("isRegistered", "true"));
-            return data;
-        }).when(invitationService).findWeddingHallInfo(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), anyLong());
+//        doAnswer(invocation -> {
+//            HttpServletResponse res = invocation.getArgument(1);
+//            res.addCookie(new Cookie("isRegistered", "true"));
+//            return data;
+//        })
+        doReturn(data).when(invitationService).findWeddingHallInfo(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -174,8 +175,6 @@ class InvitationControllerTest {
                 .andExpect(jsonPath("data.location").value("강남"))
                 .andExpect(jsonPath("data.weddingDate").value("2023-06-17"))
                 .andExpect(jsonPath("data.weddingTime").value("15:30"))
-                .andExpect(cookie().exists("isRegistered"))
-                .andExpect(cookie().value("isRegistered", "true"))
                 .andDo(print());
     }
 
@@ -190,11 +189,12 @@ class InvitationControllerTest {
                 .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
                 .address("강남").date("2023-06-17").time("15:30").build();
         WeddingHallInfoDto data = new WeddingHallInfoDto(boards);
-        doAnswer(invocation -> {
-            HttpServletResponse res = invocation.getArgument(1);
-            res.addCookie(new Cookie("isRegistered", "true"));
-            return null;
-        }).when(invitationService).checkAttendance(any(MockHttpServletRequest.class), any(MockHttpServletResponse.class), anyLong(), any(AttendanceType.class));
+//        doAnswer(invocation -> {
+//            HttpServletResponse res = invocation.getArgument(1);
+//            res.addCookie(new Cookie("isRegistered", "true"));
+//            return null;
+//        })
+        doNothing().when(invitationService).checkAttendance(any(MockHttpServletRequest.class), anyLong(), any(AttendanceType.class));
 
         RequestAttendanceVo body = new RequestAttendanceVo("yes");
         // when
@@ -207,8 +207,6 @@ class InvitationControllerTest {
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(202))
                 .andExpect(jsonPath("data").isEmpty())
-                .andExpect(cookie().exists("isRegistered"))
-                .andExpect(cookie().value("isRegistered", "true"))
                 .andDo(print());
     }
 }

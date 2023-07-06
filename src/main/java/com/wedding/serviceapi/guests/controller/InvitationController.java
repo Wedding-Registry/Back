@@ -56,7 +56,7 @@ public class InvitationController {
         HttpSession session = request.getSession();
         Long boardsId = (Long) session.getAttribute("boardsId");
         log.info("boardsId = {}", boardsId);
-        List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request, response, loginUserVo.getUserId());
+        List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request);
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
@@ -64,7 +64,7 @@ public class InvitationController {
     @GetMapping("/weddingHall/products")
     public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
         log.info("[findAllUsersGoods guest controller] usersId = {}", loginUserVo.getUserId());
-        List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request, response, loginUserVo.getUserId());
+        List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request);
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
@@ -72,7 +72,7 @@ public class InvitationController {
     @GetMapping("/weddingHall/info")
     public ResponseVo<WeddingHallInfoDto> findWeddingHallInfo(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
         log.info("[findWeddingHallInfo guest controller] usersId = {}", loginUserVo.getUserId());
-        WeddingHallInfoDto data = invitationService.findWeddingHallInfo(request, response, loginUserVo.getUserId());
+        WeddingHallInfoDto data = invitationService.findWeddingHallInfo(request);
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
@@ -82,7 +82,7 @@ public class InvitationController {
                                             HttpServletResponse response, @RequestBody RequestAttendanceVo requestAttendanceVo) {
         log.info("[checkAttendance guest controller] usersId = {}, attend = {}", loginUserVo.getUserId(), requestAttendanceVo.getAttend());
         AttendanceType attendanceType = AttendanceType.checkAttendance(requestAttendanceVo.getAttend());
-        invitationService.checkAttendance(request, response, loginUserVo.getUserId(), attendanceType);
+        invitationService.checkAttendance(request, loginUserVo.getUserId(), attendanceType);
 
         return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
     }
