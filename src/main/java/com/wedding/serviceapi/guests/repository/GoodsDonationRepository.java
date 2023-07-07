@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GoodsDonationRepository extends JpaRepository<GoodsDonation, Long> {
 
     @Query("select gd from GoodsDonation gd join fetch gd.guests g join fetch g.users u join fetch gd.usersGoods" +
             " where g.boards.id = :boardsId order by gd.updatedAt desc")
     List<GoodsDonation> findAllByBoardsIdWithUser(@Param("boardsId") Long boardsId);
+
+    Optional<GoodsDonation> findByGuestsIdAndUsersGoodsId(Long guestsId, Long usersGoodsId);
 }

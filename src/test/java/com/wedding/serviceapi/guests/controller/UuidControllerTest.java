@@ -92,35 +92,4 @@ class UuidControllerTest {
                 .andExpect(jsonPath("data.guestInfoJwt").value("test"))
                 .andDo(print());
     }
-
-//    @Test
-//    @DisplayName("uuidFirst, uuidSecond를 body에 담아서 요청하면 쿠키에 boardsId를 세팅해줍니다.")
-//    @WithCustomMockUser
-//    void setBoardsIdCookie() throws Exception {
-//        // given
-//        String url = "/invitation/uuids";
-//        UuidRequestDto requestBody = UuidRequestDto.builder()
-//                .uuidFirst("first")
-//                .uuidSecond("second")
-//                .build();
-//
-//        doAnswer(invocation -> {
-//            HttpServletResponse res = invocation.getArgument(2);
-//            res.addCookie(new Cookie("boardsId", "1"));
-//            return null;
-//        }).when(uuidService).setBoardsIdCookie(anyString(), anyString(), any(MockHttpServletResponse.class), any(MockHttpServletRequest.class));
-//        // when
-//        ResultActions resultActions = mockMvc.perform(post(url)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(requestBody)));
-//        // then
-//        resultActions.andExpect(status().isOk())
-//                .andExpect(jsonPath("success").value(true))
-//                .andExpect(jsonPath("status").value(200))
-//                .andExpect(jsonPath("data").isEmpty())
-//                .andExpect(cookie().exists("boardsId"))
-//                .andExpect(cookie().value("boardsId", "1"))
-//                .andDo(print());
-//    }
-
 }

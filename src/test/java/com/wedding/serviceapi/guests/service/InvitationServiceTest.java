@@ -4,6 +4,7 @@ import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.domain.HusbandAndWifeEachInfo;
 import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
+import com.wedding.serviceapi.common.jwtutil.JwtUtilBean;
 import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
 import com.wedding.serviceapi.exception.NoGuestBoardsInfoJwtExistException;
 import com.wedding.serviceapi.gallery.domain.GalleryImg;
@@ -15,17 +16,16 @@ import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.repository.GoodsRepository;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.domain.GoodsDonation;
 import com.wedding.serviceapi.guests.domain.Guests;
-import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
 import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
+import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
+import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.AbstractObjectAssert;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -63,6 +62,10 @@ class InvitationServiceTest {
     GoodsRepository goodsRepository;
     @Autowired
     GuestsRepository guestsRepository;
+    @Autowired
+    GoodsDonationRepository goodsDonationRepository;
+    @Autowired
+    JwtUtilBean<GuestBoardInfoVo> jwtUtil;
     @MockBean
     GuestInvitationInfoCheck guestInvitationInfoCheck;
 
@@ -71,7 +74,7 @@ class InvitationServiceTest {
     void cookieNotSettingInGalleryImg() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
-        Mockito.doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
         // when
         assertThatThrownBy(() -> invitationService.findAllGalleryImg(request))
                 .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
@@ -92,7 +95,7 @@ class InvitationServiceTest {
         galleryImgRepository.saveAll(List.of(galleryImg1, galleryImg2));
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        Mockito.doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
         // when
         List<S3ImgInfoDto> galleryImgList = invitationService.findAllGalleryImg(request);
         // then
@@ -106,7 +109,7 @@ class InvitationServiceTest {
     void cookieNotSettingInUsersGoods() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
-        Mockito.doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
         // when
         assertThatThrownBy(() -> invitationService.findAllUsersGoods(request))
                 .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
@@ -138,7 +141,7 @@ class InvitationServiceTest {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        Mockito.doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
         // when
         List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request);
         // then
@@ -164,7 +167,7 @@ class InvitationServiceTest {
         Boards savedBoard = boardsRepository.saveAndFlush(boards);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        Mockito.doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
 
         // when
         WeddingHallInfoDto weddingHallInfo = invitationService.findWeddingHallInfo(request);
@@ -204,7 +207,7 @@ class InvitationServiceTest {
                 .build());
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        Mockito.doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
         // when
         invitationService.checkAttendance(request, savedGuest.getId(), AttendanceType.YES);
         // then
@@ -212,51 +215,57 @@ class InvitationServiceTest {
         assertThat(guests.getAttendance()).isEqualTo(AttendanceType.YES);
     }
 
-//    @Test
-//    @DisplayName("쿠키에 값이 세팅되어 있지 않다면 게시판 정보를 보내달라는 메시지를 전달한다.")
-//    void donateWithoutCookie() {
-//        // given
-//        MockHttpServletRequest request = new MockHttpServletRequest();
-//        MockHttpServletResponse response = new MockHttpServletResponse();
-//        // when
-//        // then
-//        assertThatThrownBy(() -> invitationService.donateUsersGoods(request, response, anyLong(), anyInt(), anyLong()))
-//                .isInstanceOf(NoBoardsIdCookieExistException.class)
-//                .hasMessage("어떤 게시판인지 알 수 없습니다. 게시판 정보를 보내주세요");
-//    }
-//
-//    @Test
-//    @DisplayName("게스트가 특정 상품에 후원하게 되면 해당 상품의 정보와 후원 퍼센티지를 보내준다.")
-//    void donateUsersGoods() {
-//        // given
-//        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
-//        Users savedUser = usersRepository.save(user);
-//        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
-//        Users savedGuest = usersRepository.save(userGuest);
-//        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
-//                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
-//                .address("강남").date("2023-06-17").time("15:30").build();
-//        Boards savedBoard = boardsRepository.saveAndFlush(boards);
-//        Goods goods = Goods.builder().goodsName("상품1").goodsPrice(10000).goodsImgUrl("test-img").build();
-//        Goods savedGoods = goodsRepository.save(goods);
-//        UsersGoods usersGoods = UsersGoods.builder().users(savedUser).boards(savedBoard).goods(savedGoods).updatedUsersGoodsName("test상품").usersGoodsTotalDonation(5000).updatedUsersGoodsPrice(10000).build();
-//        UsersGoods savedUsersGoods = usersGoodsRepository.save(usersGoods);
-//        MockHttpServletRequest request = new MockHttpServletRequest();
-//        request.setCookies(new Cookie("boardsId", String.valueOf(savedBoard.getId())));
-//        MockHttpServletResponse response = new MockHttpServletResponse();
-//        int donationAmount = 2000;
-//        // when
-//        UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, response, savedUsersGoods.getId(), donationAmount, savedGuest.getId());
-//        // then
-//        Optional<Guests> savedOptionalGuest = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId());
-//
-//        assertThat(savedOptionalGuest).isNotEmpty();
-//        assertThat(savedOptionalGuest.get().getUsers().getName()).isEqualTo("userGuest");
-//        assertThat(response.getCookie("isRegistered").getValue()).isEqualTo("true");
-//        assertThat(data.getUsersGoodsId()).isEqualTo(savedUsersGoods.getId());
-//        assertThat(data.getUsersGoodsName()).isEqualTo("test상품");
-//        assertThat(data.getUsersGoodsTotalDonation()).isEqualTo(7000);
-//        assertThat(data.getUsersGoodsPercent()).isEqualTo(70);
-//    }
+    @Test
+    @DisplayName("쿠키에 값이 세팅되어 있지 않다면 게시판 정보를 보내달라는 메시지를 전달한다.")
+    void donateWithoutCookie() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        // then
+        assertThatThrownBy(() -> invitationService.donateUsersGoods(request, 1L, 1000, 1L))
+                .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
+    }
+
+    @Test
+    @DisplayName("게스트가 특정 상품에 후원하게 되면 해당 상품의 정보와 후원 퍼센티지를 보내준다.")
+    void donateUsersGoods() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+        Goods goods = Goods.builder().goodsName("상품1").goodsPrice(10000).goodsImgUrl("test-img").build();
+        Goods savedGoods = goodsRepository.save(goods);
+        UsersGoods usersGoods = UsersGoods.builder().users(savedUser).boards(savedBoard).goods(savedGoods).updatedUsersGoodsName("test상품").usersGoodsTotalDonation(5000).updatedUsersGoodsPrice(10000).build();
+        UsersGoods savedUsersGoods = usersGoodsRepository.save(usersGoods);
+        Guests guests = Guests.builder()
+                .boards(savedBoard)
+                .users(savedGuest)
+                .build();
+        Guests savedGuestTable = guestsRepository.save(guests);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        int donationAmount = 2000;
+
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+
+        // when
+        UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, savedUsersGoods.getId(), donationAmount, savedGuest.getId());
+        // then
+        Optional<Guests> savedOptionalGuest = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId());
+        GoodsDonation goodsDonation = goodsDonationRepository.findByGuestsIdAndUsersGoodsId(savedGuestTable.getId(), savedUsersGoods.getId()).get();
+
+        assertThat(goodsDonation.getGoodsDonationAmount()).isEqualTo(2000);
+        assertThat(savedOptionalGuest).isNotEmpty();
+        assertThat(savedOptionalGuest.get().getUsers().getName()).isEqualTo("userGuest");
+        assertThat(data.getUsersGoodsId()).isEqualTo(savedUsersGoods.getId());
+        assertThat(data.getUsersGoodsName()).isEqualTo("test상품");
+        assertThat(data.getUsersGoodsTotalDonation()).isEqualTo(7000);
+        assertThat(data.getUsersGoodsPercent()).isEqualTo(70);
+    }
 
 }

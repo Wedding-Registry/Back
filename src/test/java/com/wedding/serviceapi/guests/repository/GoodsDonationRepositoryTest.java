@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,23 +49,25 @@ class GoodsDonationRepositoryTest {
     }
 
     private Boards savedBoards;
+    private Long usersGoodsId;
 
     @BeforeEach
     void init() throws InterruptedException {
         Users user1 = Users.builder().name("user1").build();
         Users guest1 = Users.builder().name("guest1").build();
-        Users guest2 = Users.builder().name("guest1").build();
-        usersRepository.saveAllAndFlush(List.of(user1, guest1, guest2));
+        Users guest2 = Users.builder().name("guest2").build();
+        List<Users> users = usersRepository.saveAllAndFlush(List.of(user1, guest1, guest2));
         Boards boards = Boards.builder().users(user1).uuidFirst("first").uuidSecond("second").build();
         savedBoards = boardsRepository.saveAndFlush(boards);
         Goods goods1 = Goods.builder().goodsName("goods1").goodsPrice(10000).goodsUrl("url1").build();
         Goods goods2 = Goods.builder().goodsName("goods2").goodsPrice(20000).goodsUrl("url2").build();
         goodsRepository.saveAllAndFlush(List.of(goods1, goods2));
-        UsersGoods usersGoods1 = UsersGoods.builder().users(user1).boards(boards).goods(goods1).wishGoods(false).updatedUsersGoodsName("goods1").updatedUsersGoodsPrice(10000).build();
-        UsersGoods usersGoods2 = UsersGoods.builder().users(user1).boards(boards).goods(goods2).wishGoods(false).updatedUsersGoodsName("goods2").updatedUsersGoodsPrice(20000).build();
-        usersGoodsRepository.saveAllAndFlush(List.of(usersGoods1, usersGoods2));
-        Guests guests1 = Guests.builder().boards(boards).users(guest1).attendance(AttendanceType.YES).build();
-        Guests guests2 = Guests.builder().boards(boards).users(guest2).attendance(AttendanceType.NO).build();
+        UsersGoods usersGoods1 = UsersGoods.builder().users(user1).boards(savedBoards).goods(goods1).wishGoods(false).updatedUsersGoodsName("goods1").updatedUsersGoodsPrice(10000).build();
+        UsersGoods usersGoods2 = UsersGoods.builder().users(user1).boards(savedBoards).goods(goods2).wishGoods(false).updatedUsersGoodsName("goods2").updatedUsersGoodsPrice(20000).build();
+        List<UsersGoods> usersGoods = usersGoodsRepository.saveAllAndFlush(List.of(usersGoods1, usersGoods2));
+        usersGoodsId = usersGoods.get(0).getId();
+        Guests guests1 = Guests.builder().boards(savedBoards).users(users.get(1)).attendance(AttendanceType.YES).build();
+        Guests guests2 = Guests.builder().boards(savedBoards).users(users.get(2)).attendance(AttendanceType.NO).build();
         guestsRepository.saveAllAndFlush(List.of(guests1, guests2));
         GoodsDonation goodsDonation1 = GoodsDonation.builder().usersGoods(usersGoods1).guests(guests1).goodsDonationAmount(1000).build();
         Thread.sleep(1000);
@@ -84,5 +87,4 @@ class GoodsDonationRepositoryTest {
         assertThat(result.size()).isEqualTo(3);
         assertThat(result.get(result.size() - 1).getGoodsDonationAmount()).isEqualTo(1000);
     }
-
 }

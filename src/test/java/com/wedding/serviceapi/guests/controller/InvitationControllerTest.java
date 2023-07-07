@@ -17,6 +17,7 @@ import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
 import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
+import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.guests.service.InvitationService;
 import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
@@ -70,6 +71,8 @@ class InvitationControllerTest {
     GuestInvitationInfoCheck guestInvitationInfoCheck;
     @MockBean
     UsersGoodsRepository usersGoodsRepository;
+    @MockBean
+    GoodsDonationRepository goodsDonationRepository;
 
     @Autowired
     MockMvc mockMvc;
@@ -104,11 +107,6 @@ class InvitationControllerTest {
         GalleryImg galleryImg2 = GalleryImg.builder().id(2L).galleryImgUrl("url2").build();
         S3ImgInfoDto s3ImgInfoDto1 = new S3ImgInfoDto(galleryImg1);
         S3ImgInfoDto s3ImgInfoDto2 = new S3ImgInfoDto(galleryImg2);
-//        doAnswer(invocation -> {
-//            HttpServletRequest request = invocation.getArgument(0);
-//            request.
-//            return List.of(s3ImgInfoDto1, s3ImgInfoDto2);
-//        })
         doReturn(List.of(s3ImgInfoDto1, s3ImgInfoDto2)).when(invitationService).findAllGalleryImg(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
@@ -133,11 +131,6 @@ class InvitationControllerTest {
         UsersGoods usersGoods2 = UsersGoods.builder().id(2L).goods(goods2).updatedUsersGoodsName("goods2").updatedUsersGoodsPrice(30000).usersGoodsTotalDonation(5000).build();
         UsersGoodsInfoDto data1 = new UsersGoodsInfoDto(usersGoods1);
         UsersGoodsInfoDto data2 = new UsersGoodsInfoDto(usersGoods2);
-//        doAnswer(invocation -> {
-//            HttpServletResponse res = invocation.getArgument(1);
-//            res.addCookie(new Cookie("isRegistered", "true"));
-//            return List.of(data1, data2);
-//        })
         doReturn(List.of(data1, data2)).when(invitationService).findAllUsersGoods(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
@@ -161,11 +154,6 @@ class InvitationControllerTest {
                 .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
                 .address("강남").date("2023-06-17").time("15:30").build();
         WeddingHallInfoDto data = new WeddingHallInfoDto(boards);
-//        doAnswer(invocation -> {
-//            HttpServletResponse res = invocation.getArgument(1);
-//            res.addCookie(new Cookie("isRegistered", "true"));
-//            return data;
-//        })
         doReturn(data).when(invitationService).findWeddingHallInfo(any(MockHttpServletRequest.class));
         // when
         ResultActions resultActions = mockMvc.perform(get(url)
@@ -193,11 +181,6 @@ class InvitationControllerTest {
                 .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
                 .address("강남").date("2023-06-17").time("15:30").build();
         WeddingHallInfoDto data = new WeddingHallInfoDto(boards);
-//        doAnswer(invocation -> {
-//            HttpServletResponse res = invocation.getArgument(1);
-//            res.addCookie(new Cookie("isRegistered", "true"));
-//            return null;
-//        })
         doNothing().when(invitationService).checkAttendance(any(MockHttpServletRequest.class), anyLong(), any(AttendanceType.class));
 
         RequestAttendanceVo body = new RequestAttendanceVo("yes");

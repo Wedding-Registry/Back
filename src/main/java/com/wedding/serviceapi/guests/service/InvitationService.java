@@ -3,13 +3,18 @@ package com.wedding.serviceapi.guests.service;
 import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
 import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
+import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
+import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.domain.GoodsDonation;
 import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.gallery.service.GalleryService;
+import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
 import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
+import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +35,8 @@ public class InvitationService {
     private final WeddingHallService weddingHallService;
     private final GuestInvitationInfoCheck guestInvitationInfoCheck;
     private final GuestsRepository guestsRepository;
+    private final UsersGoodsRepository usersGoodsRepository;
+    private final GoodsDonationRepository goodsDonationRepository;
 
     public List<S3ImgInfoDto> findAllGalleryImg(HttpServletRequest request) {
         GuestBoardInfoVo guestBoardInfo = guestInvitationInfoCheck.getGuestBoardInfo(request);
@@ -57,10 +64,21 @@ public class InvitationService {
         guests.changeAttendanceType(attendanceType);
     }
 
-//    public UsersGoodsInfoResponseDto donateUsersGoods(HttpServletRequest request, HttpServletResponse response, Long usersGoodsId, int donation, Long usersId) {
-//        invitationInfoSetter.checkInvitationInfoAndSettingInfoIfNotExist(request, response, usersId);
-//        UsersGoods usersGoods = usersGoodsRepository.findById(usersGoodsId).orElseThrow(() -> new NoSuchElementException("해당하는 상품 항목이 없습니다."));
-//        usersGoods.donateMoney(donation);
-//        return UsersGoodsInfoResponseDto.from(usersGoods);
-//    }
+    public UsersGoodsInfoResponseDto donateUsersGoods(HttpServletRequest request, Long usersGoodsId, int donation, Long usersId) {
+        GuestBoardInfoVo guestBoardInfo = guestInvitationInfoCheck.getGuestBoardInfo(request);
+        Long boardsId = guestBoardInfo.getBoardsId();
+
+        // goodsDonation 엔티티 생성 후 저장
+        Guests guests = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).orElseThrow(() -> new NoSuchElementException("해당하는 손님이 없습니다."));
+        UsersGoods usersGoods = usersGoodsRepository.findById(usersGoodsId).orElseThrow(() -> new NoSuchElementException("해당하는 상품 항목이 없습니다."));
+        GoodsDonation goodsDonation = GoodsDonation.builder()
+                .guests(guests)
+                .usersGoods(usersGoods)
+                .goodsDonationAmount(donation)
+                .build();
+        goodsDonationRepository.save(goodsDonation);
+        // usersGoods 엔티티에서 총 후원 금액 업데이트
+        usersGoods.donateMoney(donation);
+        return UsersGoodsInfoResponseDto.from(usersGoods);
+    }
 }
