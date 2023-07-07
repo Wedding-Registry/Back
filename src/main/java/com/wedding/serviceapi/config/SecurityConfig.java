@@ -6,7 +6,7 @@ import com.wedding.serviceapi.filter.CustomAuthorizationFilter;
 import com.wedding.serviceapi.auth.securitycustom.CustomServiceAuthenticationProvider;
 import com.wedding.serviceapi.auth.securitycustom.CustomLoginAuthenticationManager;
 import com.wedding.serviceapi.auth.securitycustom.CustomSocialAuthenticationProvider;
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.auth.service.CustomServiceLoginUserDetails;
 import com.wedding.serviceapi.auth.service.CustomSocialLoginUserDetails;
 import com.wedding.serviceapi.filter.CustomAuthenticationFilter;
@@ -37,7 +37,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final AuthJwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
     private final BoardsRepository boardsRepository;
@@ -73,9 +73,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

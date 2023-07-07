@@ -18,8 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -43,35 +45,36 @@ public class InvitationController {
 
 
     @GetMapping("/gallery/images")
-    public ResponseVo<List<S3ImgInfoDto>> findAllGalleryImg(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseVo<List<S3ImgInfoDto>> findAllGalleryImg(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
         log.info("[findAllGalleryImg guest controller] usersId = {}", loginUserVo.getUserId());
-        List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request, response, loginUserVo.getUserId());
+        List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request);
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
     @GetMapping("/weddingHall/products")
-    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
         log.info("[findAllUsersGoods guest controller] usersId = {}", loginUserVo.getUserId());
-        List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request, response, loginUserVo.getUserId());
+        List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request);
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
     @GetMapping("/weddingHall/info")
-    public ResponseVo<WeddingHallInfoDto> findWeddingHallInfo(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseVo<WeddingHallInfoDto> findWeddingHallInfo(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
         log.info("[findWeddingHallInfo guest controller] usersId = {}", loginUserVo.getUserId());
-        WeddingHallInfoDto data = invitationService.findWeddingHallInfo(request, response, loginUserVo.getUserId());
+        WeddingHallInfoDto data = invitationService.findWeddingHallInfo(request);
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
     @PostMapping("/weddingHall/attendance")
-    public ResponseVo<Void> checkAttendance(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request,
-                                            HttpServletResponse response, @RequestBody RequestAttendanceVo requestAttendanceVo) {
+    public ResponseVo<Void> checkAttendance(@LoginUser LoginUserVo loginUserVo,
+                                            HttpServletRequest request,
+                                            @RequestBody RequestAttendanceVo requestAttendanceVo) {
         log.info("[checkAttendance guest controller] usersId = {}, attend = {}", loginUserVo.getUserId(), requestAttendanceVo.getAttend());
         AttendanceType attendanceType = AttendanceType.checkAttendance(requestAttendanceVo.getAttend());
-        invitationService.checkAttendance(request, response, loginUserVo.getUserId(), attendanceType);
+        invitationService.checkAttendance(request, loginUserVo.getUserId(), attendanceType);
 
         return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
     }
@@ -79,11 +82,10 @@ public class InvitationController {
     @PostMapping("/weddingHall/donation")
     public ResponseVo<UsersGoodsInfoResponseDto> postDonation(@LoginUser LoginUserVo loginUserVo,
                                                               HttpServletRequest request,
-                                                              HttpServletResponse response,
                                                               @Validated @RequestBody RequestDonationVo requestDonationVo) {
         log.info("[postDonation controller] usersId = {}, usersGoodsId = {}, donation = {}",
                 loginUserVo.getUserId(), requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation());
-        UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, response, requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation(), loginUserVo.getUserId());
+        UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation(), loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
     }

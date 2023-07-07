@@ -1,6 +1,6 @@
 package com.wedding.serviceapi.goods.service;
 
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.exception.NegativePriceException;
@@ -54,7 +54,7 @@ class UsersGoodsServiceTest {
     @Mock
     BoardsRepository boardsRepository;
     @Mock
-    JwtUtil jwtUtil;
+    AuthJwtUtil jwtUtil;
 
     public String url;
     public Long userId;

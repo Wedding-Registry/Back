@@ -2,30 +2,21 @@ package com.wedding.serviceapi.guests.service;
 
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
+import com.wedding.serviceapi.guests.dto.GuestInfoJwtDto;
 import com.wedding.serviceapi.guests.dto.UuidResponseDto;
-import com.wedding.serviceapi.guests.invitationinfo.InvitationInfoSetter;
+import com.wedding.serviceapi.guests.invitationinfo.HeaderUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.mock.http.client.MockClientHttpResponse;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,11 +28,9 @@ class UuidServiceTest {
 
     @Mock
     private BoardsRepository boardsRepository;
-
     @Mock
-    private InvitationInfoSetter invitationInfoSetter;
+    private HeaderUtil headerUtil;
 
-    @Disabled
     @Test
     @DisplayName("uuidResponseDto 정상 생성 테스트")
     void makeUuidResponseDto() {
@@ -51,26 +40,33 @@ class UuidServiceTest {
         // when
         UuidResponseDto result = uuidService.getUuid(1L, 1L);
         // then
-//        assertThat(result.getBoardsId()).isEqualTo(1L);
         assertThat(result.getUuidFirst()).isEqualTo("first");
         assertThat(result.getUuidSecond()).isEqualTo("second");
     }
 
-    @Disabled
     @Test
-    @DisplayName("cookie에 boardsId 쿠키 값을 정상적으로 세팅해준다.")
-    void setBoardsIdCookie() {
+    @DisplayName("uuidFirst 와 uuidSecond 에 해당하는 결혼 게시판이 없는 경우 에러를 발생시킨다.")
+    void noBoards() {
         // given
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        doAnswer(invocation -> {
-            HttpServletResponse res = invocation.getArgument(0);
-            res.addCookie(new Cookie("boardsId", "1"));
-            return null;
-        }).when(invitationInfoSetter).setBoardsId(response, "first", "second");
+        doReturn(Optional.empty()).when(boardsRepository).findByUuidFirstAndUuidSecond(anyString(), anyString());
         // when
-        uuidService.setBoardsIdCookie("first", "second", response);
         // then
-        assertThat(response.getCookie("boardsId").getValue()).isEqualTo("1");
+        assertThatThrownBy(() -> uuidService.makeGuestInfoJwt(anyString(), anyString(), 1L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("해당하는 결혼 게시판이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("uuidFirst 와 uuidSecond 에 해당하는 결혼 게시판이 있는경우 해당 정보를 담은 jwt 토큰을 반환한다.")
+    void makeJwt() {
+        // given
+        Boards boards = Boards.builder().id(1L).build();
+        doReturn(Optional.of(boards)).when(boardsRepository).findByUuidFirstAndUuidSecond(anyString(), anyString());
+        doReturn("testJwt").when(headerUtil).makeGuestBoardInfoJwt(1L, 1L);
+        // when
+        GuestInfoJwtDto guestInfoJwtDto = uuidService.makeGuestInfoJwt(anyString(), anyString(), 1L);
+        // then
+        assertThat(guestInfoJwtDto.getGuestInfoJwt()).isEqualTo("testJwt");
     }
 
 }

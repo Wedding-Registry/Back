@@ -3,7 +3,7 @@ package com.wedding.serviceapi.guests.controller;
 import com.wedding.serviceapi.auth.vo.LoginUser;
 import com.wedding.serviceapi.auth.vo.LoginUserVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
-import com.wedding.serviceapi.guests.dto.UuidRequestDto;
+import com.wedding.serviceapi.guests.dto.GuestInfoJwtDto;
 import com.wedding.serviceapi.guests.dto.UuidResponseDto;
 import com.wedding.serviceapi.guests.service.UuidService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @RestController
 @Slf4j
@@ -30,16 +32,16 @@ public class UuidController {
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
-    @PostMapping
-    public ResponseVo<Void> postBoardsIdCookie(@LoginUser LoginUserVo loginUserVo,
-                                               @Validated @RequestBody UuidRequestDto uuidRequestDto,
-                                               HttpServletResponse response
+    @GetMapping("/info")
+    public ResponseVo<GuestInfoJwtDto> postBoardsIdCookie(@LoginUser LoginUserVo loginUserVo,
+                                                           @RequestParam("uuidFirst") String uuidFirst,
+                                                           @RequestParam("uuidSecond") String uuidSecond
     ) {
-        log.info("[postBoardsIdCookie controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
-                loginUserVo.getUserId(), uuidRequestDto.getUuidFirst(), uuidRequestDto.getUuidSecond());
-        uuidService.setBoardsIdCookie(uuidRequestDto.getUuidFirst(), uuidRequestDto.getUuidSecond(), response);
+        log.info("[postBoardsIdCookie test controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
+                loginUserVo.getUserId(), uuidFirst, uuidSecond);
+        GuestInfoJwtDto data = uuidService.makeGuestInfoJwt(uuidFirst, uuidSecond, loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), null);
+        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 }
 

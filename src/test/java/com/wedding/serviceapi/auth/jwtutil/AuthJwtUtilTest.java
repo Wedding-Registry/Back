@@ -1,25 +1,28 @@
 package com.wedding.serviceapi.auth.jwtutil;
 
+import com.wedding.serviceapi.common.jwtutil.JwtUtilBean;
 import com.wedding.serviceapi.common.vo.LoginUserInfoVo;
 import com.wedding.serviceapi.users.domain.Role;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.security.InvalidKeyException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-public class JwtUtilTest {
+@SpringBootTest
+public class AuthJwtUtilTest {
 
-    JwtUtilBean jwtUtil;
+    @Autowired
+    JwtUtilBean<LoginUserInfoVo> jwtUtil;
 
     private Long userId;
     private String userName;
@@ -32,11 +35,6 @@ public class JwtUtilTest {
         userName = "test";
         role = Role.USER;
         boardsId = 1L;
-    }
-
-    @BeforeEach
-    void setJwtUtilTest() {
-        jwtUtil = new JwtUtilForTest();
     }
 
     @Test
@@ -77,7 +75,7 @@ public class JwtUtilTest {
         String jwt = "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODE0MDY0MDgsImV4cCI6MTcxMjk0MjQwOCwidXNlcklkIjoxLCJ1c2VyTmFtZSI6InRlc3QifQ.qtU2Z2frD0icHr2VE0Tekvue1wJtyrJHF44Qfhb7f29YKHF29C8HdolyxiUi3iF6RhYrJNNcd-JTo4O3iPVPV";
         String header = "Bearer " + jwt;
         // when
-        assertThrows(SignatureException.class, () -> jwtUtil.decodeJwt(header));
+        assertThrows(IllegalArgumentException.class, () -> jwtUtil.decodeJwt(header));
         // then
     }
 
@@ -88,6 +86,7 @@ public class JwtUtilTest {
         List<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, boardsId, role);
         String token = "Bearer " + tokenList.get(0);
         // when
+//        LoginUserInfoVo userInfo = jwtUtil.decodeJwt(token);
         LoginUserInfoVo userInfo = jwtUtil.decodeJwt(token);
         // then
         assertThat(userInfo.getUserId()).isEqualTo(1L);

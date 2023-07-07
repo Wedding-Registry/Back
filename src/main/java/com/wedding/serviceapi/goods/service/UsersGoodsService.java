@@ -1,6 +1,6 @@
 package com.wedding.serviceapi.goods.service;
 
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.goods.domain.Commerce;
@@ -35,7 +35,7 @@ public class UsersGoodsService {
     private final GoodsRepository goodsRepository;
     private final RegisterUsersGoodsCrawler crawler;
     private final BoardsRepository boardsRepository;
-    private final JwtUtil jwtUtil;
+    private final AuthJwtUtil jwtUtil;
 
     public MakeBoardResponseDto makeWeddingBoard(Long userId, String userName) {
         Users users = usersRepository.getReferenceById(userId);

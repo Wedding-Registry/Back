@@ -1,8 +1,7 @@
 package com.wedding.serviceapi.auth.service;
 
 import com.wedding.serviceapi.auth.dto.LoginSuccessDto;
-import com.wedding.serviceapi.auth.jwtutil.JwtUtil;
-import com.wedding.serviceapi.auth.vo.SocialLoginRegisterMoreInfoRequestVo;
+import com.wedding.serviceapi.common.jwtutil.AuthJwtUtil;
 import com.wedding.serviceapi.exception.AlreadyExistedUserException;
 import com.wedding.serviceapi.exception.NotSamePasswordException;
 import com.wedding.serviceapi.users.domain.LoginType;
@@ -19,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +35,7 @@ class AuthServiceTest {
     @Mock
     UsersRepository usersRepository;
     @Mock
-    JwtUtil jwtUtil;
+    AuthJwtUtil jwtUtil;
     @Mock
     PasswordEncoder passwordEncoder;
     

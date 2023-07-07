@@ -16,6 +16,8 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     Optional<Users> findByPassword(String password);
 
+    Optional<Users> findByName(String name);
+
     List<Users> findByIdIn(List<Long> ids);
 
     default Map<Long, Users> findByIdInByMap(List<Long> ids) {
