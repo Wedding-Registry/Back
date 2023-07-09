@@ -100,7 +100,14 @@ class AttendanceControllerTest {
         // given
         String url = "/admin/attendance";
         ChangeAttendanceRequestVo requestVo = new ChangeAttendanceRequestVo(1L, type);
-        doNothing().when(attendanceService).changeAttendance(anyLong(), anyLong(), any(AttendanceType.class));
+//        doNothing().when(attendanceService).changeAttendance(anyLong(), anyLong(), any(AttendanceType.class));
+
+        AttendanceInfoDto yes = AttendanceInfoDto.of(1, 1, List.of());
+        AttendanceInfoDto no = AttendanceInfoDto.of(1, 1, List.of());
+        AttendanceInfoDto unknown = AttendanceInfoDto.of(1, 1, List.of());
+        AttendanceResponseDto result = AttendanceResponseDto.of(yes, no, unknown);
+
+        doReturn(result).when(attendanceService).changeAttendance(anyLong(), anyLong(), any(AttendanceType.class));
         // when
         ResultActions resultActions = mockMvc.perform(put(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +116,7 @@ class AttendanceControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(202))
-                .andExpect(jsonPath("data").isEmpty())
+                .andExpect(jsonPath("data").isNotEmpty())
                 .andDo(print());
     }
 }

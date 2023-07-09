@@ -28,12 +28,12 @@ public class AttendanceController {
     }
 
     @PutMapping
-    public ResponseVo<Void> changeAttendance(@LoginUser LoginUserVo loginUserVo,
+    public ResponseVo<AttendanceResponseDto> changeAttendance(@LoginUser LoginUserVo loginUserVo,
                                              @RequestBody ChangeAttendanceRequestVo changeAttendanceRequestVo) {
         log.info("[changeAttendance controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
         AttendanceType attendanceType = AttendanceType.checkAttendance(changeAttendanceRequestVo.getType());
-        attendanceService.changeAttendance(changeAttendanceRequestVo.getUserId(), loginUserVo.getBoardsId(), attendanceType);
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
+        AttendanceResponseDto data = attendanceService.changeAttendance(changeAttendanceRequestVo.getUserId(), loginUserVo.getBoardsId(), attendanceType);
+        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
     }
 }

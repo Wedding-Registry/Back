@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.admin.service;
 
+import com.amazonaws.services.kms.model.transform.CreateGrantResultJsonUnmarshaller;
 import com.wedding.serviceapi.admin.domain.CalculateAttendance;
 import com.wedding.serviceapi.admin.dto.attendance.AttendanceResponseDto;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
@@ -7,11 +8,14 @@ import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.apache.bcel.generic.RET;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,8 +32,14 @@ public class AttendanceService {
     }
 
     @Transactional
-    public void changeAttendance(Long usersId, Long boardsId, AttendanceType attendanceType) {
-        Guests guests = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).orElseThrow(() -> new NoSuchElementException("해당하는 게스트가 없습니다."));
-        guests.changeAttendanceType(attendanceType);
+    public AttendanceResponseDto changeAttendance(Long usersId, Long boardsId, AttendanceType attendanceType) {
+        List<Guests> guestsList = guestsRepository.findAllByBoardsIdWithUsers(boardsId).stream().peek(guests -> {
+            if (Objects.equals(guests.getUsers().getId(), usersId)) {
+                log.info("test");
+                guests.changeAttendanceType(attendanceType);
+            }
+        }).collect(Collectors.toList());
+
+        return calculateAttendance.makeAttendanceResponse(guestsList);
     }
 }
