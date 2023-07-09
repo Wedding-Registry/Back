@@ -8,6 +8,7 @@ import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.dto.AttendanceResponseDto;
 import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
 import com.wedding.serviceapi.guests.service.InvitationService;
 import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
@@ -68,15 +69,23 @@ public class InvitationController {
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
+    @GetMapping("/weddingHall/attendance")
+    public ResponseVo<AttendanceResponseDto> getAttendance(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
+        log.info("[getAttendance guest controller] usersId = {}", loginUserVo.getUserId());
+        AttendanceResponseDto data = invitationService.getAttendance(request, loginUserVo.getUserId());
+
+        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+    }
+
     @PostMapping("/weddingHall/attendance")
-    public ResponseVo<Void> checkAttendance(@LoginUser LoginUserVo loginUserVo,
-                                            HttpServletRequest request,
-                                            @RequestBody RequestAttendanceVo requestAttendanceVo) {
+    public ResponseVo<AttendanceResponseDto> checkAttendance(@LoginUser LoginUserVo loginUserVo,
+                                                             HttpServletRequest request,
+                                                             @RequestBody RequestAttendanceVo requestAttendanceVo) {
         log.info("[checkAttendance guest controller] usersId = {}, attend = {}", loginUserVo.getUserId(), requestAttendanceVo.getAttend());
         AttendanceType attendanceType = AttendanceType.checkAttendance(requestAttendanceVo.getAttend());
-        invitationService.checkAttendance(request, loginUserVo.getUserId(), attendanceType);
+        AttendanceResponseDto data = invitationService.checkAttendance(request, loginUserVo.getUserId(), attendanceType);
 
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
+        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
     }
 
     @PostMapping("/weddingHall/donation")
