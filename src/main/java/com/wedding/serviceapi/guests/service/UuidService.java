@@ -27,6 +27,7 @@ public class UuidService {
         return UuidResponseDto.from(boards);
     }
 
+    @Transactional
     public GuestInfoJwtDto makeGuestInfoJwt(String uuidFirst, String uuidSecond, Long usersId) {
         Boards boards = boardsRepository.findByUuidFirstAndUuidSecond(uuidFirst, uuidSecond)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 결혼 게시판이 없습니다."));

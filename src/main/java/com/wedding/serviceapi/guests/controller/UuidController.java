@@ -33,11 +33,11 @@ public class UuidController {
     }
 
     @GetMapping("/info")
-    public ResponseVo<GuestInfoJwtDto> postBoardsIdCookie(@LoginUser LoginUserVo loginUserVo,
+    public ResponseVo<GuestInfoJwtDto> getJwtAboutGuestInfo(@LoginUser LoginUserVo loginUserVo,
                                                            @RequestParam("uuidFirst") String uuidFirst,
                                                            @RequestParam("uuidSecond") String uuidSecond
     ) {
-        log.info("[postBoardsIdCookie test controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
+        log.info("[getJwtAboutGuestInfo controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
                 loginUserVo.getUserId(), uuidFirst, uuidSecond);
         GuestInfoJwtDto data = uuidService.makeGuestInfoJwt(uuidFirst, uuidSecond, loginUserVo.getUserId());
 
