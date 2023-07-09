@@ -1,11 +1,14 @@
 package com.wedding.serviceapi.guests.domain;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum AttendanceType {
     NO("no"), YES("yes"), UNKNOWN("unknown");
 
-    private String attendance;
+    private final String attendance;
 
     AttendanceType(String attendance) {
         this.attendance = attendance;

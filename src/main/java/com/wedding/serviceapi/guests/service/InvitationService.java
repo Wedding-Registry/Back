@@ -12,6 +12,7 @@ import com.wedding.serviceapi.guests.domain.GoodsDonation;
 import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.gallery.service.GalleryService;
+import com.wedding.serviceapi.guests.dto.AttendanceResponseDto;
 import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
 import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
 import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
@@ -56,12 +57,20 @@ public class InvitationService {
         return weddingHallService.getWeddingHallInfo(boardsId);
     }
 
+    public AttendanceResponseDto getAttendance(HttpServletRequest request, Long usersId) {
+        GuestBoardInfoVo guestBoardInfo = guestInvitationInfoCheck.getGuestBoardInfo(request);
+        Long boardsId = guestBoardInfo.getBoardsId();
+        Guests guests = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).orElseThrow(() -> new NoSuchElementException("해당 사용자는 초대되지 않았습니다."));
+        return AttendanceResponseDto.of(guests.getAttendance().getAttendance());
+    }
+
     // TODO: 2023/07/07 만약 관리자가 관리자 페이지를 보고 있다면 게스트가 참석 여부를 선택할때 어떻게 변경된 값을 나타낼 것인가
-    public void checkAttendance(HttpServletRequest request, Long usersId, AttendanceType attendanceType) {
+    public AttendanceResponseDto checkAttendance(HttpServletRequest request, Long usersId, AttendanceType attendanceType) {
         GuestBoardInfoVo guestBoardInfo = guestInvitationInfoCheck.getGuestBoardInfo(request);
         Long boardsId = guestBoardInfo.getBoardsId();
         Guests guests = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).orElseThrow(() -> new NoSuchElementException("해당 사용자는 초대되지 않았습니다."));
         guests.changeAttendanceType(attendanceType);
+        return AttendanceResponseDto.of(attendanceType.getAttendance());
     }
 
     public UsersGoodsInfoResponseDto donateUsersGoods(HttpServletRequest request, Long usersGoodsId, int donation, Long usersId) {

@@ -18,6 +18,7 @@ import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
 import com.wedding.serviceapi.guests.domain.GoodsDonation;
 import com.wedding.serviceapi.guests.domain.Guests;
+import com.wedding.serviceapi.guests.dto.AttendanceResponseDto;
 import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
 import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
 import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
@@ -190,6 +191,32 @@ class InvitationServiceTest {
     }
 
     @Test
+    @DisplayName("초대받은 유저의 참석 여부 정보를 전달합니다.")
+    void getAttendance() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+        guestsRepository.save(Guests.builder()
+                .boards(savedBoard)
+                .users(savedGuest)
+                .attendance(AttendanceType.YES)
+                .build());
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        AttendanceResponseDto attendance = invitationService.getAttendance(request, savedGuest.getId());
+        // then
+        assertThat(attendance.getAttend()).isEqualTo("yes");
+    }
+
+    @Test
     @DisplayName("초대받은 유저가 참석 여부를 업데이트 합니다.")
     void updateAttendance() {
         // given
@@ -209,15 +236,16 @@ class InvitationServiceTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
         // when
-        invitationService.checkAttendance(request, savedGuest.getId(), AttendanceType.YES);
+        AttendanceResponseDto result = invitationService.checkAttendance(request, savedGuest.getId(), AttendanceType.YES);
         // then
         Guests guests = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId()).get();
         assertThat(guests.getAttendance()).isEqualTo(AttendanceType.YES);
+        assertThat(result.getAttend()).isEqualTo("yes");
     }
 
     @Test
-    @DisplayName("쿠키에 값이 세팅되어 있지 않다면 게시판 정보를 보내달라는 메시지를 전달한다.")
-    void donateWithoutCookie() {
+    @DisplayName("헤더에 값이 세팅되어 있지 않다면 게시판 정보를 보내달라는 메시지를 전달한다.")
+    void donateWithoutHeader() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);

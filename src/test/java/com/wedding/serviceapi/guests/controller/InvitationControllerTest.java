@@ -16,6 +16,7 @@ import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.dto.AttendanceResponseDto;
 import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
 import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
@@ -171,17 +172,35 @@ class InvitationControllerTest {
     }
 
     @Test
+    @DisplayName("초대된 사용자의 참석 정보를 전달한다.")
+    @WithCustomMockUser
+    void getGuestAttendance() throws Exception {
+        // given
+        String url = "/invitation/weddingHall/attendance";
+        AttendanceResponseDto data = AttendanceResponseDto.of("yes");
+        doReturn(data).when(invitationService).getAttendance(any(MockHttpServletRequest.class), anyLong());
+        // when
+        ResultActions resultActions = mockMvc.perform(get(url));
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("success").value(true))
+                .andExpect(jsonPath("status").value(200))
+                .andExpect(jsonPath("data.attend").value("yes"))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("초대된 사용자가 참석 여부를 결정해서 전달한다.")
     @WithCustomMockUser
     void checkGuestAttendance() throws Exception {
         // given
         String url = "/invitation/weddingHall/attendance";
-        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
-        Boards boards = Boards.builder().users(user).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
-                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
-                .address("강남").date("2023-06-17").time("15:30").build();
-        WeddingHallInfoDto data = new WeddingHallInfoDto(boards);
-        doNothing().when(invitationService).checkAttendance(any(MockHttpServletRequest.class), anyLong(), any(AttendanceType.class));
+//        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+//        Boards boards = Boards.builder().users(user).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+//                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+//                .address("강남").date("2023-06-17").time("15:30").build();
+        AttendanceResponseDto data = AttendanceResponseDto.of("yes");
+        doReturn(data).when(invitationService).checkAttendance(any(MockHttpServletRequest.class), anyLong(), any(AttendanceType.class));
 
         RequestAttendanceVo body = new RequestAttendanceVo("yes");
         // when
@@ -193,7 +212,7 @@ class InvitationControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(202))
-                .andExpect(jsonPath("data").isEmpty())
+                .andExpect(jsonPath("data.attend").value("yes"))
                 .andDo(print());
     }
 
