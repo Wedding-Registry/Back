@@ -163,7 +163,6 @@ class InvitationControllerTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("success").value(true))
                 .andExpect(jsonPath("status").value(200))
-                .andExpect(jsonPath("data.users.size()").value(2))
                 .andExpect(jsonPath("data.account.size()").value(2))
                 .andExpect(jsonPath("data.location").value("강남"))
                 .andExpect(jsonPath("data.weddingDate").value("2023-06-17"))
@@ -195,10 +194,6 @@ class InvitationControllerTest {
     void checkGuestAttendance() throws Exception {
         // given
         String url = "/invitation/weddingHall/attendance";
-//        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
-//        Boards boards = Boards.builder().users(user).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
-//                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
-//                .address("강남").date("2023-06-17").time("15:30").build();
         AttendanceResponseDto data = AttendanceResponseDto.of("yes");
         doReturn(data).when(invitationService).checkAttendance(any(MockHttpServletRequest.class), anyLong(), any(AttendanceType.class));
 

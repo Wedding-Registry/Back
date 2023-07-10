@@ -53,13 +53,10 @@ class WeddingHallServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(data.getUsers().size()).isEqualTo(2),
                 () -> assertThat(data.getAccount().size()).isEqualTo(2),
                 () -> assertThat(data.getLocation()).isEqualTo("test address"),
                 () -> assertThat(data.getWeddingDate()).isEqualTo("2023-02-16"),
                 () -> assertThat(data.getWeddingTime()).isEqualTo("15:50"),
-                () -> assertThat(data.getUsers().get(0).getName()).isEqualTo("husband name"),
-                () -> assertThat(data.getUsers().get(1).getName()).isEqualTo("wife name"),
                 () -> assertThat(data.getAccount().get(0).getBank()).isEqualTo("husband bank"),
                 () -> assertThat(data.getAccount().get(1).getBank()).isEqualTo("wife bank")
         );

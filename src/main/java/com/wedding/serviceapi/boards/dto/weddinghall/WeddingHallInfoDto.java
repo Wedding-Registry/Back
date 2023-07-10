@@ -12,27 +12,22 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor
 public class WeddingHallInfoDto {
-    private List<HusbandWifeNameDto> users = new ArrayList<>();
     private List<HusbandWifeBankAccountDto> account = new ArrayList<>();
     private String location;
     private String weddingDate;
     private String weddingTime;
 
     public WeddingHallInfoDto(Boards boards) {
-        extractNameAndBankAccountForSettingUsersAndAccount(boards);
+        extractNameAndBankAccountForSettingAccount(boards);
         this.location = boards.getAddress();
         this.weddingDate = boards.getDate();
         this.weddingTime = boards.getTime();
     }
 
-    private void extractNameAndBankAccountForSettingUsersAndAccount(Boards boards) {
+    private void extractNameAndBankAccountForSettingAccount(Boards boards) {
         HusbandAndWifeEachInfo husband = boards.getHusband();
         HusbandAndWifeEachInfo wife = boards.getWife();
-        System.out.println("husband : " + husband);
-        users.add(new HusbandWifeNameDto("husband", husband.getName()));
-        users.add(new HusbandWifeNameDto("wife", wife.getName()));
-
-        account.add(new HusbandWifeBankAccountDto("husband", husband.getBank(), husband.getAccount()));
-        account.add(new HusbandWifeBankAccountDto("wife", wife.getBank(), wife.getAccount()));
+        this.account.add(new HusbandWifeBankAccountDto("husband", husband.getName(), husband.getBank(), husband.getAccount()));
+        this.account.add(new HusbandWifeBankAccountDto("wife", wife.getName(), wife.getBank(), wife.getAccount()));
     }
 }
