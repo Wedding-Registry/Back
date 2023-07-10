@@ -173,17 +173,11 @@ class InvitationServiceTest {
         // when
         WeddingHallInfoDto weddingHallInfo = invitationService.findWeddingHallInfo(request);
         // then
-        assertThat(weddingHallInfo.getUsers()).hasSize(2);
-        assertThat(weddingHallInfo.getUsers()).extracting("gender", "name")
-                .containsExactly(
-                        tuple("husband", "husband"),
-                        tuple("wife", "wife")
-                );
         assertThat(weddingHallInfo.getAccount()).hasSize(2);
-        assertThat(weddingHallInfo.getAccount()).extracting("gender", "bank", "account")
+        assertThat(weddingHallInfo.getAccount()).extracting("gender", "name", "bank", "account")
                 .containsExactly(
-                        tuple("husband", "신한은행", "110111111"),
-                        tuple("wife", "국민은행", "110211212")
+                        tuple("husband", "husband", "신한은행", "110111111"),
+                        tuple("wife", "wife", "국민은행", "110211212")
                 );
         assertThat(weddingHallInfo.getLocation()).isEqualTo("강남");
         assertThat(weddingHallInfo.getWeddingDate()).isEqualTo("2023-06-17");

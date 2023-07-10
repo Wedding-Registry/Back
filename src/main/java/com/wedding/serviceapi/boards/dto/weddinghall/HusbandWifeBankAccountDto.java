@@ -8,6 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class HusbandWifeBankAccountDto {
     private String gender;
+    private String name;
     private String bank;
     private String account;
 }

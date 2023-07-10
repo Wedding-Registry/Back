@@ -68,10 +68,8 @@ class WeddingHallControllerTest {
 
     private WeddingHallInfoDto makeResultData() {
         WeddingHallInfoDto testResult = new WeddingHallInfoDto();
-        testResult.getUsers().add(new HusbandWifeNameDto("husband", "husband name"));
-        testResult.getUsers().add(new HusbandWifeNameDto("wife", "wife name"));
-        testResult.getAccount().add(new HusbandWifeBankAccountDto("husband", "husband bank", "husband account"));
-        testResult.getAccount().add(new HusbandWifeBankAccountDto("wife", "wife bank", "wife account"));
+        testResult.getAccount().add(new HusbandWifeBankAccountDto("husband", "husband name", "husband bank", "husband account"));
+        testResult.getAccount().add(new HusbandWifeBankAccountDto("wife", "wife name", "wife bank", "wife account"));
         testResult.setLocation("test address");
         testResult.setWeddingDate("2023-02-16");
         testResult.setWeddingTime("15:50");
