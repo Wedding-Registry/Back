@@ -107,16 +107,16 @@ public class UsersGoodsService {
         return goodsInfo;
     }
 
-    public UsersGoodsNameDto updateUsersGoodsName(Long userId, Long usersGoodsId, String usersGoodsName) {
+    public UsersGoodsPostResponseDto updateUsersGoodsName(Long userId, Long usersGoodsId, String usersGoodsName) {
         UsersGoods usersGoods = usersGoodsRepository.findByIdAndUsersId(usersGoodsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 상품이 없습니다."));
         usersGoods.changeUsersGoodsName(usersGoodsName);
-        return new UsersGoodsNameDto(usersGoods.getUpdatedUsersGoodsName());
+        return UsersGoodsPostResponseDto.from(usersGoods);
     }
 
-    public UsersGoodsPriceDto updateUsersGoodsPrice(Long userId, Long usersGoodsId, Integer usersGoodsPrice) {
+    public UsersGoodsPostResponseDto updateUsersGoodsPrice(Long userId, Long usersGoodsId, Integer usersGoodsPrice) {
         UsersGoods usersGoods = usersGoodsRepository.findByIdAndUsersId(usersGoodsId, userId).orElseThrow(() -> new NoSuchElementException("해당하는 상품이 없습니다."));
         usersGoods.changeUsersGoodsPrice(usersGoodsPrice);
-        return new UsersGoodsPriceDto(usersGoods.getUpdatedUsersGoodsPrice());
+        return UsersGoodsPostResponseDto.from(usersGoods);
     }
 
     public void deleteUsersGoods(Long usersGoodsId) {
