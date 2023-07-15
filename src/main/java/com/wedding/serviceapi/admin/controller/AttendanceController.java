@@ -1,6 +1,7 @@
 package com.wedding.serviceapi.admin.controller;
 
 import com.wedding.serviceapi.admin.dto.attendance.AttendanceResponseDto;
+import com.wedding.serviceapi.admin.dto.attendance.ChangeAttendanceDto;
 import com.wedding.serviceapi.admin.service.AttendanceService;
 import com.wedding.serviceapi.admin.vo.ChangeAttendanceRequestVo;
 import com.wedding.serviceapi.auth.vo.LoginUser;
@@ -11,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/admin/attendance")
@@ -29,11 +34,16 @@ public class AttendanceController {
 
     @PutMapping
     public ResponseVo<AttendanceResponseDto> changeAttendance(@LoginUser LoginUserVo loginUserVo,
-                                             @RequestBody ChangeAttendanceRequestVo changeAttendanceRequestVo) {
+                                                              @RequestBody List<ChangeAttendanceRequestVo> requestBody) {
         log.info("[changeAttendance controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
-        AttendanceType attendanceType = AttendanceType.checkAttendance(changeAttendanceRequestVo.getType());
-        AttendanceResponseDto data = attendanceService.changeAttendance(changeAttendanceRequestVo.getUserId(), loginUserVo.getBoardsId(), attendanceType);
+        List<ChangeAttendanceDto> changeAttendanceDtoList = requestBody.stream()
+                .map(changeAttendanceRequestVo -> ChangeAttendanceDto.of(
+                        changeAttendanceRequestVo.getUserId(),
+                        AttendanceType.checkAttendance(changeAttendanceRequestVo.getType())))
+                .collect(Collectors.toList());
+
+        AttendanceResponseDto data = attendanceService.changeAttendance(changeAttendanceDtoList, loginUserVo.getBoardsId());
         return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
     }
 }

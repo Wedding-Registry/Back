@@ -2,6 +2,7 @@ package com.wedding.serviceapi.admin.service;
 
 import com.wedding.serviceapi.admin.domain.CalculateAttendance;
 import com.wedding.serviceapi.admin.dto.attendance.AttendanceResponseDto;
+import com.wedding.serviceapi.admin.dto.attendance.ChangeAttendanceDto;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
 import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
@@ -107,20 +108,32 @@ class AttendanceServiceTest {
         Guests guest7 = Guests.builder().users(user7).attendance(AttendanceType.UNKNOWN).build();
         List<Guests> guestList = List.of(guest1, guest2, guest3, guest4, guest5, guest6, guest7);
         doReturn(guestList).when(guestsRepository).findAllByBoardsIdWithUsers(1L);
-        AttendanceType type = AttendanceType.NO;
+
+
+        ChangeAttendanceDto changeAttendanceDto1 = ChangeAttendanceDto.builder()
+                .userId(guestList.get(5).getUsers().getId())
+                .attendanceType(AttendanceType.NO)
+                .build();
+
+        ChangeAttendanceDto changeAttendanceDto2 = ChangeAttendanceDto.builder()
+                .userId(guestList.get(6).getUsers().getId())
+                .attendanceType(AttendanceType.YES)
+                .build();
+
+        List<ChangeAttendanceDto> changeAttendanceDtoList = List.of(changeAttendanceDto1, changeAttendanceDto2);
 
         // when
-        AttendanceResponseDto attendanceInfo = attendanceService.changeAttendance(guestList.get(6).getUsers().getId(), 1L, type);
+        AttendanceResponseDto attendanceInfo = attendanceService.changeAttendance(changeAttendanceDtoList, 1L);
         // then
-        assertThat(attendanceInfo.getYes().getCount()).isEqualTo(2);
-        assertThat(attendanceInfo.getYes().getRate()).isEqualTo(29);
-        assertThat(attendanceInfo.getYes().getGuestList().size()).isEqualTo(2);
+        assertThat(attendanceInfo.getYes().getCount()).isEqualTo(3);
+        assertThat(attendanceInfo.getYes().getRate()).isEqualTo(43);
+        assertThat(attendanceInfo.getYes().getGuestList().size()).isEqualTo(3);
         assertThat(attendanceInfo.getNo().getCount()).isEqualTo(3);
         assertThat(attendanceInfo.getNo().getRate()).isEqualTo(43);
         assertThat(attendanceInfo.getNo().getGuestList().size()).isEqualTo(3);
-        assertThat(attendanceInfo.getUnknown().getCount()).isEqualTo(2);
-        assertThat(attendanceInfo.getUnknown().getRate()).isEqualTo(29);
-        assertThat(attendanceInfo.getUnknown().getGuestList().size()).isEqualTo(2);
+        assertThat(attendanceInfo.getUnknown().getCount()).isEqualTo(1);
+        assertThat(attendanceInfo.getUnknown().getRate()).isEqualTo(14);
+        assertThat(attendanceInfo.getUnknown().getGuestList().size()).isEqualTo(1);
     }
 
 
