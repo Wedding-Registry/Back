@@ -3,6 +3,8 @@ package com.wedding.serviceapi.goods.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.WithCustomMockUser;
 import com.wedding.serviceapi.boards.domain.Boards;
+import com.wedding.serviceapi.goods.domain.Goods;
+import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.MakeBoardResponseDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsNameDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
@@ -146,7 +148,18 @@ class UsersGoodsControllerTest {
 
         String usersGoodsName = "testGoodsName";
         UpdateUsersGoodsNameRequestVo requestVo = new UpdateUsersGoodsNameRequestVo(usersGoodsName);
-        UsersGoodsNameDto data = new UsersGoodsNameDto(usersGoodsName);
+        Goods goods = Goods.builder()
+                .goodsImgUrl("imageUrl")
+                .build();
+
+        UsersGoodsPostResponseDto data = UsersGoodsPostResponseDto.from(
+                UsersGoods.builder()
+                        .id(1L)
+                        .goods(goods)
+                        .updatedUsersGoodsName("testGoodsName")
+                        .updatedUsersGoodsPrice(1000)
+                        .build()
+        );
 
         doReturn(data).when(usersGoodsService).updateUsersGoodsName(userId, usersGoodsId, requestVo.getUsersGoodsName());
 
@@ -173,7 +186,18 @@ class UsersGoodsControllerTest {
         Integer newPrice = 1000;
 
         UpdateUsersGoodsPriceRequestVo requestVo = new UpdateUsersGoodsPriceRequestVo(newPrice);
-        UsersGoodsPriceDto data = new UsersGoodsPriceDto(newPrice);
+        Goods goods = Goods.builder()
+                .goodsImgUrl("imageUrl")
+                .build();
+
+        UsersGoodsPostResponseDto data = UsersGoodsPostResponseDto.from(
+                UsersGoods.builder()
+                        .id(1L)
+                        .goods(goods)
+                        .updatedUsersGoodsName("name")
+                        .updatedUsersGoodsPrice(1000)
+                        .build()
+        );
         doReturn(data).when(usersGoodsService).updateUsersGoodsPrice(userId, usersGoodsId, newPrice);
 
         // when

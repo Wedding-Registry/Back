@@ -52,18 +52,18 @@ public class UsersGoodsController {
     }
 
     @PostMapping("/name/update")
-    public ResponseVo<UsersGoodsNameDto> updateUsersGoodsName(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsNameRequestVo body) {
+    public ResponseVo<UsersGoodsPostResponseDto> updateUsersGoodsName(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsNameRequestVo body) {
         log.info("[updateUsersGoodsName controller] userId = {}, usersGoodsId = {}, usersGoodsName = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
 
-        UsersGoodsNameDto data = usersGoodsService.updateUsersGoodsName(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
+        UsersGoodsPostResponseDto data = usersGoodsService.updateUsersGoodsName(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
     @PostMapping("/cost/update")
-    public ResponseVo<UsersGoodsPriceDto> updateUsersGoodsPrice(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsPriceRequestVo body) {
+    public ResponseVo<UsersGoodsPostResponseDto> updateUsersGoodsPrice(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsPriceRequestVo body) {
         log.info("[updateUsersGoodsPrice controller] userId = {}, usersGoodsId = {}, usersGoodsPrice = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
 
-        UsersGoodsPriceDto data = usersGoodsService.updateUsersGoodsPrice(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
+        UsersGoodsPostResponseDto data = usersGoodsService.updateUsersGoodsPrice(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
