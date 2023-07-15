@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedding.serviceapi.WithCustomMockUser;
 import com.wedding.serviceapi.admin.dto.attendance.AttendanceInfoDto;
 import com.wedding.serviceapi.admin.dto.attendance.AttendanceResponseDto;
+import com.wedding.serviceapi.admin.dto.attendance.ChangeAttendanceDto;
 import com.wedding.serviceapi.admin.service.AttendanceService;
 import com.wedding.serviceapi.admin.vo.ChangeAttendanceRequestVo;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
@@ -79,7 +80,7 @@ class AttendanceControllerTest {
     void noValidAttendanceType() throws Exception {
         // given
         String url = "/admin/attendance";
-        ChangeAttendanceRequestVo requestVo = new ChangeAttendanceRequestVo(1L, "yees");
+        List<ChangeAttendanceRequestVo> requestVo = List.of(new ChangeAttendanceRequestVo(1L, "yees"));
         // when
         ResultActions resultActions = mockMvc.perform(put(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -99,15 +100,14 @@ class AttendanceControllerTest {
     void validAttendanceType(String type) throws Exception {
         // given
         String url = "/admin/attendance";
-        ChangeAttendanceRequestVo requestVo = new ChangeAttendanceRequestVo(1L, type);
-//        doNothing().when(attendanceService).changeAttendance(anyLong(), anyLong(), any(AttendanceType.class));
+        List<ChangeAttendanceRequestVo> requestVo = List.of(new ChangeAttendanceRequestVo(1L, type));
 
         AttendanceInfoDto yes = AttendanceInfoDto.of(1, 1, List.of());
         AttendanceInfoDto no = AttendanceInfoDto.of(1, 1, List.of());
         AttendanceInfoDto unknown = AttendanceInfoDto.of(1, 1, List.of());
         AttendanceResponseDto result = AttendanceResponseDto.of(yes, no, unknown);
 
-        doReturn(result).when(attendanceService).changeAttendance(anyLong(), anyLong(), any(AttendanceType.class));
+        doReturn(result).when(attendanceService).changeAttendance(anyList(), anyLong());
         // when
         ResultActions resultActions = mockMvc.perform(put(url)
                 .contentType(MediaType.APPLICATION_JSON)

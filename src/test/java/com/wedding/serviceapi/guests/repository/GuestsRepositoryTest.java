@@ -7,24 +7,19 @@ import com.wedding.serviceapi.guests.domain.Guests;
 import com.wedding.serviceapi.users.domain.LoginType;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Slf4j
@@ -47,6 +42,8 @@ class GuestsRepositoryTest {
     private Users savedUser;
     private Users savedGuest;
     private Boards savedBoard;
+    private Guests savedNewGuest1;
+    private Guests savedNewGuest2;
 
     @BeforeEach
     void init() throws InterruptedException {
@@ -61,8 +58,8 @@ class GuestsRepositoryTest {
         Guests newGuest = Guests.builder().users(savedGuest).boards(savedBoard).attendance(AttendanceType.YES).build();
         Thread.sleep(50);
         Guests newGuest2 = Guests.builder().users(savedGuest2).boards(savedBoard).attendance(AttendanceType.YES).build();
-        guestsRepository.save(newGuest);
-        guestsRepository.save(newGuest2);
+        savedNewGuest1 = guestsRepository.save(newGuest);
+        savedNewGuest2 = guestsRepository.save(newGuest2);
         em.flush();
     }
 
