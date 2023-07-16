@@ -64,12 +64,11 @@ jobs:
         java-version: '11'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2.4.2
-#    - name: setting application-main.yaml
-#      run: |
-#        cd ./src/main/resources
-#        touch application-main.yaml
-#        echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-main.yaml
-#        cat application-main.yaml
+    - name: setting application-prod.yaml
+      run: |
+        cd ./src/main/resources
+        touch application-prod.yaml
+        echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-prod.yaml
     - name: Execute Gradle build
       run: ./gradlew clean bootJar
     - name: Login to Container registry
@@ -113,8 +112,6 @@ jobs:
           docker rmi -f $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
         fi
     - name: restart new backend container
-      env:
-        AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
 
