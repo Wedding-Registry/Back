@@ -21,8 +21,8 @@ spring:
     driver-class-name: ${{ secrets.DATABASE_DRIVER }}
 
   jpa:
-    database: ${{ secrets.DATABASE_DRIVER }}
-    database-platform: ${{ secrets.DATABASE_DRIVER }}
+    database: ${{ secrets.DATABASE }}
+    database-platform: ${{ secrets.DATABASE_DIALECT }}
     hibernate:
       ddl-auto: none
     properties:
