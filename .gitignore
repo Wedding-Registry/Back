@@ -1,5 +1,13 @@
 .DS_Store
+.env
+docker-compose-local.yml
 .idea
 .gradle
+spy.log
 
 build
+src/main/resources/application-local.yml
+src/main/resources/application-dev.yml
+db
+
+out

@@ -1,0 +1,293 @@
+package com.wedding.serviceapi.guests.service;
+
+import com.wedding.serviceapi.boards.domain.Boards;
+import com.wedding.serviceapi.boards.domain.HusbandAndWifeEachInfo;
+import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
+import com.wedding.serviceapi.boards.repository.BoardsRepository;
+import com.wedding.serviceapi.common.jwtutil.JwtUtilBean;
+import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
+import com.wedding.serviceapi.exception.NoGuestBoardsInfoJwtExistException;
+import com.wedding.serviceapi.gallery.domain.GalleryImg;
+import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
+import com.wedding.serviceapi.gallery.repository.GalleryImgRepository;
+import com.wedding.serviceapi.goods.domain.Goods;
+import com.wedding.serviceapi.goods.domain.UsersGoods;
+import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
+import com.wedding.serviceapi.goods.repository.GoodsRepository;
+import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
+import com.wedding.serviceapi.guests.domain.AttendanceType;
+import com.wedding.serviceapi.guests.domain.GoodsDonation;
+import com.wedding.serviceapi.guests.domain.Guests;
+import com.wedding.serviceapi.guests.dto.AttendanceResponseDto;
+import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
+import com.wedding.serviceapi.guests.invitationinfo.GuestInvitationInfoCheck;
+import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
+import com.wedding.serviceapi.guests.repository.GuestsRepository;
+import com.wedding.serviceapi.users.domain.LoginType;
+import com.wedding.serviceapi.users.domain.Users;
+import com.wedding.serviceapi.users.repository.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest
+@Slf4j
+@Transactional
+class InvitationServiceTest {
+
+    @Autowired
+    InvitationService invitationService;
+    @Autowired
+    UsersRepository usersRepository;
+    @Autowired
+    BoardsRepository boardsRepository;
+    @Autowired
+    GalleryImgRepository galleryImgRepository;
+    @Autowired
+    UsersGoodsRepository usersGoodsRepository;
+    @Autowired
+    GoodsRepository goodsRepository;
+    @Autowired
+    GuestsRepository guestsRepository;
+    @Autowired
+    GoodsDonationRepository goodsDonationRepository;
+    @Autowired
+    JwtUtilBean<GuestBoardInfoVo> jwtUtil;
+    @MockBean
+    GuestInvitationInfoCheck guestInvitationInfoCheck;
+
+    @Test
+    @DisplayName("사진 정보 요청 시 헤더에 boardsId 값이 세팅되어 있지 않은경우 uuid를 요청한다.")
+    void cookieNotSettingInGalleryImg() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        assertThatThrownBy(() -> invitationService.findAllGalleryImg(request))
+                .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
+    }
+
+    @Test
+    @DisplayName("사진 정보 요청을 보내면 헤더에 저장된 boardsId를 통해 사진들을 전달한다.")
+    void getGalleryImages() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        usersRepository.save(user);
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards board = Boards.builder().users(user).build();
+        Boards savedBoard = boardsRepository.save(board);
+        GalleryImg galleryImg1 = GalleryImg.builder().boards(savedBoard).galleryImgUrl("img1").build();
+        GalleryImg galleryImg2 = GalleryImg.builder().boards(savedBoard).galleryImgUrl("img2").build();
+        galleryImgRepository.saveAll(List.of(galleryImg1, galleryImg2));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        List<S3ImgInfoDto> galleryImgList = invitationService.findAllGalleryImg(request);
+        // then
+        assertThat(galleryImgList.size()).isEqualTo(2);
+        assertThat(galleryImgList).extracting("galleryImgUrl")
+                .containsExactly("img1", "img2");
+    }
+
+    @Test
+    @DisplayName("등록한 상품 리스트 요청 시 헤더에 boardsId 값이 세팅되어 있지 않은경우 uuid를 요청한다.")
+    void cookieNotSettingInUsersGoods() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        assertThatThrownBy(() -> invitationService.findAllUsersGoods(request))
+                .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
+    }
+
+    @Test
+    @DisplayName("등록된 상품 정보 요청을 보내면 헤더에 저장된 boardsId를 통해 상품들을 전달한다.")
+    @Rollback(value = false)
+    void usersGoods() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards board = Boards.builder().users(savedUser).build();
+        Boards savedBoard = boardsRepository.save(board);
+
+        Goods goods1 = Goods.builder().goodsUrl("goods1").goodsPrice(10000).goodsName("goods1").build();
+        Goods goods2 = Goods.builder().goodsUrl("goods2").goodsPrice(30000).goodsName("goods2").build();
+
+        Goods savedGoods1 = goodsRepository.save(goods1);
+        Goods savedGoods2 = goodsRepository.save(goods2);
+
+
+        UsersGoods usersGoods1 = UsersGoods.builder().users(savedUser).boards(savedBoard).goods(savedGoods1).updatedUsersGoodsPrice(10000).updatedUsersGoodsName("goods1").usersGoodsTotalDonation(3000).wishGoods(false).build();
+        UsersGoods usersGoods2 = UsersGoods.builder().users(savedUser).boards(savedBoard).goods(savedGoods2).updatedUsersGoodsPrice(30000).updatedUsersGoodsName("goods2").usersGoodsTotalDonation(4000).wishGoods(false).build();
+        usersGoodsRepository.save(usersGoods1);
+        usersGoodsRepository.save(usersGoods2);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request);
+        // then
+        assertThat(data).hasSize(2);
+        assertThat(data).extracting("usersGoodsName", "usersGoodsPrice", "usersGoodsTotalDonation", "usersGoodsPercent")
+                .containsExactly(
+                        tuple("goods1", 10000, 3000, 30),
+                        tuple("goods2", 30000, 4000, 13)
+                );
+    }
+
+    @Test
+    @DisplayName("웨딩 정보 요청을 보내면 헤더에 저장된 boardsId를 통해 결혼식 정보를 전달한다.")
+    void weddingHallInfo() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+
+        // when
+        WeddingHallInfoDto weddingHallInfo = invitationService.findWeddingHallInfo(request);
+        // then
+        assertThat(weddingHallInfo.getAccount()).hasSize(2);
+        assertThat(weddingHallInfo.getAccount()).extracting("gender", "name", "bank", "account")
+                .containsExactly(
+                        tuple("husband", "husband", "신한은행", "110111111"),
+                        tuple("wife", "wife", "국민은행", "110211212")
+                );
+        assertThat(weddingHallInfo.getLocation()).isEqualTo("강남");
+        assertThat(weddingHallInfo.getWeddingDate()).isEqualTo("2023-06-17");
+        assertThat(weddingHallInfo.getWeddingTime()).isEqualTo("15:30");
+    }
+
+    @Test
+    @DisplayName("초대받은 유저의 참석 여부 정보를 전달합니다.")
+    void getAttendance() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+        guestsRepository.save(Guests.builder()
+                .boards(savedBoard)
+                .users(savedGuest)
+                .attendance(AttendanceType.YES)
+                .build());
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        AttendanceResponseDto attendance = invitationService.getAttendance(request, savedGuest.getId());
+        // then
+        assertThat(attendance.getAttend()).isEqualTo("yes");
+    }
+
+    @Test
+    @DisplayName("초대받은 유저가 참석 여부를 업데이트 합니다.")
+    void updateAttendance() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+        guestsRepository.save(Guests.builder()
+                .boards(savedBoard)
+                .users(savedGuest)
+                .build());
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        AttendanceResponseDto result = invitationService.checkAttendance(request, savedGuest.getId(), AttendanceType.YES);
+        // then
+        Guests guests = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId()).get();
+        assertThat(guests.getAttendance()).isEqualTo(AttendanceType.YES);
+        assertThat(result.getAttend()).isEqualTo("yes");
+    }
+
+    @Test
+    @DisplayName("헤더에 값이 세팅되어 있지 않다면 게시판 정보를 보내달라는 메시지를 전달한다.")
+    void donateWithoutHeader() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        doThrow(NoGuestBoardsInfoJwtExistException.class).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+        // when
+        // then
+        assertThatThrownBy(() -> invitationService.donateUsersGoods(request, 1L, 1000, 1L))
+                .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
+    }
+
+    @Test
+    @DisplayName("게스트가 특정 상품에 후원하게 되면 해당 상품의 정보와 후원 퍼센티지를 보내준다.")
+    void donateUsersGoods() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+        Goods goods = Goods.builder().goodsName("상품1").goodsPrice(10000).goodsImgUrl("test-img").build();
+        Goods savedGoods = goodsRepository.save(goods);
+        UsersGoods usersGoods = UsersGoods.builder().users(savedUser).boards(savedBoard).goods(savedGoods).updatedUsersGoodsName("test상품").usersGoodsTotalDonation(5000).updatedUsersGoodsPrice(10000).build();
+        UsersGoods savedUsersGoods = usersGoodsRepository.save(usersGoods);
+        Guests guests = Guests.builder()
+                .boards(savedBoard)
+                .users(savedGuest)
+                .build();
+        Guests savedGuestTable = guestsRepository.save(guests);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        int donationAmount = 2000;
+
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+
+        // when
+        UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, savedUsersGoods.getId(), donationAmount, savedGuest.getId());
+        // then
+        Optional<Guests> savedOptionalGuest = guestsRepository.findByUsersIdAndBoardsId(savedGuest.getId(), savedBoard.getId());
+        GoodsDonation goodsDonation = goodsDonationRepository.findByGuestsIdAndUsersGoodsId(savedGuestTable.getId(), savedUsersGoods.getId()).get();
+
+        assertThat(goodsDonation.getGoodsDonationAmount()).isEqualTo(2000);
+        assertThat(savedOptionalGuest).isNotEmpty();
+        assertThat(savedOptionalGuest.get().getUsers().getName()).isEqualTo("userGuest");
+        assertThat(data.getUsersGoodsId()).isEqualTo(savedUsersGoods.getId());
+        assertThat(data.getUsersGoodsName()).isEqualTo("test상품");
+        assertThat(data.getUsersGoodsTotalDonation()).isEqualTo(7000);
+        assertThat(data.getUsersGoodsPercent()).isEqualTo(70);
+    }
+
+}
