@@ -69,6 +69,7 @@ jobs:
         cd ./src/main/resources
         touch application-main.yaml
         echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-main.yaml
+        cat application-main.yaml
     - name: Execute Gradle build
       run: ./gradlew clean bootJar
     - name: Login to Container registry
