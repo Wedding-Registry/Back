@@ -50,7 +50,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/login/**", "/auth/signup", "/auth/social/info").permitAll()
-                .antMatchers(HttpMethod.GET, "/prod/hello").permitAll()
+                .antMatchers(HttpMethod.GET, "/prod/**", "/actuator/**").permitAll()
                 .anyRequest().hasAuthority("USER")
                 .and()
                 .cors()
