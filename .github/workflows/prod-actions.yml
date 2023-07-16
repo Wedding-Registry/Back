@@ -71,8 +71,6 @@ jobs:
 #        echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-main.yaml
 #        cat application-main.yaml
     - name: Execute Gradle build
-      env:
-        AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       run: ./gradlew clean bootJar
     - name: Login to Container registry
       uses: docker/login-action@v2.1.0
@@ -115,6 +113,8 @@ jobs:
           docker rmi -f $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
         fi
     - name: restart new backend container
+      env:
+        AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
 
