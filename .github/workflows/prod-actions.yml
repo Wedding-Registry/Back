@@ -64,12 +64,11 @@ jobs:
         java-version: '11'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2.4.2
-#    - name: setting application-dev.yaml
-#      run: |
-#        cd ./src/main/resources
-#        touch application-dev.yaml
-#        echo ${{ secrets.APPLICATION_DEV_YAML }} | base64 --decode > ./application-dev.yaml
-#        cat application-dev.yaml
+    - name: setting application-prod.yaml
+      run: |
+        cd ./src/main/resources
+        touch application-prod.yaml
+        echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-prod.yaml
     - name: Execute Gradle build
       run: ./gradlew clean bootJar
     - name: Login to Container registry
