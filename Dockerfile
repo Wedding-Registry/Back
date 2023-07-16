@@ -12,5 +12,6 @@ RUN chmod a+x /app
 COPY build/libs/${JAR_FILE} .
 
 #ENTRYPOINT ["java", "-jar", "/app/serviceapi-0.1.jar", "--spring.profiles.active=${active_profile}"]
-ENTRYPOINT ["java", "-jar", "/app/${jar_file}", "--spring.profiles.active=${active_profile}"]
+#ENTRYPOINT ["java", "-jar", "/app/${jar_file}", "--spring.profiles.active=${active_profile}"]
+ENTRYPOINT "java -jar /app/$jar_file} --spring.profiles.active=$active_profile}"
 
