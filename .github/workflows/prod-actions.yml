@@ -64,11 +64,11 @@ jobs:
         java-version: '11'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2.4.2
-    - name: setting application-prod.yaml
+    - name: setting application-main.yaml
       run: |
         cd ./src/main/resources
-        touch application-prod.yaml
-        echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-prod.yaml
+        touch application-main.yaml
+        echo ${{ secrets.APPLICATION_PROD_YAML }} | base64 --decode > ./application-main.yaml
     - name: Execute Gradle build
       run: ./gradlew clean bootJar
     - name: Login to Container registry
@@ -78,7 +78,7 @@ jobs:
         username: ${{ env.USERNAME }}
         password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
     - name: docker image build
-      run: docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG --build-arg profile="prod" .
+      run: docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG --build-arg profile="main" .
     - name: docker image push to container registry
       run : docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
