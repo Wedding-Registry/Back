@@ -84,7 +84,7 @@ jobs:
           docker rmi -f $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
         fi
     - name: restart new backend container
-      run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} -v /home/ec2-user/application/logs:/app/logs --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+      run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} -p ${{ secrets.ACTUATOR_PORT }}:${{ secrets.ACTUATOR_PORT }} -v /home/ec2-user/application/logs:/app/logs --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
 
 
