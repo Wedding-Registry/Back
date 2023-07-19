@@ -22,30 +22,28 @@ public class WeddingHallController {
 
     private final WeddingHallService weddingHallService;
 
-    @GetMapping("/all/{boardsId}")
-    public ResponseVo<WeddingHallInfoDto> getWeddingHallInfo(@PathVariable Long boardsId, @LoginUser LoginUserVo loginUserVo) {
-        log.info("[getWeddingHallInfo controller] boardsId = {}, usersId = {}", boardsId, loginUserVo.getUserId());
-        WeddingHallInfoDto data = weddingHallService.getWeddingHallInfo(boardsId, loginUserVo.getUserId());
+    @GetMapping("/all")
+    public ResponseVo<WeddingHallInfoDto> getWeddingHallInfo(@LoginUser LoginUserVo loginUserVo) {
+        log.info("[getWeddingHallInfo controller] boardsId = {}, usersId = {}", loginUserVo.getBoardsId(), loginUserVo.getUserId());
+        WeddingHallInfoDto data = weddingHallService.getWeddingHallInfo(loginUserVo.getBoardsId(), loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.OK.value(), data);
     }
 
-    @PostMapping("/location/{boardsId}")
-    public ResponseVo<WeddingHallAddressDto> postWeddingHallAddress(@PathVariable Long boardsId,
-                                                                    @RequestBody PostWeddingHallAddressRequestVo body,
+    @PostMapping("/location")
+    public ResponseVo<WeddingHallAddressDto> postWeddingHallAddress(@RequestBody PostWeddingHallAddressRequestVo body,
                                                                     @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postWeddingHallAddress controller] boardsId = {}, address = {}, usersId = {}", boardsId, body.getAddress(), loginUserVo.getUserId());
-        WeddingHallAddressDto data = weddingHallService.postWeddingHallAddress(boardsId, body.getAddress(), loginUserVo.getUserId());
+        log.info("[postWeddingHallAddress controller] boardsId = {}, address = {}, usersId = {}", loginUserVo.getBoardsId(), body.getAddress(), loginUserVo.getUserId());
+        WeddingHallAddressDto data = weddingHallService.postWeddingHallAddress(loginUserVo.getBoardsId(), body.getAddress(), loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
-    @PostMapping("/time/{boardsId}")
-    public ResponseVo<WeddingHallDateTimeDto> postWeddingHallDateTime(@PathVariable Long boardsId,
-                                                                      @RequestBody RequestPostWeddingHallTimeVo body,
+    @PostMapping("/time")
+    public ResponseVo<WeddingHallDateTimeDto> postWeddingHallDateTime(@RequestBody RequestPostWeddingHallTimeVo body,
                                                                       @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postWeddingHallTime controller] boardsId = {}, date = {}, time = {}, usersId = {}", boardsId, body.getDate(), body.getTime(), loginUserVo.getUserId());
-        WeddingHallDateTimeDto data = weddingHallService.postWeddingHallDateTime(boardsId, body.getDate(), body.getTime(), loginUserVo.getUserId());
+        log.info("[postWeddingHallTime controller] boardsId = {}, date = {}, time = {}, usersId = {}", loginUserVo.getBoardsId(), body.getDate(), body.getTime(), loginUserVo.getUserId());
+        WeddingHallDateTimeDto data = weddingHallService.postWeddingHallDateTime(loginUserVo.getBoardsId(), body.getDate(), body.getTime(), loginUserVo.getUserId());
 
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
