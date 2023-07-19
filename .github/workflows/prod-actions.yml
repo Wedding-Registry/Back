@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: Java CI with Gradle in PROD environment
 
 on:
   push:
@@ -20,35 +20,7 @@ env:
   CONTAINER_NAME: wedding-backend
 
 jobs:
-#  test:
-#    runs-on: ubuntu-latest
-#    services:
-#      mysql:
-#        image: mysql
-#        env:
-#          MYSQL_DATABASE: wedding_registry_test
-#          MYSQL_ROOT_PASSWORD: password
-#        ports:
-#          - 3306:3306
-#        options: >-
-#          --health-cmd="mysqladmin ping"
-#          --health-interval=10s
-#          --health-timeout=5s
-#          --health-retries=3
-#
-#    steps:
-#    - uses: actions/checkout@v3.5.2
-#    - name: Set up JDK 11
-#      uses: actions/setup-java@v3.11.0
-#      with:
-#        distribution: 'zulu'
-#        java-version: '11'
-#    - name: Do Unit Test
-#      run: ./gradlew :test
-
-
   build-and-push-image:
-#    needs: test
     runs-on: ubuntu-latest
     environment: prod
 
@@ -112,7 +84,7 @@ jobs:
           docker rmi -f $(docker images --filter=reference=$REGISTRY/$IMAGE_NAME -q)
         fi
     - name: restart new backend container
-      run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+      run: docker run -d -p ${{ secrets.SERVER_PORT }}:${{ secrets.SERVER_PORT }} -p ${{ secrets.ACTUATOR_PORT }}:${{ secrets.ACTUATOR_PORT }} -v /home/ec2-user/application/logs:/app/logs --name $CONTAINER_NAME --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
 
 

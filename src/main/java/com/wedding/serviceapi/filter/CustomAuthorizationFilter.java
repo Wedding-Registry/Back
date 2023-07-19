@@ -36,7 +36,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     "/auth/signup",
                     "/login/service",
                     "/login/oauth",
-                    "/auth/social/info"
+                    "/auth/social/info",
+                    "/prod/hello",
+                    "/actuator"
             )
     );
 
