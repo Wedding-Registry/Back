@@ -21,7 +21,7 @@ public class MarriageController {
 
     private final MarriageService marriageService;
 
-    @PostMapping("/{type}/name/")
+    @PostMapping("/{type}/name")
     public ResponseVo<MarriageNameDto> postHusbandOrWifeName(@PathVariable String type,
                                                              @RequestBody PostHusbandOrWifeNameRequestVo body,
                                                              @LoginUser LoginUserVo loginUserVo) {
@@ -31,7 +31,7 @@ public class MarriageController {
         return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
     }
 
-    @PostMapping("/{type}/account/")
+    @PostMapping("/{type}/account")
     public ResponseVo<MarriageBankAccountDto> postBankAndAccount(@PathVariable String type,
                                                                  @RequestBody RequestPostMarriageBankAccountVo body,
                                                                  @LoginUser LoginUserVo loginUserVo) {
