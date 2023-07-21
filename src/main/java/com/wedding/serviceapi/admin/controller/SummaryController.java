@@ -28,7 +28,7 @@ public class SummaryController {
         log.info("[findAttendanceRate controller] boardsId = {}", loginUserVo.getBoardsId());
 
         AttendanceSummaryDto data = summaryService.getAttendanceSummary(loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @GetMapping("/donation")
@@ -36,6 +36,6 @@ public class SummaryController {
         log.info("[findAllDonation controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
         List<DonationSummaryDto> data = summaryService.getDonationSummary(loginUserVo.getUserId(), loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 }

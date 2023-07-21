@@ -28,7 +28,7 @@ public class MarriageController {
         log.info("[postHusbandName controller] type = {}, boardsId = {}, name = {}, userId = {}", type, loginUserVo.getBoardsId(), body.getName(), loginUserVo.getUserId());
         MarriageNameDto data = marriageService.postHusbandOrWifeName(type, loginUserVo.getBoardsId(), body.getName(), loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @PostMapping("/{type}/account")
@@ -39,7 +39,7 @@ public class MarriageController {
                 type, loginUserVo.getBoardsId(), body.getBank(), body.getAccount());
         MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, loginUserVo.getBoardsId(), body.getBank(), body.getAccount(), loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
 }

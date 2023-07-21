@@ -29,14 +29,14 @@ public class GalleryController {
         log.info("[uploadGalleryImg Controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         S3ImgInfoDto data = galleryService.uploadGalleryImg(loginUserVo.getUserId(), loginUserVo.getBoardsId(), file);
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @GetMapping
     public ResponseVo<List<S3ImgInfoDto>> findAllGalleryImg(@LoginUser LoginUserVo loginUserVo) {
         log.info("[findAllGalleryImg Controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<S3ImgInfoDto> data = galleryService.findAllGalleryImg(loginUserVo.getUserId(), loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @DeleteMapping
@@ -45,6 +45,6 @@ public class GalleryController {
                 loginUserVo.getUserId(), loginUserVo.getBoardsId(), galleryImgId);
 
         galleryService.deleteGalleryImg(galleryImgId, loginUserVo.getUserId(), loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
+        return ResponseVo.accepted();
     }
 }

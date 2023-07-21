@@ -69,7 +69,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         // token 발행
         if (authenticatedUser == null) {
             LoginSuccessDto data = new LoginSuccessDto(null, null, null, null, null, true);
-            String responseBody = objectMapper.writeValueAsString(new ResponseVo<>(true, HttpStatus.OK.value(), data));
+            String responseBody = objectMapper.writeValueAsString(ResponseVo.ok(data));
+
             setResponseBody(response, responseBody);
         } else {
             Long userId = authenticatedUser.getUserId();
@@ -80,7 +81,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             ArrayList<String> tokenList = jwtUtil.makeAccessTokenAndRefreshToken(userId, userName, boardsId, role);
 
             LoginSuccessDto data = new LoginSuccessDto(userId, userName, boardsId, tokenList.get(0), tokenList.get(1), false);
-            String responseBody = objectMapper.writeValueAsString(new ResponseVo<>(true, HttpStatus.OK.value(), data));
+            String responseBody = objectMapper.writeValueAsString(ResponseVo.ok(data));
             log.info("responseBody = {}", responseBody);
             setResponseBody(response, responseBody);
         }
@@ -89,7 +90,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.error("AuthenticationException ", failed);
-        String responseBody = objectMapper.writeValueAsString(new ErrorResponseVo(false, HttpStatus.BAD_REQUEST.value(), failed.getMessage()));
+        String responseBody = objectMapper.writeValueAsString(ErrorResponseVo.badRequest(failed.getMessage()));
         setResponseBody(response, responseBody);
     }
 

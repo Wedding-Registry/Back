@@ -6,7 +6,6 @@ import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.common.vo.ResponseVo;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
-import com.wedding.serviceapi.goods.dto.UsersGoodsPostResponseDto;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
 import com.wedding.serviceapi.guests.dto.AttendanceResponseDto;
 import com.wedding.serviceapi.guests.dto.UsersGoodsInfoResponseDto;
@@ -15,14 +14,10 @@ import com.wedding.serviceapi.guests.vo.RequestAttendanceVo;
 import com.wedding.serviceapi.guests.vo.RequestDonationVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -50,7 +45,7 @@ public class InvitationController {
         log.info("[findAllGalleryImg guest controller] usersId = {}", loginUserVo.getUserId());
         List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request);
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @GetMapping("/weddingHall/products")
@@ -58,7 +53,7 @@ public class InvitationController {
         log.info("[findAllUsersGoods guest controller] usersId = {}", loginUserVo.getUserId());
         List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request);
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @GetMapping("/weddingHall/info")
@@ -66,7 +61,7 @@ public class InvitationController {
         log.info("[findWeddingHallInfo guest controller] usersId = {}", loginUserVo.getUserId());
         WeddingHallInfoDto data = invitationService.findWeddingHallInfo(request);
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @GetMapping("/weddingHall/attendance")
@@ -74,7 +69,7 @@ public class InvitationController {
         log.info("[getAttendance guest controller] usersId = {}", loginUserVo.getUserId());
         AttendanceResponseDto data = invitationService.getAttendance(request, loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @PostMapping("/weddingHall/attendance")
@@ -85,7 +80,7 @@ public class InvitationController {
         AttendanceType attendanceType = AttendanceType.checkAttendance(requestAttendanceVo.getAttend());
         AttendanceResponseDto data = invitationService.checkAttendance(request, loginUserVo.getUserId(), attendanceType);
 
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
+        return ResponseVo.accepted(data);
     }
 
     @PostMapping("/weddingHall/donation")
@@ -96,7 +91,7 @@ public class InvitationController {
                 loginUserVo.getUserId(), requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation());
         UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation(), loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
+        return ResponseVo.accepted(data);
     }
 }
 

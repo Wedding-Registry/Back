@@ -10,12 +10,10 @@ import com.wedding.serviceapi.common.vo.ResponseVo;
 import com.wedding.serviceapi.guests.domain.AttendanceType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/admin/attendance")
@@ -29,7 +27,7 @@ public class AttendanceController {
     public ResponseVo<AttendanceResponseDto> getAllAttendanceInfo(@LoginUser LoginUserVo loginUserVo) {
         log.info("[getAllAttendanceInfo controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AttendanceResponseDto data = attendanceService.getAllAttendanceInfo(loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @PutMapping
@@ -44,6 +42,6 @@ public class AttendanceController {
                 .collect(Collectors.toList());
 
         AttendanceResponseDto data = attendanceService.changeAttendance(changeAttendanceDtoList, loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
+        return ResponseVo.accepted(data);
     }
 }
