@@ -29,7 +29,7 @@ public class UuidController {
         log.info("[getUuids controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         UuidResponseDto data = uuidService.getUuid(loginUserVo.getBoardsId(), loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @GetMapping("/info")
@@ -41,7 +41,7 @@ public class UuidController {
                 loginUserVo.getUserId(), uuidFirst, uuidSecond);
         GuestInfoJwtDto data = uuidService.makeGuestInfoJwt(uuidFirst, uuidSecond, loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 }
 

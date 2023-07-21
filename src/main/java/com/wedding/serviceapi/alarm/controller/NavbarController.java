@@ -27,7 +27,7 @@ public class NavbarController {
         log.info("[getNavbarAlarm controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<NavbarAlarmDto> data = navbarService.getNavbarAlarm(loginUserVo.getBoardsId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
 

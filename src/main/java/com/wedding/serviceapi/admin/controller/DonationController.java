@@ -28,7 +28,7 @@ public class DonationController {
         log.info("[getAllDonationList controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<DonatedUsersGoodsInfoDto> data = donationService.findAllUsersGoodsInfo(loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @GetMapping("/transfer/detail")
@@ -36,7 +36,7 @@ public class DonationController {
         log.info("[getAllAccountTransferList controller] boardsId = {}", loginUserVo.getBoardsId());
         List<AccountTransferInfoDto> data = donationService.findAllAccountTransferInfo(loginUserVo.getBoardsId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @PostMapping("/transfer/detail")
@@ -45,7 +45,7 @@ public class DonationController {
         log.info("[postAccountTransfer controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AccountTransferInfoDto data = donationService.postAccountTransferMemo(loginUserVo.getBoardsId(), accountTransferRequestVo.getTransferMemo());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @PutMapping("/transfer/detail")
@@ -55,7 +55,7 @@ public class DonationController {
         AccountTransferInfoDto data = donationService.putAccountTransferMemo(loginUserVo.getBoardsId(),
                 accountTransferInfoDto.getAccountTransferId(), accountTransferInfoDto.getTransferMemo());
 
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), data);
+        return ResponseVo.accepted(data);
     }
 
     @DeleteMapping("/transfer/detail")
@@ -63,7 +63,7 @@ public class DonationController {
         log.info("[deleteAccountTransfer controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         donationService.deleteAccountTransferMemo(loginUserVo.getBoardsId(), accountTransferId);
 
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
+        return ResponseVo.accepted();
     }
 
 

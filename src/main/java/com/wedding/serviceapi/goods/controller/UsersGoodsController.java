@@ -32,14 +32,14 @@ public class UsersGoodsController {
         log.info("[makeNewBoard controller] userId = {}, userName = {}", loginUserVo.getUserId(), loginUserVo.getUserName());
         MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(loginUserVo.getUserId(), loginUserVo.getUserName());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @GetMapping("/all")
     public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo) {
         log.info("[findAllUsersGoods controller] userId = {}, boardId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId(), loginUserVo.getBoardsId());
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @PostMapping("/add/product")
@@ -48,7 +48,7 @@ public class UsersGoodsController {
         log.info("[postUsersGoods controller] userId = {}, url = {}, boardId = {}", loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId());
 
         UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId(), false);
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @PostMapping("/name/update")
@@ -56,7 +56,7 @@ public class UsersGoodsController {
         log.info("[updateUsersGoodsName controller] userId = {}, usersGoodsId = {}, usersGoodsName = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
 
         UsersGoodsPostResponseDto data = usersGoodsService.updateUsersGoodsName(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @PostMapping("/cost/update")
@@ -64,7 +64,7 @@ public class UsersGoodsController {
         log.info("[updateUsersGoodsPrice controller] userId = {}, usersGoodsId = {}, usersGoodsPrice = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
 
         UsersGoodsPostResponseDto data = usersGoodsService.updateUsersGoodsPrice(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @DeleteMapping()
@@ -72,7 +72,7 @@ public class UsersGoodsController {
         log.info("[deleteUsersGoods controller] usersGoodsId = {}", usersGoodsId);
 
         usersGoodsService.deleteUsersGoods(usersGoodsId);
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
+        return ResponseVo.accepted();
     }
 }
 

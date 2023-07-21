@@ -72,12 +72,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             } catch (IllegalArgumentException e1) {
                 log.error("jwtAuthenticationFilter error");
                 // jwt 토큰이 문제인 경우
-                ErrorResponseVo body = new ErrorResponseVo(false, HttpStatus.UNAUTHORIZED.value(), "유효한 토큰이 아닙니다.");
+                ErrorResponseVo body = ErrorResponseVo.unAuthorized("유효한 토큰이 아닙니다.");
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.getWriter().write(objectMapper.writeValueAsString(body));
             }
         } else {
-            ErrorResponseVo body = new ErrorResponseVo(false, HttpStatus.FORBIDDEN.value(), "인증 토큰이 필요합니다.");
+            ErrorResponseVo body = ErrorResponseVo.forbidden("인증 토큰이 필요합니다.");
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(objectMapper.writeValueAsString(body));
         }
