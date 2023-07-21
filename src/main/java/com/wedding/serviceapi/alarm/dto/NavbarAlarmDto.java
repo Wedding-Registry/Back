@@ -24,7 +24,7 @@ public class NavbarAlarmDto {
                 .name(attendanceUserInfoDto.getName())
                 .type("attend")
                 .date(attendanceUserInfoDto.getDate())
-                .attend(attendanceUserInfoDto.getAttend())
+                .attend(attendanceUserInfoDto.getAttendanceType())
                 .goods(null)
                 .donation(null)
                 .build();
