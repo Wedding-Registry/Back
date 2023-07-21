@@ -6,12 +6,14 @@ import java.util.Arrays;
 
 @Getter
 public enum AttendanceType {
-    NO("no"), YES("yes"), UNKNOWN("unknown");
+    NO("no", "불참"), YES("yes", "참석"), UNKNOWN("unknown", "미정");
 
     private final String attendance;
+    private final String attendanceByKoreaLan;
 
-    AttendanceType(String attendance) {
+    AttendanceType(String attendance, String attendanceByKoreaLan) {
         this.attendance = attendance;
+        this.attendanceByKoreaLan = attendanceByKoreaLan;
     }
 
     public static AttendanceType checkAttendance(String guestAnswer) {

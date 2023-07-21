@@ -34,4 +34,7 @@ public class BaseEntity {
         this.deletedAt = true;
     }
 
+    public void setUpdatedAt(LocalDateTime localDateTime) {
+        this.updatedAt = localDateTime;
+    }
 }
