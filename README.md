@@ -33,7 +33,7 @@ AWS S3 객체의 경우 어플리케이션을 통해 쓰기, 읽기가 가능하
 Public으로 읽기에 대해서만 오픈했기 때문에 클라이언트에서 해당 이미지를 직접 받아올 수 있도록 설계했습니다.
 
 <br>
-<centor><img src="https://github.com/Wedding-Registry/Back/assets/91299082/5ce63bed-fe0e-4866-be9e-7fc4693c67e4.png" width="80%" height="80%">
+<centor><img src="https://github.com/Wedding-Registry/Back/assets/91299082/84da987e-e796-4c7f-8bcf-ddf561f62067.png" width="80%" height="80%">
 
 
   ### 2. DB diagram
