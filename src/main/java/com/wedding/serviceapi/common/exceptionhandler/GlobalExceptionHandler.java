@@ -108,4 +108,10 @@ public class GlobalExceptionHandler {
         log.error("NotSaveGalleryImgException ", e);
         return ErrorResponseVo.internalError(e.getMessage());
     }
+
+    @ExceptionHandler
+    public ErrorResponseVo s3ObjectException(S3ObjectException e) {
+        log.info("S3ObjectException ", e);
+        return ErrorResponseVo.internalError(e.getMessage());
+    }
 }
