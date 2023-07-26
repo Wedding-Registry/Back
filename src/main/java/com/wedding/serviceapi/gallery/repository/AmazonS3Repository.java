@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class AmazonS3Repository implements S3Repository {
@@ -66,6 +67,7 @@ public class AmazonS3Repository implements S3Repository {
     @Scheduled(initialDelay = 0, fixedDelay = 1000 * 60 * 60 * 24)
     public void deleteNotUsingS3Img() {
         log.info("deleteNotUsingS3Img batch start at = {}", LocalDateTime.now());
+        log.info("s3ImgUrlsNeedDelete = {}", s3ImgUrlsNeedDelete);
         s3ImgUrlsNeedDelete.forEach(key -> amazonS3.deleteObject(BUCKET_NAME, key));
         s3ImgUrlsNeedDelete.clear();
     }
