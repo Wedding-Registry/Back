@@ -71,6 +71,10 @@ public class GalleryService {
         return galleryImgList.stream().map(S3ImgInfoDto::from).collect(Collectors.toList());
     }
 
+    /**
+     * DB에서 먼저 삭제를 진행했기 때문에 따로 catch로 잡을 필요 없이 errorHandler에서 응답을 보내면 된다.
+     * S3 객체에서 이미지를 삭제할 때 에러가 발생하게 되면 Map 객체에 두고 배치를 돌며 삭제하도록 구현했습니다.
+     */
     public void deleteGalleryImg(Long galleryImgId) {
         String deletedGalleryImgUrl = galleryImgRepositoryFacade.deleteById(galleryImgId);
         printConnectionStatus();
@@ -82,7 +86,7 @@ public class GalleryService {
         HikariPoolMXBean hikariPoolMXBean = hikariDataSource.getHikariPoolMXBean();
 
         log.debug("################################");
-        log.debug("현재 active인 connection의 수 : = {}",hikariPoolMXBean.getActiveConnections());
+        log.debug("현재 active인 connection의 수 : = {}", hikariPoolMXBean.getActiveConnections());
         log.debug("현재 idle인 connection의 수 : {}", hikariPoolMXBean.getIdleConnections());
         log.debug("################################");
     }
