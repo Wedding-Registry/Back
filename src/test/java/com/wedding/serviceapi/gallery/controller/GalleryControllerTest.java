@@ -123,7 +123,7 @@ class GalleryControllerTest {
     void failDeleteGalleryImg() throws Exception {
         // given
         String url = "/gallery/img";
-        Mockito.doThrow(new IllegalArgumentException("해당하는 게시판이 없습니다.")).when(galleryService).deleteGalleryImg(1L, userId, boardsId);
+        Mockito.doThrow(new IllegalArgumentException("해당하는 게시판이 없습니다.")).when(galleryService).deleteGalleryImg(1L);
 
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.delete(url)
@@ -142,7 +142,7 @@ class GalleryControllerTest {
     void deleteGalleryImg() throws Exception {
         // given
         String url = "/gallery/img";
-        Mockito.doNothing().when(galleryService).deleteGalleryImg(1L, userId, boardsId);
+        Mockito.doNothing().when(galleryService).deleteGalleryImg(1L);
         // when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.delete(url)
                 .param("galleryImgId", "1"));
