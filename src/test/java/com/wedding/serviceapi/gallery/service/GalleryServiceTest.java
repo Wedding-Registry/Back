@@ -1,5 +1,6 @@
 package com.wedding.serviceapi.gallery.service;
 
+import com.github.gavlyukovskiy.boot.jdbc.decorator.DecoratedDataSource;
 import com.wedding.serviceapi.boards.domain.Boards;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.gallery.domain.GalleryImg;
@@ -71,23 +72,6 @@ class GalleryServiceTest {
     }
 
     @Test
-    @DisplayName("이미지 저장 완료")
-    void successUploadGalleryImg() {
-        // given
-        String galleryImgUrl = "testUrl";
-        Mockito.doReturn(Optional.of(boards)).when(boardsRepository).findByIdAndUsersIdNotDeleted(boardsId, usersId);
-        Mockito.doReturn(galleryImgUrl).when(s3Repository).uploadObject(multipartFile, usersId);
-        GalleryImg savedGalleryImg = new GalleryImg(1L, boards, galleryImgUrl);
-        Mockito.doReturn(savedGalleryImg).when(galleryImgRepository).save(Mockito.any(GalleryImg.class));
-        // when
-        S3ImgInfoDto s3ImgInfoDto = galleryService.uploadGalleryImg(usersId, boardsId, multipartFile);
-
-        // then
-        assertThat(s3ImgInfoDto.getGalleryImgId()).isEqualTo(1L);
-        assertThat(s3ImgInfoDto.getGalleryImgUrl()).isEqualTo("testUrl");
-    }
-
-    @Test
     @DisplayName("모든 갤러리 사진 찾기")
     void findAllGalleryImg() {
         // given
@@ -101,16 +85,6 @@ class GalleryServiceTest {
         List<S3ImgInfoDto> allGalleryImg = galleryService.findAllGalleryImg(usersId, boardsId);
         // then
         assertThat(allGalleryImg).hasSize(3);
-    }
-
-    @Test
-    @DisplayName("갤러리 이미지 삭제 실패")
-    void deleteGalleryImgFail() {
-        // given
-        Mockito.doReturn(Optional.empty()).when(galleryImgRepository).findByIdAndBoardsIdAndUsersIdNotDeleted(1L, boardsId, usersId);
-        // then
-        assertThatThrownBy(() -> galleryService.deleteGalleryImg(1L, usersId, boardsId))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 }
 

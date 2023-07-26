@@ -24,4 +24,8 @@ public class ErrorResponseVo {
     public static ErrorResponseVo forbidden(String message) {
         return new ErrorResponseVo(false, HttpStatus.FORBIDDEN.value(), message);
     }
+
+    public static ErrorResponseVo internalError(String message) {
+        return new ErrorResponseVo(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), message);
+    }
 }

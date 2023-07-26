@@ -50,3 +50,6 @@ logging:
   level:
     org.springframework.web: error
     org.hibernate: error
+    org.springframework.transaction.interceptor: TRACE
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+    com.wedding.serviceapi.gallery.service: DEBUG
