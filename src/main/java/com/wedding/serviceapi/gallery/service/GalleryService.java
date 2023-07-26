@@ -39,7 +39,6 @@ public class GalleryService {
      *
      * s3를 이용하는 것과 db를 이용하는 것의 트랜잭션을 분리하기 위해 새로운 서비스가 하나 필요함 -> Facade로 정의하는게 맞나??
      */
-//    @Transactional
     public S3ImgInfoDto uploadGalleryImg(Long usersId, Long boardsId, MultipartFile file) {
         Boards boards = boardsRepository.findByIdAndUsersIdNotDeleted(boardsId, usersId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 결혼 게시판이 없습니다."));
