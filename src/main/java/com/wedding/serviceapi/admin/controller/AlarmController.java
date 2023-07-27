@@ -25,6 +25,6 @@ public class AlarmController {
         log.info("[getAllAlarmList controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AlarmListResponseDto data = alarmService.getAllAlarmList(loginUserVo.getBoardsId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 }

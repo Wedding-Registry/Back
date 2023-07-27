@@ -58,7 +58,7 @@ class WeddingHallControllerTest {
         doReturn(weddingHallInfoDto).when(weddingHallService).getWeddingHallInfo(boardsId, usersId);
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/weddingHall/all/{boardsId}", boardsId));
+        ResultActions resultActions = mockMvc.perform(get("/weddingHall/all"));
 
         // then
         resultActions.andExpect(status().isOk())
@@ -89,7 +89,7 @@ class WeddingHallControllerTest {
         doReturn(data).when(weddingHallService).postWeddingHallAddress(boardsId, newAddress, usersId);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/weddingHall/location/{boardsId}", boardsId)
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/location")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );
@@ -113,7 +113,7 @@ class WeddingHallControllerTest {
         doReturn(data).when(weddingHallService).postWeddingHallDateTime(boardsId, date, time, usersId);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", boardsId)
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );
@@ -135,7 +135,7 @@ class WeddingHallControllerTest {
         when(weddingHallService.postWeddingHallDateTime(boardsId, "date", "time", usersId)).thenThrow(DateTimeException.class);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time/{boardsId}", boardsId)
+        ResultActions resultActions = mockMvc.perform(post("/weddingHall/time")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );

@@ -50,7 +50,7 @@ class MarriageControllerTest {
 
         doReturn(data).when(marriageService).postHusbandOrWifeName(type, boardsId, name, userId);
         // when
-        ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/name/{boardsId}", type, boardsId)
+        ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/name/", type)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestVo))
         );
@@ -75,7 +75,7 @@ class MarriageControllerTest {
 
         doReturn(data).when(marriageService).postMarriageBankAndAccount(type, boardsId, data.getBank(), data.getAccount(), userId);
         // when
-        ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/account/{boardsId}", type, boardsId)
+        ResultActions resultActions = mockMvc.perform(post("/marriage/{type}/account/", type)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(body))
         );

@@ -34,7 +34,7 @@ public class MemoController {
         log.info("lastId = {}, size = {}, sort = {}", lastId, pageable.getPageSize(), pageable.getSort());
         WishItemPagingDto data = memoService.getAllItemWish(loginUserVo.getUserId(), loginUserVo.getBoardsId(), lastId, pageable);
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @PostMapping("/item/wish")
@@ -42,7 +42,7 @@ public class MemoController {
         log.info("[postWishItem controller] usersId = {}, boardsId = {}, url ={}", loginUserVo.getUserId(), loginUserVo.getBoardsId(), requestVo.getUrl());
         UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), requestVo.getUrl(), loginUserVo.getBoardsId(), true);
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @GetMapping("/pad")
@@ -50,7 +50,7 @@ public class MemoController {
         log.info("[getMemoPad controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         PadContentsDto data = memoService.getMemoContents(loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
-        return new ResponseVo<>(true, HttpStatus.OK.value(), data);
+        return ResponseVo.ok(data);
     }
 
     @PostMapping("/pad")
@@ -58,7 +58,7 @@ public class MemoController {
         log.info("[postMemoPad controller] usersId = {}, boardsId = {}, contents = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId(), padContentsDto.getContents());
         PadContentsDto data = memoService.postMemoContents(loginUserVo.getUserId(), loginUserVo.getBoardsId(), padContentsDto.getContents());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @DeleteMapping("/pad")
@@ -66,6 +66,6 @@ public class MemoController {
         log.info("[deleteMemoPad controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         memoService.deleteMemoContents(loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
-        return new ResponseVo<>(true, HttpStatus.ACCEPTED.value(), null);
+        return ResponseVo.accepted();
     }
 }

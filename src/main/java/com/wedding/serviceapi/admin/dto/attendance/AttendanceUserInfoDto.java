@@ -16,7 +16,8 @@ public class AttendanceUserInfoDto {
   
     private String date;
     private String time;
-    private AttendanceType attend;
+    private String attend;
+    private AttendanceType attendanceType;
 
     private AttendanceUserInfoDto(Long userId, String name) {
         this.userId = userId;
@@ -30,7 +31,7 @@ public class AttendanceUserInfoDto {
     public static AttendanceUserInfoDto from(Guests guests) {
         Users users = guests.getUsers();
         String date = guests.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String time = guests.getUpdatedAt().format(DateTimeFormatter.ofPattern("hh-mm"));
-        return new AttendanceUserInfoDto(users.getId(), users.getName(), date, time, guests.getAttendance());
+        String time = guests.getUpdatedAt().format(DateTimeFormatter.ofPattern("HH:mm"));
+        return new AttendanceUserInfoDto(users.getId(), users.getName(), date, time, guests.getAttendance().getAttendanceByKoreaLan(), guests.getAttendance());
     }
 }

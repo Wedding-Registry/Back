@@ -27,7 +27,7 @@ public class AuthController {
         log.info("registerUser controller body = {}", body);
         LoginSuccessDto data = authService.registerUser(body.getName(), body.getEmail(), body.getPassword(), body.getPasswordCheck(), body.getNotification());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
     @PostMapping("/social/info")
@@ -35,6 +35,6 @@ public class AuthController {
         log.info("registerSocialUser controller body = {}", body);
         LoginSuccessDto data = authService.registerSocialUser(body.getEmail(), body.getName(), body.getPassword(), body.getNotification());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 }

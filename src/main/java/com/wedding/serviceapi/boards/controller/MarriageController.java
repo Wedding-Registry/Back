@@ -21,27 +21,25 @@ public class MarriageController {
 
     private final MarriageService marriageService;
 
-    @PostMapping("/{type}/name/{boardsId}")
+    @PostMapping("/{type}/name")
     public ResponseVo<MarriageNameDto> postHusbandOrWifeName(@PathVariable String type,
-                                                             @PathVariable Long boardsId,
                                                              @RequestBody PostHusbandOrWifeNameRequestVo body,
                                                              @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postHusbandName controller] type = {}, boardsId = {}, name = {}, userId = {}", type, boardsId, body.getName(), loginUserVo.getUserId());
-        MarriageNameDto data = marriageService.postHusbandOrWifeName(type, boardsId, body.getName(), loginUserVo.getUserId());
+        log.info("[postHusbandName controller] type = {}, boardsId = {}, name = {}, userId = {}", type, loginUserVo.getBoardsId(), body.getName(), loginUserVo.getUserId());
+        MarriageNameDto data = marriageService.postHusbandOrWifeName(type, loginUserVo.getBoardsId(), body.getName(), loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
-    @PostMapping("/{type}/account/{boardsId}")
+    @PostMapping("/{type}/account")
     public ResponseVo<MarriageBankAccountDto> postBankAndAccount(@PathVariable String type,
-                                                                 @PathVariable Long boardsId,
                                                                  @RequestBody RequestPostMarriageBankAccountVo body,
                                                                  @LoginUser LoginUserVo loginUserVo) {
         log.info("[postBankAndAccount controller] type = {}, boardsId = {}, bank = {}, account = {}",
-                type, boardsId, body.getBank(), body.getAccount());
-        MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, boardsId, body.getBank(), body.getAccount(), loginUserVo.getUserId());
+                type, loginUserVo.getBoardsId(), body.getBank(), body.getAccount());
+        MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, loginUserVo.getBoardsId(), body.getBank(), body.getAccount(), loginUserVo.getUserId());
 
-        return new ResponseVo<>(true, HttpStatus.CREATED.value(), data);
+        return ResponseVo.created(data);
     }
 
 }
