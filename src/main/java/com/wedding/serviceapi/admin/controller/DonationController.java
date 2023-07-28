@@ -25,7 +25,6 @@ public class DonationController {
 
     @GetMapping("/product/detail")
     public ResponseVo<List<DonatedUsersGoodsInfoDto>> getAllDonationList(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getAllDonationList controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<DonatedUsersGoodsInfoDto> data = donationService.findAllUsersGoodsInfo(loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
         return ResponseVo.ok(data);
@@ -33,7 +32,6 @@ public class DonationController {
 
     @GetMapping("/transfer/detail")
     public ResponseVo<List<AccountTransferInfoDto>> getAllAccountTransferList(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getAllAccountTransferList controller] boardsId = {}", loginUserVo.getBoardsId());
         List<AccountTransferInfoDto> data = donationService.findAllAccountTransferInfo(loginUserVo.getBoardsId());
 
         return ResponseVo.ok(data);
@@ -42,7 +40,6 @@ public class DonationController {
     @PostMapping("/transfer/detail")
     public ResponseVo<AccountTransferInfoDto> postAccountTransfer(@LoginUser LoginUserVo loginUserVo,
                                                                   @Validated @RequestBody AccountTransferRequestVo accountTransferRequestVo) {
-        log.info("[postAccountTransfer controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AccountTransferInfoDto data = donationService.postAccountTransferMemo(loginUserVo.getBoardsId(), accountTransferRequestVo.getTransferMemo());
 
         return ResponseVo.created(data);
@@ -51,7 +48,6 @@ public class DonationController {
     @PutMapping("/transfer/detail")
     public ResponseVo<AccountTransferInfoDto> putAccountTransfer(@LoginUser LoginUserVo loginUserVo,
                                                                  @Validated @RequestBody AccountTransferInfoDto accountTransferInfoDto) {
-        log.info("[putAccountTransfer controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AccountTransferInfoDto data = donationService.putAccountTransferMemo(loginUserVo.getBoardsId(),
                 accountTransferInfoDto.getAccountTransferId(), accountTransferInfoDto.getTransferMemo());
 
@@ -60,7 +56,6 @@ public class DonationController {
 
     @DeleteMapping("/transfer/detail")
     public ResponseVo<Void> deleteAccountTransfer(@LoginUser LoginUserVo loginUserVo, @RequestParam() Long accountTransferId) {
-        log.info("[deleteAccountTransfer controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         donationService.deleteAccountTransferMemo(loginUserVo.getBoardsId(), accountTransferId);
 
         return ResponseVo.accepted();

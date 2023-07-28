@@ -26,7 +26,6 @@ public class UuidController {
 
     @GetMapping
     public ResponseVo<UuidResponseDto> getUuids(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getUuids controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         UuidResponseDto data = uuidService.getUuid(loginUserVo.getBoardsId(), loginUserVo.getUserId());
 
         return ResponseVo.ok(data);
@@ -37,8 +36,6 @@ public class UuidController {
                                                            @RequestParam("uuidFirst") String uuidFirst,
                                                            @RequestParam("uuidSecond") String uuidSecond
     ) {
-        log.info("[getJwtAboutGuestInfo controller] usersId = {}, uuidFirst = {}, uuidSecond = {}",
-                loginUserVo.getUserId(), uuidFirst, uuidSecond);
         GuestInfoJwtDto data = uuidService.makeGuestInfoJwt(uuidFirst, uuidSecond, loginUserVo.getUserId());
 
         return ResponseVo.ok(data);

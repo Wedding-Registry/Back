@@ -25,7 +25,6 @@ public class MarriageController {
     public ResponseVo<MarriageNameDto> postHusbandOrWifeName(@PathVariable String type,
                                                              @RequestBody PostHusbandOrWifeNameRequestVo body,
                                                              @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postHusbandName controller] type = {}, boardsId = {}, name = {}, userId = {}", type, loginUserVo.getBoardsId(), body.getName(), loginUserVo.getUserId());
         MarriageNameDto data = marriageService.postHusbandOrWifeName(type, loginUserVo.getBoardsId(), body.getName(), loginUserVo.getUserId());
 
         return ResponseVo.created(data);
@@ -35,8 +34,6 @@ public class MarriageController {
     public ResponseVo<MarriageBankAccountDto> postBankAndAccount(@PathVariable String type,
                                                                  @RequestBody RequestPostMarriageBankAccountVo body,
                                                                  @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postBankAndAccount controller] type = {}, boardsId = {}, bank = {}, account = {}",
-                type, loginUserVo.getBoardsId(), body.getBank(), body.getAccount());
         MarriageBankAccountDto data = marriageService.postMarriageBankAndAccount(type, loginUserVo.getBoardsId(), body.getBank(), body.getAccount(), loginUserVo.getUserId());
 
         return ResponseVo.created(data);

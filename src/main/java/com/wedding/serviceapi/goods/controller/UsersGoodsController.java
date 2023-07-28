@@ -29,7 +29,6 @@ public class UsersGoodsController {
 
     @GetMapping("/add/board")
     public ResponseVo<MakeBoardResponseDto> makeNewBoard(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[makeNewBoard controller] userId = {}, userName = {}", loginUserVo.getUserId(), loginUserVo.getUserName());
         MakeBoardResponseDto data = usersGoodsService.makeWeddingBoard(loginUserVo.getUserId(), loginUserVo.getUserName());
 
         return ResponseVo.created(data);
@@ -37,7 +36,6 @@ public class UsersGoodsController {
 
     @GetMapping("/all")
     public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[findAllUsersGoods controller] userId = {}, boardId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<UsersGoodsInfoDto> data = usersGoodsService.findAllUsersGoods(loginUserVo.getUserId(), loginUserVo.getBoardsId());
         return ResponseVo.ok(data);
     }
@@ -45,7 +43,6 @@ public class UsersGoodsController {
     @PostMapping("/add/product")
     public ResponseVo<UsersGoodsPostResponseDto> postUsersGoods(@LoginUser LoginUserVo loginUserVo,
                                                                 @Validated @RequestBody PostUsersGoodsRequestVo body) {
-        log.info("[postUsersGoods controller] userId = {}, url = {}, boardId = {}", loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId());
 
         UsersGoodsPostResponseDto data = usersGoodsService.postUsersGoods(loginUserVo.getUserId(), body.getUrl(), loginUserVo.getBoardsId(), false);
         return ResponseVo.created(data);
@@ -53,7 +50,6 @@ public class UsersGoodsController {
 
     @PostMapping("/name/update")
     public ResponseVo<UsersGoodsPostResponseDto> updateUsersGoodsName(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsNameRequestVo body) {
-        log.info("[updateUsersGoodsName controller] userId = {}, usersGoodsId = {}, usersGoodsName = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
 
         UsersGoodsPostResponseDto data = usersGoodsService.updateUsersGoodsName(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsName());
         return ResponseVo.created(data);
@@ -61,7 +57,6 @@ public class UsersGoodsController {
 
     @PostMapping("/cost/update")
     public ResponseVo<UsersGoodsPostResponseDto> updateUsersGoodsPrice(@LoginUser LoginUserVo loginUserVo, @RequestParam Long usersGoodsId, @RequestBody UpdateUsersGoodsPriceRequestVo body) {
-        log.info("[updateUsersGoodsPrice controller] userId = {}, usersGoodsId = {}, usersGoodsPrice = {}", loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
 
         UsersGoodsPostResponseDto data = usersGoodsService.updateUsersGoodsPrice(loginUserVo.getUserId(), usersGoodsId, body.getUsersGoodsPrice());
         return ResponseVo.created(data);
@@ -69,7 +64,6 @@ public class UsersGoodsController {
 
     @DeleteMapping()
     public ResponseVo<Void> deleteUsersGoods(@RequestParam Long usersGoodsId) {
-        log.info("[deleteUsersGoods controller] usersGoodsId = {}", usersGoodsId);
 
         usersGoodsService.deleteUsersGoods(usersGoodsId);
         return ResponseVo.accepted();

@@ -12,7 +12,6 @@ public class ProdController {
 
     @GetMapping
     public String hello() {
-        log.info("[hello controller]");
         return "hello";
     }
 }
