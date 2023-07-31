@@ -24,7 +24,6 @@ public class NavbarController {
 
     @GetMapping
     public ResponseVo<List<NavbarAlarmDto>> getNavbarAlarm(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getNavbarAlarm controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         List<NavbarAlarmDto> data = navbarService.getNavbarAlarm(loginUserVo.getBoardsId());
 
         return ResponseVo.ok(data);

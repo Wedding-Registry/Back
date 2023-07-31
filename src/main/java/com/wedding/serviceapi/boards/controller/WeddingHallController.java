@@ -24,7 +24,6 @@ public class WeddingHallController {
 
     @GetMapping("/all")
     public ResponseVo<WeddingHallInfoDto> getWeddingHallInfo(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getWeddingHallInfo controller] boardsId = {}, usersId = {}", loginUserVo.getBoardsId(), loginUserVo.getUserId());
         WeddingHallInfoDto data = weddingHallService.getWeddingHallInfo(loginUserVo.getBoardsId(), loginUserVo.getUserId());
 
         return ResponseVo.ok(data);
@@ -33,7 +32,6 @@ public class WeddingHallController {
     @PostMapping("/location")
     public ResponseVo<WeddingHallAddressDto> postWeddingHallAddress(@RequestBody PostWeddingHallAddressRequestVo body,
                                                                     @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postWeddingHallAddress controller] boardsId = {}, address = {}, usersId = {}", loginUserVo.getBoardsId(), body.getAddress(), loginUserVo.getUserId());
         WeddingHallAddressDto data = weddingHallService.postWeddingHallAddress(loginUserVo.getBoardsId(), body.getAddress(), loginUserVo.getUserId());
 
         return ResponseVo.created(data);
@@ -42,7 +40,6 @@ public class WeddingHallController {
     @PostMapping("/time")
     public ResponseVo<WeddingHallDateTimeDto> postWeddingHallDateTime(@RequestBody RequestPostWeddingHallTimeVo body,
                                                                       @LoginUser LoginUserVo loginUserVo) {
-        log.info("[postWeddingHallTime controller] boardsId = {}, date = {}, time = {}, usersId = {}", loginUserVo.getBoardsId(), body.getDate(), body.getTime(), loginUserVo.getUserId());
         WeddingHallDateTimeDto data = weddingHallService.postWeddingHallDateTime(loginUserVo.getBoardsId(), body.getDate(), body.getTime(), loginUserVo.getUserId());
 
         return ResponseVo.created(data);

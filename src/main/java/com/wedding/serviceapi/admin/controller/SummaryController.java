@@ -25,7 +25,6 @@ public class SummaryController {
 
     @GetMapping("/attendance")
     public ResponseVo<AttendanceSummaryDto> findAttendanceRate(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[findAttendanceRate controller] boardsId = {}", loginUserVo.getBoardsId());
 
         AttendanceSummaryDto data = summaryService.getAttendanceSummary(loginUserVo.getBoardsId());
         return ResponseVo.ok(data);
@@ -33,7 +32,6 @@ public class SummaryController {
 
     @GetMapping("/donation")
     public ResponseVo<List<DonationSummaryDto>> findAllDonation(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[findAllDonation controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
         List<DonationSummaryDto> data = summaryService.getDonationSummary(loginUserVo.getUserId(), loginUserVo.getBoardsId());
         return ResponseVo.ok(data);

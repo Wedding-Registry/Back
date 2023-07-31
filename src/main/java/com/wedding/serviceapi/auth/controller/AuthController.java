@@ -24,7 +24,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseVo<LoginSuccessDto> registerUser(@Validated @RequestBody RegisterUserRequestVo body) {
-        log.info("registerUser controller body = {}", body);
         LoginSuccessDto data = authService.registerUser(body.getName(), body.getEmail(), body.getPassword(), body.getPasswordCheck(), body.getNotification());
 
         return ResponseVo.created(data);
@@ -32,7 +31,6 @@ public class AuthController {
 
     @PostMapping("/social/info")
     public ResponseVo<LoginSuccessDto> registerSocialUser(@Validated @RequestBody SocialLoginRegisterMoreInfoRequestVo body) {
-        log.info("registerSocialUser controller body = {}", body);
         LoginSuccessDto data = authService.registerSocialUser(body.getEmail(), body.getName(), body.getPassword(), body.getNotification());
 
         return ResponseVo.created(data);

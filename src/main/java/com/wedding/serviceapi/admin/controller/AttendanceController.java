@@ -25,7 +25,6 @@ public class AttendanceController {
 
     @GetMapping("/detail")
     public ResponseVo<AttendanceResponseDto> getAllAttendanceInfo(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getAllAttendanceInfo controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AttendanceResponseDto data = attendanceService.getAllAttendanceInfo(loginUserVo.getBoardsId());
         return ResponseVo.ok(data);
     }
@@ -33,7 +32,6 @@ public class AttendanceController {
     @PutMapping
     public ResponseVo<AttendanceResponseDto> changeAttendance(@LoginUser LoginUserVo loginUserVo,
                                                               @RequestBody List<ChangeAttendanceRequestVo> requestBody) {
-        log.info("[changeAttendance controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
 
         List<ChangeAttendanceDto> changeAttendanceDtoList = requestBody.stream()
                 .map(changeAttendanceRequestVo -> ChangeAttendanceDto.of(

@@ -22,7 +22,6 @@ public class AlarmController {
 
     @GetMapping
     public ResponseVo<AlarmListResponseDto> getAllAlarmList(@LoginUser LoginUserVo loginUserVo) {
-        log.info("[getAllAlarmList controller] usersId = {}, boardsId = {}", loginUserVo.getUserId(), loginUserVo.getBoardsId());
         AlarmListResponseDto data = alarmService.getAllAlarmList(loginUserVo.getBoardsId());
 
         return ResponseVo.ok(data);

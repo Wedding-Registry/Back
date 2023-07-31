@@ -42,7 +42,6 @@ public class InvitationController {
 
     @GetMapping("/gallery/images")
     public ResponseVo<List<S3ImgInfoDto>> findAllGalleryImg(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
-        log.info("[findAllGalleryImg guest controller] usersId = {}", loginUserVo.getUserId());
         List<S3ImgInfoDto> data = invitationService.findAllGalleryImg(request);
 
         return ResponseVo.ok(data);
@@ -50,7 +49,6 @@ public class InvitationController {
 
     @GetMapping("/weddingHall/products")
     public ResponseVo<List<UsersGoodsInfoDto>> findAllUsersGoods(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
-        log.info("[findAllUsersGoods guest controller] usersId = {}", loginUserVo.getUserId());
         List<UsersGoodsInfoDto> data = invitationService.findAllUsersGoods(request);
 
         return ResponseVo.ok(data);
@@ -58,7 +56,6 @@ public class InvitationController {
 
     @GetMapping("/weddingHall/info")
     public ResponseVo<WeddingHallInfoDto> findWeddingHallInfo(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
-        log.info("[findWeddingHallInfo guest controller] usersId = {}", loginUserVo.getUserId());
         WeddingHallInfoDto data = invitationService.findWeddingHallInfo(request);
 
         return ResponseVo.ok(data);
@@ -66,7 +63,6 @@ public class InvitationController {
 
     @GetMapping("/weddingHall/attendance")
     public ResponseVo<AttendanceResponseDto> getAttendance(@LoginUser LoginUserVo loginUserVo, HttpServletRequest request) {
-        log.info("[getAttendance guest controller] usersId = {}", loginUserVo.getUserId());
         AttendanceResponseDto data = invitationService.getAttendance(request, loginUserVo.getUserId());
 
         return ResponseVo.ok(data);
@@ -76,7 +72,6 @@ public class InvitationController {
     public ResponseVo<AttendanceResponseDto> checkAttendance(@LoginUser LoginUserVo loginUserVo,
                                                              HttpServletRequest request,
                                                              @RequestBody RequestAttendanceVo requestAttendanceVo) {
-        log.info("[checkAttendance guest controller] usersId = {}, attend = {}", loginUserVo.getUserId(), requestAttendanceVo.getAttend());
         AttendanceType attendanceType = AttendanceType.checkAttendance(requestAttendanceVo.getAttend());
         AttendanceResponseDto data = invitationService.checkAttendance(request, loginUserVo.getUserId(), attendanceType);
 
@@ -87,8 +82,6 @@ public class InvitationController {
     public ResponseVo<UsersGoodsInfoResponseDto> postDonation(@LoginUser LoginUserVo loginUserVo,
                                                               HttpServletRequest request,
                                                               @Validated @RequestBody RequestDonationVo requestDonationVo) {
-        log.info("[postDonation controller] usersId = {}, usersGoodsId = {}, donation = {}",
-                loginUserVo.getUserId(), requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation());
         UsersGoodsInfoResponseDto data = invitationService.donateUsersGoods(request, requestDonationVo.getUsersGoodsId(), requestDonationVo.getDonation(), loginUserVo.getUserId());
 
         return ResponseVo.accepted(data);
