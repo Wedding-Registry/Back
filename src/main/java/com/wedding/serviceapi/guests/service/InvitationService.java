@@ -3,6 +3,7 @@ package com.wedding.serviceapi.guests.service;
 import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.service.WeddingHallService;
 import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
+import com.wedding.serviceapi.exception.AlreadyExistedDonationException;
 import com.wedding.serviceapi.goods.domain.UsersGoods;
 import com.wedding.serviceapi.goods.dto.UsersGoodsInfoDto;
 import com.wedding.serviceapi.goods.repository.UsersGoodsRepository;
@@ -79,6 +80,13 @@ public class InvitationService {
         // goodsDonation 엔티티 생성 후 저장
         Guests guests = guestsRepository.findByUsersIdAndBoardsId(usersId, boardsId).orElseThrow(() -> new NoSuchElementException("해당하는 손님이 없습니다."));
         UsersGoods usersGoods = usersGoodsRepository.findById(usersGoodsId).orElseThrow(() -> new NoSuchElementException("해당하는 상품 항목이 없습니다."));
+
+        GoodsDonation existedGoodsDonation = goodsDonationRepository.findByGuestsIdAndUsersGoodsId(guests.getId(), usersGoods.getId())
+                .orElse(null);
+        if (existedGoodsDonation != null) {
+            throw new AlreadyExistedDonationException("이미 후원을 진행한 게스트입니다.");
+        }
+
         GoodsDonation goodsDonation = GoodsDonation.builder()
                 .guests(guests)
                 .usersGoods(usersGoods)
@@ -86,6 +94,7 @@ public class InvitationService {
                 .build();
         goodsDonationRepository.save(goodsDonation);
         // usersGoods 엔티티에서 총 후원 금액 업데이트
+
         usersGoods.donateMoney(donation);
         return UsersGoodsInfoResponseDto.from(usersGoods);
     }
