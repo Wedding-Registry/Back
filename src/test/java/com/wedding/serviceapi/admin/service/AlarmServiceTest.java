@@ -14,6 +14,7 @@ import com.wedding.serviceapi.guests.repository.GoodsDonationRepository;
 import com.wedding.serviceapi.guests.repository.GuestsRepository;
 import com.wedding.serviceapi.users.domain.Users;
 import com.wedding.serviceapi.users.repository.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Slf4j
 class AlarmServiceTest {
 
     private final GoodsDonationRepository goodsDonationRepository;
@@ -83,6 +85,16 @@ class AlarmServiceTest {
         // then
         assertThat(responseDto.getAttendance().size()).isEqualTo(2);
         assertThat(responseDto.getDonation().size()).isEqualTo(3);
+    }
+
+    @DisplayName("알람 목록의 시간 형식이 HH:mm 인지 확인")
+    @Test
+    void checkTimeFormat() {
+        // when
+        AlarmListResponseDto responseDto = alarmService.getLimitedAlarmList(savedBoards.getId(), 5);
+
+        // then
+        assertThat(responseDto.getAttendance().get(0).getTime().indexOf(":")).isNotEqualTo(-1);
     }
 
 }
