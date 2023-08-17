@@ -6,6 +6,7 @@ import com.wedding.serviceapi.boards.dto.weddinghall.WeddingHallInfoDto;
 import com.wedding.serviceapi.boards.repository.BoardsRepository;
 import com.wedding.serviceapi.common.jwtutil.JwtUtilBean;
 import com.wedding.serviceapi.common.vo.GuestBoardInfoVo;
+import com.wedding.serviceapi.exception.AlreadyExistedDonationException;
 import com.wedding.serviceapi.exception.NoGuestBoardsInfoJwtExistException;
 import com.wedding.serviceapi.gallery.domain.GalleryImg;
 import com.wedding.serviceapi.gallery.dto.S3ImgInfoDto;
@@ -247,6 +248,43 @@ class InvitationServiceTest {
         // then
         assertThatThrownBy(() -> invitationService.donateUsersGoods(request, 1L, 1000, 1L))
                 .isInstanceOf(NoGuestBoardsInfoJwtExistException.class);
+    }
+
+    @DisplayName("게스트가 이미 특정 상품에 후원한 상태라면 2번 후원하지 못하도록 에러 메시지를 보내준다.")
+    @Test
+    void alreadyExistedDonationException() {
+        // given
+        Users user = Users.builder().name("test").loginType(LoginType.SERVICE).build();
+        Users savedUser = usersRepository.save(user);
+        Users userGuest = Users.builder().name("userGuest").loginType(LoginType.SERVICE).build();
+        Users savedGuest = usersRepository.save(userGuest);
+        Boards boards = Boards.builder().users(savedUser).uuidFirst("first").uuidSecond("second").husband(new HusbandAndWifeEachInfo("husband", "신한은행", "110111111"))
+                .wife(new HusbandAndWifeEachInfo("wife", "국민은행", "110211212"))
+                .address("강남").date("2023-06-17").time("15:30").build();
+        Boards savedBoard = boardsRepository.saveAndFlush(boards);
+        Goods goods = Goods.builder().goodsName("상품1").goodsPrice(10000).goodsImgUrl("test-img").build();
+        Goods savedGoods = goodsRepository.save(goods);
+        UsersGoods usersGoods = UsersGoods.builder().users(savedUser).boards(savedBoard).goods(savedGoods).updatedUsersGoodsName("test상품").usersGoodsTotalDonation(5000).updatedUsersGoodsPrice(10000).build();
+        UsersGoods savedUsersGoods = usersGoodsRepository.save(usersGoods);
+        Guests guests = Guests.builder()
+                .boards(savedBoard)
+                .users(savedGuest)
+                .build();
+        Guests savedGuestTable = guestsRepository.save(guests);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        int donationAmount = 2000;
+        goodsDonationRepository.save(GoodsDonation.builder()
+                .guests(savedGuestTable)
+                .usersGoods(savedUsersGoods)
+                .goodsDonationAmount(donationAmount)
+                .build()
+        );
+        doReturn(new GuestBoardInfoVo(savedBoard.getId(), true)).when(guestInvitationInfoCheck).getGuestBoardInfo(request);
+
+        // when // then
+        assertThatThrownBy(() -> invitationService.donateUsersGoods(request, savedUsersGoods.getId(), donationAmount, savedGuest.getId()))
+                .isInstanceOf(AlreadyExistedDonationException.class)
+                .hasMessage("이미 후원을 진행한 게스트입니다.");
     }
 
     @Test
