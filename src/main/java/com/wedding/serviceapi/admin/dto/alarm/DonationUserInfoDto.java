@@ -22,7 +22,7 @@ public class DonationUserInfoDto {
         Users users = goodsDonation.getGuests().getUsers();
         UsersGoods usersGoods = goodsDonation.getUsersGoods();
         String date = goodsDonation.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String time = goodsDonation.getUpdatedAt().format(DateTimeFormatter.ofPattern("hh-mm"));
+        String time = goodsDonation.getUpdatedAt().format(DateTimeFormatter.ofPattern("HH:mm"));
         return new DonationUserInfoDto(goodsDonation.getId(), users.getName(), date, time, usersGoods.getUpdatedUsersGoodsName(), goodsDonation.getGoodsDonationAmount());
     }
 }
