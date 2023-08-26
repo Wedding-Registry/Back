@@ -26,7 +26,14 @@ public class MemoService {
     private final BoardsRepository boardsRepository;
 
     public WishItemPagingDto getAllItemWish(Long usersId, Long boardsId, Long lastId, Pageable pageable) {
-        Slice<UsersGoods> usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoodsAndIdLessThan(usersId, boardsId, true, lastId, pageable);
+        Slice<UsersGoods> usersGoodsSlice;
+        if (lastId == 0L) {
+            usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoods(usersId, boardsId, true, pageable);
+        } else {
+            usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoodsAndIdLessThan(usersId, boardsId, true, lastId, pageable);
+//            usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoods2(usersId, boardsId, true, pageable);
+        }
+
         PagingManager pagingManager = new PagingManager(usersGoodsSlice);
         return pagingManager.makeWishItemPagingDto();
     }
