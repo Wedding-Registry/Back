@@ -31,7 +31,6 @@ public class MemoService {
             usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoods(usersId, boardsId, true, pageable);
         } else {
             usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoodsAndIdLessThan(usersId, boardsId, true, lastId, pageable);
-//            usersGoodsSlice = usersGoodsRepository.findByUsersIdAndBoardsIdAndWishGoods2(usersId, boardsId, true, pageable);
         }
 
         PagingManager pagingManager = new PagingManager(usersGoodsSlice);
