@@ -44,6 +44,10 @@ public class RegisterUsersGoodsCrawler implements CrawlingUtil {
     public String getProductImgUrl(Document document) {
         String imageUrl = document.select("div._2tT_gkmAOr").select("img").attr("src");
 
+        if (imageUrl.equals("")) {
+            imageUrl = document.select("div.bd_1uFKu").select("div.bd_2PG3r").select("img").attr("src");
+        }
+
         return imageUrl.equals("") ? null : imageUrl;
     }
 
