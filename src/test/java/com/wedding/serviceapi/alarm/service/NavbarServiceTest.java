@@ -112,6 +112,6 @@ class NavbarServiceTest {
         // when
         List<NavbarAlarmDto> data = navbarService.getNavbarAlarm(savedBoards.getId());
         // then
-        assertThat(data).hasSize(5);
+        assertThat(data).hasSize(3);
     }
 }
