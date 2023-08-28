@@ -41,7 +41,7 @@ public class NavbarService {
                 .sorted((navbarAlarm1, navbarAlarm2) -> navbarAlarm2.getDate().compareTo(navbarAlarm1.getDate()))
                 .collect(Collectors.toList());
 
-        return sortedList.size() <= 5 ? sortedList : sortedList.subList(0, 5);
+        return sortedList.size() <= 3 ? sortedList : sortedList.subList(0, 3);
     }
 
 }
