@@ -24,7 +24,7 @@ public class NavbarService {
     private final AlarmService alarmService;
 
     public List<NavbarAlarmDto> getNavbarAlarm(Long boardsId) {
-        AlarmListResponseDto alarmList = alarmService.getLimitedAlarmList(boardsId, 5);
+        AlarmListResponseDto alarmList = alarmService.getLimitedAlarmList(boardsId, 3);
 
         List<AttendanceUserInfoDto> attendanceList = alarmList.getAttendance();
         List<DonationUserInfoDto> donationList = alarmList.getDonation();
