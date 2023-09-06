@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ErrorResponseVo NotDeleteGalleryImgException(NotDeleteGalleryImgException e) {
+    public ErrorResponseVo notDeleteGalleryImgException(NotDeleteGalleryImgException e) {
         log.error("NotSaveGalleryImgException ", e);
         return ErrorResponseVo.internalError(e.getMessage());
     }
@@ -113,5 +113,11 @@ public class GlobalExceptionHandler {
     public ErrorResponseVo s3ObjectException(S3ObjectException e) {
         log.info("S3ObjectException ", e);
         return ErrorResponseVo.internalError(e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ErrorResponseVo alreadyExistedDonationException(AlreadyExistedDonationException e) {
+        log.info("AlreadyExistedDonationException ", e);
+        return ErrorResponseVo.badRequest(e.getMessage());
     }
 }

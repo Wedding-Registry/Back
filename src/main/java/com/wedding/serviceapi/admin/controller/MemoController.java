@@ -28,9 +28,9 @@ public class MemoController {
 
     @GetMapping("/item/wish")
     public ResponseVo<WishItemPagingDto> getWishItemList(@LoginUser LoginUserVo loginUserVo,
-                                                         @RequestParam("lastId") Long lastId,
+                                                         @RequestParam(value = "lastId", defaultValue = "0") Long lastId,
                                                          Pageable pageable) {
-        log.info("lastId = {}, size = {}, sort = {}", lastId, pageable.getPageSize(), pageable.getSort());
+        log.info("lastId = {}, size = {}, sort = {}, page = {}", lastId, pageable.getPageSize(), pageable.getSort(), pageable.getPageNumber());
         WishItemPagingDto data = memoService.getAllItemWish(loginUserVo.getUserId(), loginUserVo.getBoardsId(), lastId, pageable);
 
         return ResponseVo.ok(data);

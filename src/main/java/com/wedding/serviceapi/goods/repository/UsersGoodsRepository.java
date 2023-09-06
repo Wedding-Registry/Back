@@ -25,6 +25,9 @@ public interface UsersGoodsRepository extends JpaRepository<UsersGoods, Long> {
     @Query("select distinct u from UsersGoods u join fetch u.goods join fetch u.donationList where u.users.id = :userId and u.boards.id = :boardId and u.wishGoods = false")
     List<UsersGoods> findAllDistinctByUsersIdAndBoardsIdNotWishWithUrlAndDonationId(@Param("userId") Long userId, @Param("boardId") Long boardId);
 
-    @EntityGraph(attributePaths = {"goods"})
-    Slice<UsersGoods> findByUsersIdAndBoardsIdAndWishGoodsAndIdLessThan(Long usersId, Long boardsId, Boolean wishGoods, Long usersGoodsId, Pageable pageable);
+    @Query("select u from UsersGoods u join fetch u.goods g where u.users.id = :usersId and u.boards.id = :boardsId and u.wishGoods = :wishGoods and u.id < :usersGoodsId")
+    Slice<UsersGoods> findByUsersIdAndBoardsIdAndWishGoodsAndIdLessThan(@Param("usersId") Long usersId, @Param("boardsId") Long boardsId, @Param("wishGoods") Boolean wishGoods, @Param("usersGoodsId") Long usersGoodsId, Pageable pageable);
+
+    @Query("select u from UsersGoods u join fetch u.goods g where u.users.id = :usersId and u.boards.id = :boardsId and u.wishGoods = :wishGoods")
+    Slice<UsersGoods> findByUsersIdAndBoardsIdAndWishGoods(@Param("usersId") Long usersId, @Param("boardsId") Long boardsId, @Param("wishGoods") Boolean wishGoods, Pageable pageable);
 }

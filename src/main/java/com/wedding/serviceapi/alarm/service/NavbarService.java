@@ -24,7 +24,7 @@ public class NavbarService {
     private final AlarmService alarmService;
 
     public List<NavbarAlarmDto> getNavbarAlarm(Long boardsId) {
-        AlarmListResponseDto alarmList = alarmService.getAllAlarmList(boardsId);
+        AlarmListResponseDto alarmList = alarmService.getLimitedAlarmList(boardsId, 3);
 
         List<AttendanceUserInfoDto> attendanceList = alarmList.getAttendance();
         List<DonationUserInfoDto> donationList = alarmList.getDonation();
@@ -37,9 +37,11 @@ public class NavbarService {
         navbarAlarmList.addAll(attendanceNavbarList);
         navbarAlarmList.addAll(donationNavbarList);
 
-        return navbarAlarmList.stream()
+        List<NavbarAlarmDto> sortedList = navbarAlarmList.stream()
                 .sorted((navbarAlarm1, navbarAlarm2) -> navbarAlarm2.getDate().compareTo(navbarAlarm1.getDate()))
                 .collect(Collectors.toList());
+
+        return sortedList.size() <= 3 ? sortedList : sortedList.subList(0, 3);
     }
 
 }
