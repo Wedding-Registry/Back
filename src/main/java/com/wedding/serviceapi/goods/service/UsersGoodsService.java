@@ -93,6 +93,7 @@ public class UsersGoodsService {
         }
 
         return new UsersGoodsPostResponseDto(savedUsersGoods.getId(),
+                goods.getGoodsUrl(),
                 goods.getGoodsImgUrl(),
                 savedUsersGoods.getUpdatedUsersGoodsName(),
                 savedUsersGoods.getUpdatedUsersGoodsPrice());
