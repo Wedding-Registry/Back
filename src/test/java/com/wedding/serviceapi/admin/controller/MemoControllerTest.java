@@ -57,7 +57,7 @@ class MemoControllerTest {
     void postMemoItem() throws Exception {
         // given
         String url = "/admin/memo/item/wish";
-        UsersGoodsPostResponseDto responseDto = new UsersGoodsPostResponseDto(1L, "testUrl", "testName", 10000);
+        UsersGoodsPostResponseDto responseDto = new UsersGoodsPostResponseDto(1L, "goodsUrl", "testUrl", "testName", 10000);
         PostUsersGoodsRequestVo requestVo = new PostUsersGoodsRequestVo("testUrl");
         doReturn(responseDto).when(usersGoodsService).postUsersGoods(1L, requestVo.getUrl(), 1L, true);
         // when
