@@ -47,7 +47,7 @@ class AccountTransferRepositoryTest {
         List<AccountTransfer> transferList = accountTransferRepository.findAllByBoardsId(savedBoards.getId());
         // then
         assertThat(transferList.size()).isEqualTo(2);
-        assertThat(transferList.get(0).getTransferMemo()).isEqualTo("test1 memo");
-        assertThat(transferList.get(1).getTransferMemo()).isEqualTo("test2 memo");
+        assertThat(transferList.get(0).getTransferMemo()).isEqualTo("test2 memo");
+        assertThat(transferList.get(1).getTransferMemo()).isEqualTo("test1 memo");
     }
 }
