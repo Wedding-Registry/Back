@@ -30,7 +30,8 @@ public class AmazonS3Repository implements S3Repository {
 
     @Value("${cloud.aws.s3.url}")
     private String s3Url;
-    private final String BUCKET_NAME = "wedding-registry-dev/gallery";
+    @Value("${custom.s3.bucket-name}")
+    private String BUCKET_NAME;
 
     @Override
     public String uploadObject(MultipartFile file, Long usersId) {
@@ -44,6 +45,7 @@ public class AmazonS3Repository implements S3Repository {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             objectMetadata.setContentLength(file.getSize());
+            log.info("objectMetadata = {}", objectMetadata);
             amazonS3.putObject(BUCKET_NAME, key, inputStream, objectMetadata);
         } catch (Exception e) {
             throw new S3ObjectException("잘못된 파일입니다.", e);
