@@ -30,7 +30,8 @@ public class AmazonS3Repository implements S3Repository {
 
     @Value("${cloud.aws.s3.url}")
     private String s3Url;
-    private final String BUCKET_NAME = "wedding-registry-dev/gallery";
+    @Value("${custom.s3.bucket-name}")
+    private final String BUCKET_NAME;
 
     @Override
     public String uploadObject(MultipartFile file, Long usersId) {
