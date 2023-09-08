@@ -44,6 +44,7 @@ public class AmazonS3Repository implements S3Repository {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             objectMetadata.setContentLength(file.getSize());
+            log.info("objectMetadata = {}", objectMetadata);
             amazonS3.putObject(BUCKET_NAME, key, inputStream, objectMetadata);
         } catch (Exception e) {
             throw new S3ObjectException("잘못된 파일입니다.", e);
