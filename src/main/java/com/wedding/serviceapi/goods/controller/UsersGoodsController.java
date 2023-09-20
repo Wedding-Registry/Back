@@ -3,6 +3,7 @@ package com.wedding.serviceapi.goods.controller;
 import com.wedding.serviceapi.auth.securitycustom.AuthUser;
 import com.wedding.serviceapi.auth.vo.LoginUser;
 import com.wedding.serviceapi.auth.vo.LoginUserVo;
+import com.wedding.serviceapi.common.vo.ErrorResponseVo;
 import com.wedding.serviceapi.common.vo.ResponseVo;
 import com.wedding.serviceapi.goods.dto.*;
 import com.wedding.serviceapi.goods.service.UsersGoodsService;
@@ -65,8 +66,12 @@ public class UsersGoodsController {
     @DeleteMapping()
     public ResponseVo<Void> deleteUsersGoods(@RequestParam Long usersGoodsId) {
 
-        usersGoodsService.deleteUsersGoods(usersGoodsId);
-        return ResponseVo.accepted();
+        try {
+            usersGoodsService.deleteUsersGoods(usersGoodsId);
+            return ResponseVo.accepted();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("이미 해당 상품에 대한 후원 기록이 존재합니다.");
+        }
     }
 }
 
