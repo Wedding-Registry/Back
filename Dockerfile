@@ -5,9 +5,14 @@ ARG profile
 
 ENV active_profile=$profile
 ENV jar_file=$JAR_FILE
+ENV TZ=Asia/Seoul
+
 WORKDIR /app
 
 RUN chmod a+x /app
+RUN apt-get update && apt-get install -y tzdata && \
+    echo $TZ > /etc/timezone && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
 
 COPY build/libs/${JAR_FILE} .
 
