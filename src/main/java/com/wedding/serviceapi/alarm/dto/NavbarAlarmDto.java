@@ -17,6 +17,7 @@ public class NavbarAlarmDto {
     private AttendanceType attend;
     private String goods;
     private Integer donation;
+    private String dateTime;
 
 
     public static NavbarAlarmDto from(AttendanceUserInfoDto attendanceUserInfoDto) {
@@ -27,6 +28,7 @@ public class NavbarAlarmDto {
                 .attend(attendanceUserInfoDto.getAttendanceType())
                 .goods(null)
                 .donation(null)
+                .dateTime(attendanceUserInfoDto.getDate() + " " + attendanceUserInfoDto.getTime())
                 .build();
     }
 
@@ -38,6 +40,7 @@ public class NavbarAlarmDto {
                 .attend(null)
                 .goods(donationUserInfoDto.getGoods())
                 .donation(donationUserInfoDto.getAmount())
+                .dateTime(donationUserInfoDto.getDate() + " " + donationUserInfoDto.getTime())
                 .build();
     }
 }

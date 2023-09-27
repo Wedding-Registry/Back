@@ -38,7 +38,7 @@ public class NavbarService {
         navbarAlarmList.addAll(donationNavbarList);
 
         List<NavbarAlarmDto> sortedList = navbarAlarmList.stream()
-                .sorted((navbarAlarm1, navbarAlarm2) -> navbarAlarm2.getDate().compareTo(navbarAlarm1.getDate()))
+                .sorted((navbarAlarm1, navbarAlarm2) -> navbarAlarm2.getDateTime().compareTo(navbarAlarm1.getDateTime()))
                 .collect(Collectors.toList());
 
         return sortedList.size() <= 3 ? sortedList : sortedList.subList(0, 3);
